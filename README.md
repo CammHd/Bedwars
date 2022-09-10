@@ -13,4 +13,4 @@ Yes, we do try to make things as best as we can, and do strive for quality, but 
 
 
 
-Please note that if you see this repository here: https://github.com/JT-TMU/Bedwars_189 this is a alternate account of mine.
+Please note that if you see this repository here: https://github.com/JT-TMU/Bedwars this is a alternate account of mine.
