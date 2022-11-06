@@ -4,10 +4,10 @@ import org.bukkit.ChatColor;
 
 
 //when we try to equate something to a value but are unable to
-public class EquationException extends ParameterException
+public class ValueResolutionException extends ParameterException
 {
    private final String result;
-    public EquationException(String file, int line, String expectedResult, String given, String result) {
+    public ValueResolutionException(String file, int line, String expectedResult, String given, String result) {
         super(file, line, expectedResult, given);
         this.result = result;
     }

@@ -4,9 +4,7 @@ import me.camm.productions.bedwars.Arena.GameRunning.Arena;
 import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
 
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
-import me.camm.productions.bedwars.Validation.BedWarsException;
 
-import me.camm.productions.bedwars.Validation.ConfigException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -116,12 +114,8 @@ public class GameIntializer implements CommandExecutor
                     break;
             }
         }
-        catch (BedWarsException e) {
-            if (e instanceof ConfigException) {
+        catch (Exception e) {
                 messager.sendConsoleMessage(e.getMessage(), Level.WARNING);
-            }
-            else
-                sender.sendMessage(e.getMessage());
         }
         return true;
     }

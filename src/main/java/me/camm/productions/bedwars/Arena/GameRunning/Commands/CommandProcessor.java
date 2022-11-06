@@ -6,8 +6,8 @@ import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.BedWars;
-import me.camm.productions.bedwars.Files.FileStreams.TeamFileReader;
-import me.camm.productions.bedwars.Files.FileStreams.WorldFileReader;
+import me.camm.productions.bedwars.Files.TeamFileJsonParser;
+import me.camm.productions.bedwars.Files.WorldDataJsonParser;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Validation.BedWarsException;
 import org.bukkit.ChatColor;
@@ -48,7 +48,7 @@ public class CommandProcessor {
      * @return a game runner
      * @throws BedWarsException if the sender has no perms, or if a problem occurred
      */
-    public GameRunner initRunner(CommandSender sender, Plugin plugin) throws BedWarsException{
+    public GameRunner initRunner(CommandSender sender, Plugin plugin) throws Exception {
 
         //make sure they have the permission
         if (noPermission(sender, SETUP))
@@ -62,9 +62,9 @@ public class CommandProcessor {
         GameRunner runner;
 
         ArrayList<BattleTeam> teams;
-        WorldFileReader fileReader = new WorldFileReader(plugin);
+        WorldDataJsonParser fileReader = new WorldDataJsonParser();
 
-            arena = fileReader.read();
+            arena = fileReader.getArena();
 
 
         if (arena==null)
@@ -76,7 +76,7 @@ public class CommandProcessor {
         arena.registerMap();
 
         try {
-            teams = new TeamFileReader(plugin, arena).read();
+            teams = new TeamFileJsonParser(arena).getTeams();
         }
         catch (NullPointerException e) {
             throw new InitializationException(e.getMessage());
@@ -168,9 +168,6 @@ public class CommandProcessor {
                 if (team.getRemainingPlayers()==0)
                     notOpposed--;
             }
-            /////////////////////////////////////////////////////////////////
-
-        //disabled for testing only
 
              if (!(notOpposed<2)) //game can start b/c there are at least 2 teams
                    runner.prepareAndStart();

@@ -1,10 +1,10 @@
 package me.camm.productions.bedwars.Generators;
 
 
-import me.camm.productions.bedwars.Files.FileKeywords.WorldFileKeyword;
 import me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime;
 import me.camm.productions.bedwars.Util.Locations.BlockRegisterType;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
+import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -78,32 +78,20 @@ public class Generator
 
     //time of upgrades is controlled externally
 
-    public Generator(double x, double y, double z, World world, String spawning, Plugin plugin, GameBoundary box)  //construct
+    public Generator(Coordinate location, World world, GeneratorType type, Plugin plugin, GameBoundary box)  //construct
     {
         this.box = box;
         this.name = BlockRegisterType.GENERATOR.getData();
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
         this.world = world;
         this.playerNumber = 0;
         this.plugin = plugin;
         this.timeCount = 0;
 
-        if (spawning==null) {
-            //If what the generator spawns is null, default to diamond.
-            this.genType = GeneratorType.DIAMOND;
-            this.type = genType.getSpinningBlockMaterial();
-            return;
-        }
-
-
-        this.genType = spawning.equalsIgnoreCase(WorldFileKeyword.EMERALD.getKey()) ?
-                GeneratorType.EMERALD:GeneratorType.DIAMOND;
-
+        this.genType = type;
         this.type = genType.getSpinningBlockMaterial();
-
-
     }
 
     /*
@@ -317,17 +305,17 @@ public class Generator
 
         for (Entity entity : items) {
             if (!entity.getType().equals(EntityType.DROPPED_ITEM))
-            continue;
+             continue;
 
             current = (Item) entity;
             if (current.getItemStack().getType() != product) //  if diamond/emerald
-            continue;
+              continue;
 
             if (current.getLocation().distance(generatorType.getLocation()) > 5)
-            continue;
+              continue;
 
             if (current.hasMetadata(name))
-            nearby += current.getItemStack().getAmount();
+              nearby += current.getItemStack().getAmount();
 
         } //for
 

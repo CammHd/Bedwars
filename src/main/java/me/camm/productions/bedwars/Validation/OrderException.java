@@ -8,7 +8,7 @@ public class OrderException extends ConfigException
     private final String value;
 
     public OrderException(int expectedOrder, int position, String value) {
-        super("");
+        super(null);
         this.expectedOrder = expectedOrder;
         this.position = position;
         this.value = value;

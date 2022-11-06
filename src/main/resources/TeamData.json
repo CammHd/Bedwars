@@ -1,0 +1,101 @@
+{
+"Team" : {
+  "Create Team": false,
+
+  "Forge": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "Forge Speed": 1,
+    "Forge Pickup Distance": 0
+  },
+
+  "Player Spawn": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "Rotation": 0
+    },
+
+  "Team Chest" : {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+
+  "Bed Location" : {
+     "From": {
+       "x" : 0,
+       "y" : 0,
+       "z" : 0
+     },
+
+    "To": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0
+    }
+  },
+
+  "Heal Pool Area": {
+    "From": {
+      "x" : 0,
+      "y" : 0,
+      "z" : 0
+    },
+
+    "To": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0
+    }
+  },
+
+
+  "Quick Buy Merchant": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "Rotation": 0
+  },
+
+
+  "Team Upgrades Merchant": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "Rotation": 0
+  },
+
+
+  "Restricted Place Area": {
+    "From": {
+      "x" : 0,
+      "y" : 0,
+      "z" : 0
+    },
+
+    "To": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0
+    }
+  },
+
+  "Trap Trigger Area": {
+    "From": {
+      "x" : 0,
+      "y" : 0,
+      "z" : 0
+    },
+
+    "To": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0
+    }
+  }
+
+
+  }
+}

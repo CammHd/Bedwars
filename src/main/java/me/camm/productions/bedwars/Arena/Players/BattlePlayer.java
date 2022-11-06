@@ -6,14 +6,13 @@ import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager
 import me.camm.productions.bedwars.Arena.Players.Scoreboards.PlayerBoard;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.TeamTitle;
-import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
+import me.camm.productions.bedwars.Files.FileManager;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.ChatOptionSelectionInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuyEditorInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
 import me.camm.productions.bedwars.Listeners.PacketHandler;
 import me.camm.productions.bedwars.Entities.ShopKeeper;
-import me.camm.productions.bedwars.Files.FileCreators.PlayerFileCreator;
-import me.camm.productions.bedwars.Files.FileStreams.PlayerFileReader;
+import me.camm.productions.bedwars.Files.PlayerFileReader;
 import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
 import me.camm.productions.bedwars.Items.ItemDatabases.TieredItem;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
@@ -23,7 +22,6 @@ import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -39,6 +37,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -144,7 +143,7 @@ public class BattlePlayer
 
 
     //constructor
-    public BattlePlayer(Player player, BattleTeam team, Arena arena, int number)
+    public BattlePlayer(Player player, BattleTeam team, Arena arena, int number) throws IOException
     {
 
         this.arena = arena;
@@ -158,13 +157,9 @@ public class BattlePlayer
         this.timeTillRespawn = 0;
         this.isAlive = true;
 
-
-
         this.finals = 0;
         this.kills = 0;
         this.beds = 0;
-
-
 
         this.barManager = null;
         this.shopManager = null;
@@ -182,11 +177,7 @@ public class BattlePlayer
         createBoard();
 
         //create the config files if they don't exist
-        PlayerFileCreator creator = new PlayerFileCreator(this,arena);
-        creator.createDirectory(); creator.createHotBarFile(); creator.createInventoryFile();
-
-
-
+        FileManager.getPlayerFiles(this.player);
 
         this.lastMilk = 0;
 

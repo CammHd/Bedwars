@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.camm.productions.bedwars.Files.FileKeywords.TeamFileKeywords.FORGE_SPAWN;
+
 import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.ARENA;
 
 public class ItemListener implements Listener
@@ -52,7 +52,8 @@ public class ItemListener implements Listener
     @EventHandler
     public void onItemMerge(ItemMergeEvent event)
     {
-        if (event.getEntity().hasMetadata(FORGE_SPAWN.getKey())||event.getTarget().hasMetadata(FORGE_SPAWN.getKey()))
+        String forge = Forge.getKeyword();
+        if (event.getEntity().hasMetadata(forge)||event.getTarget().hasMetadata(forge))
             event.setCancelled(true);
     }
 
@@ -109,7 +110,7 @@ public class ItemListener implements Listener
                 distanceSquared *= distanceSquared;
 
                 Item pickup = event.getItem();
-                if (!pickup.hasMetadata(FORGE_SPAWN.getKey()))
+                if (!pickup.hasMetadata(Forge.getKeyword()))
                     return;
 
                 Forge forge = null;

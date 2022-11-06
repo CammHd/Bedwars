@@ -1,5 +1,7 @@
 package me.camm.productions.bedwars.Util;
 
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
+
 public enum PacketSound
 {
     DRAGON("mob.enderdragon.growl",1F),
@@ -25,5 +27,9 @@ public enum PacketSound
 
     public float getPitch() {
         return pitch;
+    }
+
+    public PacketPlayOutNamedSoundEffect asPacket(double x, double y, double z){
+        return new PacketPlayOutNamedSoundEffect(getSoundName(), x,y,z, 1,getPitch());
     }
 }

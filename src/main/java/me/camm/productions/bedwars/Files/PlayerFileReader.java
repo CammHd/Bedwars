@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Files.FileStreams;
+package me.camm.productions.bedwars.Files;
 
 import me.camm.productions.bedwars.Arena.GameRunning.Arena;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;

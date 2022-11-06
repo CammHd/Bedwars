@@ -21,9 +21,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName.TEAM_JOIN;
 
@@ -86,8 +88,12 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
         if (cancel)
             event.setCancelled(true);
 
-
-       registerToTeam(event);
+        try {
+            registerToTeam(event);
+        }
+        catch (IOException e) {
+            sender.sendConsoleMessage(e.getMessage(), Level.WARNING);
+        }
     }
 
 
@@ -96,7 +102,7 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
  @Author CAMM
  Adds a player to a team, or changes their team if they are already on one.
   */
-    private void registerToTeam(InventoryClickEvent event)
+    private void registerToTeam(InventoryClickEvent event) throws IOException
     {
         Inventory inv = event.getClickedInventory();
         HumanEntity player = event.getWhoClicked();

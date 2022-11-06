@@ -12,7 +12,8 @@ public class ParameterException extends ConfigException
     protected final String given;
 
     public ParameterException(String file, int line, String expected, String given) {
-        super("");
+        super(null);
+
         this.file = file;
         this.line = line;
         this.expected = expected;

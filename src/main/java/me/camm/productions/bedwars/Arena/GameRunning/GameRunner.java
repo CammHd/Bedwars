@@ -29,6 +29,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.TIME;
 import static me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime.*;
@@ -43,7 +44,7 @@ public class GameRunner
 {
     private final Plugin plugin;
     private final Arena arena;
-    private final ArrayList<Generator> generators;
+    private final List<Generator> generators;
 
     private final int totalGameTime;
     private final int runnableFraction;

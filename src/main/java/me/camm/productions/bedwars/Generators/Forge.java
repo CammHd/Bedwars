@@ -1,7 +1,6 @@
 package me.camm.productions.bedwars.Generators;
 
 import me.camm.productions.bedwars.Arena.Teams.TeamColor;
-import me.camm.productions.bedwars.Files.FileKeywords.TeamFileKeywords;
 import me.camm.productions.bedwars.Util.Randoms.WeightedItem;
 import me.camm.productions.bedwars.Util.Randoms.WeightedRandom;
 import org.bukkit.Chunk;
@@ -41,10 +40,11 @@ public class Forge implements Runnable {
 
     private volatile int tier;
     private volatile boolean isAlive;
+    private final double pickup;
 
     private final Random spawningTimeRand;
 
-    private static final double PICKUP_DISTANCE;
+  //  private static final double PICKUP_DISTANCE;
     private static final int MAX_GOLD;
     private static final int MAX_IRON;
 
@@ -53,15 +53,16 @@ public class Forge implements Runnable {
     private final WeightedItem<Material> emeraldChance;
     private final WeightedItem<Material> goldChance;
 
+    private static final String FORGE = "FORGE";
 
     static {
-        PICKUP_DISTANCE = 1.5;
+      //  PICKUP_DISTANCE = 1.5;
         MAX_GOLD = 16;
         MAX_IRON = 48;
 
     }
 
-    public Forge(double x, double y, double z, World world, TeamColor color, long initialTime, Plugin plugin)  //construct
+    public Forge(double x, double y, double z, World world, TeamColor color, long initialTime, Plugin plugin, double pickup)  //construct
     {
         this.recount = false;
         this.location = new Location(world, x, y, z);
@@ -70,7 +71,8 @@ public class Forge implements Runnable {
         this.world = world;
         this.tier = 0;
         this.plugin = plugin;
-        this.type = TeamFileKeywords.FORGE_SPAWN.getKey();
+        this.type = FORGE;
+        this.pickup = pickup;
 
         this.spawnTime = initialTime;
         this.isAlive = true;
@@ -94,6 +96,10 @@ public class Forge implements Runnable {
 
     }
 
+    public static String getKeyword(){
+        return FORGE;
+    }
+
     //returns the forge location
     public Location getForgeLocation() {
         return location;
@@ -101,7 +107,7 @@ public class Forge implements Runnable {
 
     //returns the pickup distance
     public double getDistance() {
-        return PICKUP_DISTANCE;
+        return pickup;
     }
 
     //disables the forge
@@ -244,7 +250,7 @@ public class Forge implements Runnable {
                 int goldCount = 0;
                 int ironCount = 0;
 
-                Collection<Entity> nearby = world.getNearbyEntities(location, PICKUP_DISTANCE, PICKUP_DISTANCE, PICKUP_DISTANCE);
+                Collection<Entity> nearby = world.getNearbyEntities(location, pickup, pickup, pickup);
                 for (Entity entity : nearby) {
 
                     if (!(entity instanceof Item))

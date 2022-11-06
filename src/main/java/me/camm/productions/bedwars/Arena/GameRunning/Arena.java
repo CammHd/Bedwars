@@ -46,7 +46,7 @@ public class Arena
   private final ConcurrentHashMap<String, BattleTeam> teams;
   //the string is the team color
 
-  private ArrayList<Generator> generators;
+  private List<Generator> generators;
   private final World world;
 
   private final Plugin plugin;
@@ -316,12 +316,12 @@ public class Arena
         return teams;
     }
 
-    public ArrayList<Generator> getGenerators()
+    public List<Generator> getGenerators()
     {
         return generators;
     }
 
-    public void setGenerators(ArrayList<Generator> generators)
+    public void setGenerators(List<Generator> generators)
     {
         this.generators = generators;
     }

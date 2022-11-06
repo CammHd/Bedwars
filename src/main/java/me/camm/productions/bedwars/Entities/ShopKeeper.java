@@ -2,8 +2,7 @@ package me.camm.productions.bedwars.Entities;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Util.Sites;
+import me.camm.productions.bedwars.Util.SiteInfo;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -116,7 +115,7 @@ public class ShopKeeper
     {
         try
         {
-            URL url = new URL(Sites.PROFILE_GET.getURL()+uuid.toString()+ Sites.PROFILE_CAPPER.getURL());
+            URL url = new URL(SiteInfo.PROFILE_GET.getURL()+uuid.toString()+ SiteInfo.PROFILE_CAPPER.getURL());
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             if (connection.getResponseCode()==HttpURLConnection.HTTP_OK)
             {

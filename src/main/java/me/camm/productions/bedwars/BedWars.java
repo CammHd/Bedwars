@@ -10,8 +10,8 @@ import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager
 import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;
 import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
 import me.camm.productions.bedwars.Listeners.PacketHandler;
-import me.camm.productions.bedwars.Files.FileCreators.DirectoryCreator;
-import me.camm.productions.bedwars.Files.FileStreams.GameFileWriter;
+import me.camm.productions.bedwars.Files.FileManager;
+import me.camm.productions.bedwars.Files.GameFileWriter;
 import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuyInventory;
 import me.camm.productions.bedwars.Util.DataSets.ShopItemSet;
@@ -46,6 +46,10 @@ public final class BedWars extends JavaPlugin
 
     private static Plugin plugin;
 
+    public BedWars(){
+        plugin = this;
+    }
+
     public static Plugin getPlugin(){
         return plugin;
     }
@@ -54,7 +58,6 @@ public final class BedWars extends JavaPlugin
     public void onEnable()
     {
 
-        plugin = this;
         ChatSender sender = ChatSender.getInstance();
         //we init it right away so that we can use it anywhere.
 
@@ -63,8 +66,8 @@ public final class BedWars extends JavaPlugin
         sender.sendConsoleMessage("It is recommended that you make a backup of this world as the game may destroy and change it.",Level.INFO);
 
        try {
-           DirectoryCreator fileCreator = new DirectoryCreator(this);
-           fileCreator.createFiles();
+           FileManager fileManager = new FileManager();
+           fileManager.createFiles();
 
            replaceClass(gameDragon, DRAGON_NAME, DRAGON_ID);
            sender.sendConsoleMessage("Registered custom ender dragon...", Level.INFO);
@@ -77,10 +80,15 @@ public final class BedWars extends JavaPlugin
 
 
        }
-       catch (BedWarsException e) {
+       catch (Exception e) {
            sender.sendConsoleMessage(e.getMessage(), Level.WARNING);
        }
     }
+
+
+
+
+
 
 
     @SuppressWarnings("unchecked")
