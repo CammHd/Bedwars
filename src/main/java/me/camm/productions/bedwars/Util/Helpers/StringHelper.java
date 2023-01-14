@@ -4,7 +4,6 @@ import me.camm.productions.bedwars.BedWars;
 import me.camm.productions.bedwars.Files.FileKeywords.DataSeparatorKeys;
 import me.camm.productions.bedwars.Files.FileKeywords.FilePaths;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 
 import javax.annotation.Nullable;
@@ -124,7 +123,7 @@ public class StringHelper
     //gets the plugin folder of the server.
     public static String getServerFolder()
     {
-        return BedWars.getPlugin().getDataFolder().getParentFile().getAbsolutePath();
+        return BedWars.getInstance().getDataFolder().getParentFile().getAbsolutePath();
     }
 
     public static String getMainFolderPath()

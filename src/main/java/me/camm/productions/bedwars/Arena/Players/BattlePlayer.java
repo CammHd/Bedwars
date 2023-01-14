@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Arena.Players;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
 import me.camm.productions.bedwars.Arena.Players.Scoreboards.PlayerBoard;

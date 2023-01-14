@@ -28,7 +28,7 @@ public class ChatSender
 
     public static ChatSender getInstance(){
         if (sender == null) {
-            sender = new ChatSender(BedWars.getPlugin());
+            sender = new ChatSender(BedWars.getInstance());
         }
             return sender;
     }

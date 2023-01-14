@@ -51,8 +51,13 @@ public abstract class JsonParser {
     }
 
     public static JsonObject getParent(File file) throws IOException {
-        return (JsonObject) new com.google.gson.JsonParser()
-                .parse(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        try {
+            return (JsonObject) new com.google.gson.JsonParser()
+                    .parse(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        }
+        catch (RuntimeException e) {
+            throw new IOException("Error parsing json in file:  "+file.getName()+": "+e.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -103,7 +108,7 @@ public abstract class JsonParser {
 
     protected void getMapEntries(HashMap<String, String> entries, JsonObject o) {
         for (Map.Entry<String, JsonElement> entry : o.entrySet()) {
-            entries.put(entry.getKey(), entry.getValue().getAsString());
+            entries.put(entry.getKey(), entry.getValue().toString());
         }
     }
 

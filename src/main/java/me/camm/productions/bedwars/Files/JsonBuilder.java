@@ -3,7 +3,6 @@ package me.camm.productions.bedwars.Files;
 import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.BedWars;
 import me.camm.productions.bedwars.Generators.Forge;
-import me.camm.productions.bedwars.Generators.Generator;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import org.bukkit.World;
@@ -18,19 +17,21 @@ public class JsonBuilder {
     public static Coordinate buildCoordinate(Map<String,String> values) throws IllegalArgumentException {
         //(double x, double y, double z, double yaw)
 
-        String rotation = null;
-        double[] coords = getXYZDouble(values);
-        double rotationD;
+        try {
+            String rotation = null;
+            double[] coords = getXYZAsDouble(values);
 
-        if (values.containsKey(JsonParser.Identifier.ROTATION.id))
-            rotation = values.get(JsonParser.Identifier.ROTATION.id);
 
-        if (rotation == null)
-            return new Coordinate(coords[0], coords[1], coords[2]);
-        else
-        {
-            rotationD = toDouble(rotation);
-            return new Coordinate(coords[0], coords[1], coords[2], rotationD);
+            if (values.containsKey(JsonParser.Identifier.ROTATION.id))
+                rotation = values.get(JsonParser.Identifier.ROTATION.id);
+
+            if (rotation == null)
+                return new Coordinate(coords[0], coords[1], coords[2]);
+            else
+                return new Coordinate(coords[0], coords[1], coords[2], toDouble(rotation));
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Error building coordinate location: "+e.getMessage());
         }
     }
 
@@ -40,8 +41,8 @@ public class JsonBuilder {
 
     //double x, double y, double z, World world, TeamColor color, long initialTime, Plugin plugin, double pickup
     public static Forge buildForge(Map<String, String> values, World world, TeamColor color) {
-        double[] coords = getXYZDouble(values);
-        Plugin plugin = BedWars.getPlugin();
+        double[] coords = getXYZAsDouble(values);
+        Plugin plugin = BedWars.getInstance();
 
         int time = -1;
         if (values.containsKey(TeamFileJsonParser.DataHolder.FORGE_SPEED.data))
@@ -68,11 +69,16 @@ public class JsonBuilder {
     //x1 x2, y1 y2, z1 z2
     public static GameBoundary buildBoundary(Map<String, String> values) throws IllegalArgumentException {
 
-        int[] xyz1 = getXYZInt(values);
-        int[] xyz2 = getXYZInt2(values);
-        Integer[] coordinates = new Integer[]{xyz1[0],xyz2[0],xyz1[1],xyz2[1],xyz1[2],xyz2[2]};
+        try {
+            int[] xyz1 = getXYZInt(values);
+            int[] xyz2 = getXYZInt2(values);
+            Integer[] coordinates = new Integer[]{xyz1[0], xyz2[0], xyz1[1], xyz2[1], xyz1[2], xyz2[2]};
 
-        return new GameBoundary(coordinates);
+            return new GameBoundary(coordinates);
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Error building boundary: "+e.getMessage());
+        }
     }
 
 
@@ -102,13 +108,13 @@ public class JsonBuilder {
 
 
     private static int[] getXYZInt(Map<String, String> values) {
-        String[] coords = getXYZ(values);
+        String[] coords = getXYZFirstPair(values);
         return getInts(coords);
 
     }
 
     private static int[] getXYZInt2(Map<String, String> values) {
-      String[] coords = getXYZ2(values);
+      String[] coords = getXYZSecondPair(values);
         return getInts(coords);
 
     }
@@ -128,9 +134,9 @@ public class JsonBuilder {
 
 
 
-    private static double[] getXYZDouble(Map<String, String> values) {
+    private static double[] getXYZAsDouble(Map<String, String> values) {
 
-        String[] coords = getXYZ(values);
+        String[] coords = getXYZFirstPair(values);
         if (coords == null)
             throw new IllegalArgumentException("Invalid arguments for x,y,z coordinates");
 
@@ -144,7 +150,7 @@ public class JsonBuilder {
 
 
 
-    private static String[] getXYZ(Map<String, String> values){
+    private static String[] getXYZFirstPair(Map<String, String> values){
         String x,y,z;
         x = y = z = null;
 
@@ -163,7 +169,7 @@ public class JsonBuilder {
         return new String[]{x,y,z};
     }
 
-    private static String[] getXYZ2(Map<String, String> values) {
+    private static String[] getXYZSecondPair(Map<String, String> values) {
         String x,y,z;
         x = y = z = null;
 

@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Util.Locations.Boundaries;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.TeamTraps.ITrap;
@@ -10,6 +10,7 @@ import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.PacketSound;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -146,6 +147,7 @@ public class ExecutableBoundaryLoader implements Runnable
 
                                    primedTraps.remove(current);
                                    coolingTeams.add(new TimeSet(current, System.currentTimeMillis()));
+
                                }
 
 

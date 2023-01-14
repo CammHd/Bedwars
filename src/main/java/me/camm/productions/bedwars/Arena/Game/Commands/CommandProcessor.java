@@ -1,7 +1,7 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Commands;
+package me.camm.productions.bedwars.Arena.Game.Commands;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.TeamColor;
@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.camm.productions.bedwars.Arena.GameRunning.Commands.CommandKeyword.*;
+import static me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword.*;
 
 
 /*
@@ -86,6 +86,8 @@ public class CommandProcessor {
             //ensure that there are teams for opposition in the game
             //if valid, then register their areas from the config and put them into
             //the arena
+
+
             if (teams==null||teams.size()<=1)
                 throw new InitializationException("The teams are invalid!"+
                     (teams==null?(" teams are not defined"):(" There must be more than 1 team")));
@@ -169,10 +171,12 @@ public class CommandProcessor {
                     notOpposed--;
             }
 
-             if (!(notOpposed<2)) //game can start b/c there are at least 2 teams
+            //TODO turn on after done refactoring
+
+            // if (!(notOpposed<2)) //game can start b/c there are at least 2 teams
                    runner.prepareAndStart();
-                else
-                    throw new StateException(ChatColor.RED+"There must be opposition for a game to start!");
+          //      else
+          //          throw new StateException(ChatColor.RED+"There must be opposition for a game to start!");
 
     }
 
@@ -263,7 +267,7 @@ public class CommandProcessor {
     }
 
     private BedWarsException getPermException(CommandKeyword word){
-        Plugin p = BedWars.getPlugin();
+        Plugin p = BedWars.getInstance();
         PluginCommand command = p.getServer().getPluginCommand(word.getWord());
         if (command == null)
             return new PermissionException(ChatColor.RED+"You have no permission!");

@@ -4,6 +4,7 @@ package me.camm.productions.bedwars.Files.FileKeywords;
 @author CAMM
   This class holds the significant keys used in file reading for the plugin.
  */
+@Deprecated
 public enum DataSeparatorKeys
 {
     SEPARATOR("/"),

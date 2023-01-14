@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Events;
+package me.camm.productions.bedwars.Arena.Game.Events;
 
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 

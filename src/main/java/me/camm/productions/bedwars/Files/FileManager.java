@@ -5,10 +5,7 @@ import me.camm.productions.bedwars.BedWars;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -48,49 +45,68 @@ public class FileManager
         }
     }
 
-    private final Plugin plugin;
-    private final String dataPath;
 
     private static final String INVENTORY = "Inventory.txt";
     private static final String HOTBAR = "Hotbar.txt";
 
-    public FileManager()
-    {
-        plugin = BedWars.getPlugin();
-        dataPath = plugin.getDataFolder().getParentFile().getAbsolutePath()+ "\\";
-    }
-
 
 
     public static String getDataPath(){
-        Plugin p = BedWars.getPlugin();
-        return p.getDataFolder().getParentFile().getAbsolutePath()+ "\\" + Directories.DATA.data +"\\";
+        Plugin p = BedWars.getInstance();
+        return p.getDataFolder().getParentFile().getAbsolutePath()+ "\\" + Directories.DATA.data;
     }
 
+    public static String getTeamDataPath() {
+        return getDataPath() + "\\" + Directories.TEAMS.data;
+    }
 
+    public static String getPlayerDataPath() {
+        return getDataPath() + "\\" + Directories.PLAYERS.data;
+    }
 
     public static String getPlayerFolder(UUID id) {
-        return getDataPath() + Directories.PLAYERS.data +"\\"+ id.toString();
+        return getPlayerDataPath() +"\\" + id.toString();
+    }
+
+    public static boolean clearFile(File file) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+            writer.write("");
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+
+    //writes to the file.
+    public static boolean write(List<String> lines, boolean append, File file) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, append))){
+
+            for (String s : lines) {
+                writer.write(s + "\n");
+            }
+        } catch (IOException e) {
+          return false;
+        }
+        return true;
     }
 
 
 
 
-    public void createFiles() throws IOException, IllegalStateException
+    public static void createFiles() throws IOException, IllegalStateException
     {
-        String interiorPath = dataPath + Directories.DATA.data;
+        String interiorPath = getDataPath() +"\\";
+
         createDirectory(interiorPath);
+       createDirectory(getPlayerDataPath());
+       createDirectory(getTeamDataPath());
 
-        interiorPath += "\\";
-
-       createDirectory(interiorPath + Directories.PLAYERS.data);
-
-       createDirectory(interiorPath + Directories.TEAMS.data);
 
        for (Files f: Files.values()) {
 
           if (f == Files.TEAM_DATA)
-            createTeamFiles(interiorPath);
+            createTeamFiles();
           else {
               boolean success = copyResource(f.data, interiorPath + f.data).exists();
               if (!success)
@@ -136,17 +152,20 @@ public class FileManager
 
 
 
-    private void createTeamFiles(String original) throws IOException {
-        String origin = original + Directories.TEAMS +"\\"+ Files.TEAM_DATA.data;
+    private static void createTeamFiles() throws IOException {
+
+        String dirPath = getTeamDataPath() +"\\";
+
+
 
         for (TeamColor color: TeamColor.values()) {
-            String path = original + color.getName() + ".json";
+            String path = dirPath + color.getName() + ".json";
 
             File teamFile = new File(path);
             if (teamFile.exists())
                 continue;
 
-            File copied = copyResource(Files.TEAM_DATA.data, origin);
+            File copied = copyResource(Files.TEAM_DATA.data, path + Files.TEAM_DATA.data);
            boolean success = copied.renameTo(new File(path)) || copied.exists();
 
            if (!success)
@@ -157,7 +176,7 @@ public class FileManager
 
 
 
-    private void createDirectory(String path) throws IOException {
+    private static void createDirectory(String path) throws IOException {
         File main = new File(path);
         boolean isDirectory = main.mkdir() || main.isDirectory();
         boolean created = main.exists() || main.createNewFile();
@@ -168,8 +187,8 @@ public class FileManager
 
 
 
-    private File copyResource(String resourceName, String pathName) throws IOException {
-        InputStream stream = plugin.getResource(resourceName);
+    private static File copyResource(String resourceName, String pathName) throws IOException {
+        InputStream stream = BedWars.getInstance().getResource(resourceName);
 
         if (stream == null) {
             throw new NoSuchFileException("File "+resourceName+" not found");
@@ -187,6 +206,9 @@ public class FileManager
       return file;
 
     }
+
+
+
 
 
 }

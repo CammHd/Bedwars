@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Commands;
+package me.camm.productions.bedwars.Arena.Game.Commands;
 
 
 /*

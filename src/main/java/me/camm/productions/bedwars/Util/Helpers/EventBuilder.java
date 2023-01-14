@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Events.*;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
-import static me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime.*;
-import me.camm.productions.bedwars.Arena.GameRunning.Events.GameEventText;
+import me.camm.productions.bedwars.Arena.Game.Events.*;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
+import static me.camm.productions.bedwars.Arena.Game.Events.EventTime.*;
+import me.camm.productions.bedwars.Arena.Game.Events.GameEventText;
 
 import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.*;
 import static me.camm.productions.bedwars.Generators.GeneratorType.*;
@@ -11,7 +11,7 @@ import static me.camm.productions.bedwars.Generators.GeneratorType.*;
 import java.util.ArrayList;
 
 
-
+@Deprecated
 public class EventBuilder
 {
     public static ArrayList<ActionEvent> build(GameRunner runner) {

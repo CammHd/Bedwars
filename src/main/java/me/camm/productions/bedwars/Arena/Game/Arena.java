@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Arena.GameRunning;
+package me.camm.productions.bedwars.Arena.Game;
 
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
@@ -207,25 +207,17 @@ public class Arena
 
       final long time = System.currentTimeMillis();
 
-      new BukkitRunnable() {
-          @Override
-          public void run() {
-
-              setRegistering(true);
-
-              bounds.register(world, ARENA.getData(), RegisterType.EVERYTHING.getType(),plugin); //registering the playable area
-              bounds.registerButNotBlockOrAir(world,MAP.getData(),plugin,Material.BED_BLOCK);  //registering all blocks to map blocks except for beds
-
+      setRegistering(true);
 
               for (Generator generator: generators)
                   generator.registerBox();
 
-              setRegistering(false);
-             sender.sendMessage("Registered map zones! ("+(System.currentTimeMillis() - time)+" ms)");
-              cancel();
+      setRegistering(false);
 
-          }
-      }.runTask(plugin);
+
+      sender.sendMessage("Registered map zones! ("+(System.currentTimeMillis() - time)+" ms)");
+
+
 
   }
 

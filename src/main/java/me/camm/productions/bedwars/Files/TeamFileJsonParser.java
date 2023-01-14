@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Files;
 
 import com.google.gson.JsonObject;
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.Generators.Forge;
@@ -66,7 +66,7 @@ public class TeamFileJsonParser extends JsonParser {
 
     public ArrayList<BattleTeam> getTeams() throws IllegalArgumentException {
 
-        String path = FileManager.getDataPath() + FileManager.Directories.TEAMS.data;
+        String path = FileManager.getTeamDataPath() +"\\";
         ArrayList<BattleTeam> teams = new ArrayList<>();
 
         for (TeamColor color : TeamColor.values()) {
@@ -95,7 +95,7 @@ public class TeamFileJsonParser extends JsonParser {
 
         String color = values[0].toLowerCase();
         if (!colors.containsKey(color))
-            throw new IllegalArgumentException("Tried to construct team but could not resolve team color "+color);
+            throw new IllegalArgumentException("Tried to construct team but could not resolve team color:"+color);
 
         TeamColor teamColor = colors.get(color);
 
@@ -112,7 +112,12 @@ public class TeamFileJsonParser extends JsonParser {
         if (!construct)
             return null;
 
-        return construct(parent,teamColor);
+        try {
+            return construct(parent, teamColor);
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Exception while building team "+teamColor.getName()+": "+e.getMessage());
+        }
 
         }
         catch (IOException | ClassCastException e) {
@@ -132,54 +137,61 @@ public class TeamFileJsonParser extends JsonParser {
         restrictedPlace = healPool = trapArea = bed = null;
 
 
-        for (Keyword key: Keyword.values()) {
+            for (Keyword key : Keyword.values()) {
 
-            HashMap<String, String> entries;
-            if (key.expectPhrase) {
-                entries = parseExpectPhrase(parent);
-            }
-            else entries = parseNormally(parent);
+                try {
 
-            switch (key) {
-                case CHEST: {
-                    chest = JsonBuilder.buildCoordinate(entries);
+                    JsonObject object = parent.get(key.keyword).getAsJsonObject();
+
+                    HashMap<String, String> entries;
+                    if (key.expectPhrase) {
+                        entries = parseExpectPhrase(object);
+                    } else entries = parseNormally(object);
+
+                    switch (key) {
+                        case CHEST:
+                            chest = JsonBuilder.buildCoordinate(entries);
+                        break;
+
+                        case FORGE:
+                            forge = JsonBuilder.buildForge(entries, arena.getWorld(), color);
+                            break;
+
+                        case TEAM_BUY:
+                            teambuy = JsonBuilder.buildCoordinate(entries);
+                            break;
+
+                        case HEAL_POOL:
+                            healPool = JsonBuilder.buildBoundary(entries);
+                            break;
+
+                        case QUICK_BUY:
+                            quickbuy = JsonBuilder.buildCoordinate(entries);
+                            break;
+
+                        case BED_LOCATION:
+                            bed = JsonBuilder.buildBoundary(entries);
+                            break;
+
+                        case PLAYER_SPAWN:
+                            spawn = JsonBuilder.buildCoordinate(entries);
+                            break;
+
+                        case TRAP_TRIGGER:
+                            trapArea = JsonBuilder.buildBoundary(entries);
+                            break;
+
+                        case RESTRICT_PLACE:
+                            restrictedPlace = JsonBuilder.buildBoundary(entries);
+                            break;
+                    }
                 }
-                    break;
+                catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(" at \""+key.keyword+"\": "+e.getMessage());
+                }
 
-                case FORGE:
-                    forge = JsonBuilder.buildForge(entries, arena.getWorld(),color);
-                    break;
-
-                case TEAM_BUY:
-                    teambuy = JsonBuilder.buildCoordinate(entries);
-                    break;
-
-                case HEAL_POOL:
-                    healPool = JsonBuilder.buildBoundary(entries);
-                    break;
-
-                case QUICK_BUY:
-                    quickbuy = JsonBuilder.buildCoordinate(entries);
-                    break;
-
-                case BED_LOCATION:
-                    bed = JsonBuilder.buildBoundary(entries);
-                    break;
-
-                case PLAYER_SPAWN:
-                    spawn = JsonBuilder.buildCoordinate(entries);
-                    break;
-
-                case TRAP_TRIGGER:
-                    trapArea = JsonBuilder.buildBoundary(entries);
-                    break;
-
-                case RESTRICT_PLACE:
-                    restrictedPlace = JsonBuilder.buildBoundary(entries);
-                    break;
             }
 
-        }
 
         if (forge == null || spawn == null || bed == null
             || chest == null || quickbuy == null || teambuy == null ||

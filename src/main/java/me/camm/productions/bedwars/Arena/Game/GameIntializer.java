@@ -1,7 +1,9 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Commands;
+package me.camm.productions.bedwars.Arena.Game;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
+import me.camm.productions.bedwars.Arena.Game.Commands.CommandProcessor;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 
@@ -116,6 +118,7 @@ public class GameIntializer implements CommandExecutor
         }
         catch (Exception e) {
                 messager.sendConsoleMessage(e.getMessage(), Level.WARNING);
+                e.printStackTrace();
         }
         return true;
     }

@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Entities.Consumables;
+package me.camm.productions.bedwars.Entities;
 
 import me.camm.productions.bedwars.Util.Locations.BridgeFiller;
 import org.bukkit.Location;

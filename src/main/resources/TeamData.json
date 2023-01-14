@@ -1,13 +1,13 @@
 {
 "Team" : {
-  "Create Team": false,
+    "Create Team": false,
 
-  "Forge": {
-    "x": 0,
-    "y": 0,
-    "z": 0,
-    "Forge Speed": 1,
-    "Forge Pickup Distance": 0
+    "Forge": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "Forge Speed": 1,
+      "Forge Pickup Distance":0
   },
 
   "Player Spawn": {

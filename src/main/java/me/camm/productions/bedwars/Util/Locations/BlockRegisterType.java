@@ -1,5 +1,6 @@
 package me.camm.productions.bedwars.Util.Locations;
 
+
 public enum BlockRegisterType
 {
     GENERATOR("GENERATOR"),

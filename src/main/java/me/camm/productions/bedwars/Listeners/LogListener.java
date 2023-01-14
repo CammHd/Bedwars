@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.Commands.CommandKeyword;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Entities.ShopKeeper;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHelper, IPlayerUtil
 {

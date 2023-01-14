@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Listeners;
 
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;
 import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.IGameTeamable;
 import me.camm.productions.bedwars.Explosions.ExplosionParticle;

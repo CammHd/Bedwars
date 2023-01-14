@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Events;
+package me.camm.productions.bedwars.Arena.Game.Events;
 
 public abstract class GameActionPhysical extends Action{
     protected boolean spent;

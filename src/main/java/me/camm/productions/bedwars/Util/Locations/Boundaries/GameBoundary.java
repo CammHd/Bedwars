@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.Collection;
 import java.util.Random;
@@ -29,6 +30,10 @@ public class GameBoundary extends Boundary<Integer>
         reArrange();
         dissectArray();
         sender = ChatSender.getInstance();
+
+     //   Block b;
+      //  net.minecraft.server.v1_8_R3.Block c;
+
     }
 
 
@@ -144,28 +149,70 @@ public class GameBoundary extends Boundary<Integer>
         return false;
     }
 
-    public void unregister(String metadata, World world, Plugin plugin) {
+    public void unregister(World world) {
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
                 for (int z = z1; z <= z2; z++) {
                     Block block = world.getBlockAt(x, y, z);
-                    block.removeMetadata(metadata, plugin);
+
+
+
+
                 }
             }
         }
     }
 
-    public void register(World world, String type, int blocks, Plugin plugin)//include stuff to register different blocks [e.g. air, wood, wool{include colors}]
-    {
+    //todo Fix Memory Leak
 
-        if (blocks > 0) //if 0, then register blocks that are not air
-            registerAll(world, type, plugin);  //if 0, then register blocks that are not air
-        else if (blocks == 0)
-            registerSolids(world, type, plugin);
-        else
-            registerAir(world, type, plugin); //only register the air
-
+    public void register(World world, byte tag, RegisterType type) {
+        if(type == RegisterType.EVERYTHING)
+        {
+            registerAll(tag);
+        } else if (type == RegisterType.AIR_ONLY) {
+            registerAir(world, tag);
+        } else
+        {
+            registerNotAir(world, tag);
+        }
     }
+
+
+    public void registerAll(byte tag){
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                        addBlock(x,y,z, tag);
+                }
+            }
+        }
+    }
+
+    public void registerAir(World world, byte tag){
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (block.getType() == Material.AIR)
+                        addBlock(x, y, z, tag);
+                }
+            }
+        }
+    }
+
+    public void registerNotAir(World world, byte tag){
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (block.getType() != Material.AIR)
+                      addBlock(x,y,z, tag);
+                }
+            }
+        }
+    }
+
+
     //1 = all, 0 = !air, -1 = air only
 
     public Coordinate getRandomCoordinateWithin() {
@@ -185,62 +232,10 @@ public class GameBoundary extends Boundary<Integer>
 
 
     //registers all blocks in the bounds with a metadata of string type
-    private void registerAll(World world, String type, Plugin plugin) {
 
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-
-                    Block block = world.getBlockAt(x, y, z);
-                    block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-
-                }
-            }
-        }
-        sendRegistry(type);
-    }
-
-    //Registering everything that is not air
-    private void registerSolids(World world, String type, Plugin plugin) {
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() != Material.AIR)
-                        block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-                }
-            }
-        }
-        sendRegistry(type);
-    }
-
-   //registering all materials that are air
-    private void registerAir(World world, String type, Plugin plugin) {
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() == Material.AIR)
-                        block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-                }
-            }
-        }
-        sendRegistry(type);
-    }
 
     //registering all materials except for that provided, and air
-    public void registerButNotBlockOrAir(World world, String type, Plugin plugin, Material notRegister) {
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() != notRegister && block.getType() != Material.AIR)  //if not air and not the material, then register
-                        block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-                }
-            }
-        }
-       sendRegistry(type);
-    }
+
 
     public void unregister(World world, String type, Plugin plugin) {
         for (int x = x1; x <= x2; x++) {

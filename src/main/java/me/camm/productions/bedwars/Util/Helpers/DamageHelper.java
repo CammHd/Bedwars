@@ -13,9 +13,8 @@ public class DamageHelper {
 
 
 
-    public static void sendDeathMessage(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, boolean finalKill){
+    public static void formatDeathMessage(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, boolean finalKill){
 
-        //sendDeathMessage(owner, player, null, EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,arena,isFinal);
         String message;
         if (killer == null) {
 
@@ -40,11 +39,9 @@ public class DamageHelper {
                     message = DeathFormatter.format(victim,killer,type);
 
             }
-            else {
-
-                //the killer and the initiator are not null
+            else
                 message = DeathFormatter.format(victim,killer,DeathFormatter.toInitiatedCause(cause),involved);
-            }
+            //the killer and the initiator are not null
 
         }
 
@@ -57,7 +54,7 @@ public class DamageHelper {
     }
 
 
-    public static void sendVoidNonDirectMessage(BattlePlayer killer, BattlePlayer victim, Cause cause, boolean isFinal){
+    public static void formatDeathVoidNonDirect(BattlePlayer killer, BattlePlayer victim, Cause cause, boolean isFinal){
         String message;
 
         if (cause != Cause.FIREBALL_VOID && cause != Cause.TNT_VOID && cause != Cause.PROJECTILE_VOID)
@@ -70,7 +67,6 @@ public class DamageHelper {
             sender.sendMessage(ChatColor.YELLOW+message);
         else
             sender.sendMessage(ChatColor.YELLOW+message+ChatColor.AQUA+""+ChatColor.BOLD+" FINAL KILL!");
-
     }
 
 

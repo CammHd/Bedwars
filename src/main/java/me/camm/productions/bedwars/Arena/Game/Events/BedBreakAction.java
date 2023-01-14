@@ -1,7 +1,7 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Events;
+package me.camm.productions.bedwars.Arena.Game.Events;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader;
 
 

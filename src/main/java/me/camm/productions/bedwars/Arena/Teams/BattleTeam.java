@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Arena.Teams;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerTrackerManager;
 import me.camm.productions.bedwars.Arena.Teams.TeamTraps.ITrap;
@@ -22,7 +22,9 @@ import me.camm.productions.bedwars.Util.Locations.RegisterType;
 import me.camm.productions.bedwars.Util.Locations.IRegistratable;
 import me.camm.productions.bedwars.Util.PacketSound;
 import me.camm.productions.bedwars.Util.Tuple3;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
 import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.TileEntityBeacon;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -111,11 +113,12 @@ public class BattleTeam
 
     public BattleTeam(Arena arena, TeamColor teamColor, Forge forge, Coordinate teamSpawn, GameBoundary bed, Coordinate chest, Coordinate quickBuy, Coordinate teamBuy, GameBoundary unbreakable, GameBoundary aura, GameBoundary trapArea) {
 
-        this.teamColor  = teamColor;
+        this.teamColor = teamColor;
         this.forge = forge;
         this.canStartForge = true;
         this.bed = bed;
         this.chest = chest;
+
 
         this.aura = aura;
 
@@ -316,6 +319,8 @@ public class BattleTeam
 @Author CAMM
 Marks the current team as on their last lives.
 It is up to the calling method to update the scoreboards of the players.
+
+todo add sound packet
  */
     public synchronized void putOnLastStand()
     {
@@ -323,6 +328,7 @@ It is up to the calling method to update the scoreboards of the players.
             return;
 
         sendTeamTitle(BED_DESTROYED.getMessage(), LAST_LIFE_WARNING.getMessage(), 10, 40,10);  //Say that their bed has been destroyed
+
         bed.replace(Material.AIR, Material.BED_BLOCK, bedBreakData, arena.getWorld());
         bed.unregister(BED.getData(), arena.getWorld(), arena.getPlugin());
         bedBroken = true;

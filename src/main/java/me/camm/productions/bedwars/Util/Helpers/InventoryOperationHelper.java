@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
@@ -44,8 +44,6 @@ public class InventoryOperationHelper
     private enum Values {
         SLOT, HOTBAR, MOVE, SWAP, PLACE, COLLECT, DROP, PICKUP,
     }
-
-
 
     private final static ShopItem[] gameItems;
     private final static TeamInventoryConfig[] config;

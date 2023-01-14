@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.Commands.CommandKeyword;
-import me.camm.productions.bedwars.Arena.GameRunning.Commands.GameIntializer;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
+import me.camm.productions.bedwars.Arena.Game.GameIntializer;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
@@ -17,8 +17,6 @@ import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuy
 import me.camm.productions.bedwars.Util.DataSets.ShopItemSet;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.StringHelper;
-import me.camm.productions.bedwars.Validation.BedWarsException;
-import me.camm.productions.bedwars.Validation.RegistrationException;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -50,27 +48,20 @@ public final class BedWars extends JavaPlugin
         plugin = this;
     }
 
-    public static Plugin getPlugin(){
+    public static Plugin getInstance(){
         return plugin;
     }
 
     @Override
     public void onEnable()
     {
-
         ChatSender sender = ChatSender.getInstance();
-        //we init it right away so that we can use it anywhere.
-
-
-        sender.sendConsoleMessage("Starting up!",Level.INFO);
-        sender.sendConsoleMessage("It is recommended that you make a backup of this world as the game may destroy and change it.",Level.INFO);
 
        try {
-           FileManager fileManager = new FileManager();
-           fileManager.createFiles();
+
+         FileManager.createFiles();
 
            replaceClass(gameDragon, DRAGON_NAME, DRAGON_ID);
-           sender.sendConsoleMessage("Registered custom ender dragon...", Level.INFO);
 
            initialization = new GameIntializer(this);
 
@@ -82,6 +73,7 @@ public final class BedWars extends JavaPlugin
        }
        catch (Exception e) {
            sender.sendConsoleMessage(e.getMessage(), Level.WARNING);
+           e.printStackTrace();
        }
     }
 
@@ -92,28 +84,23 @@ public final class BedWars extends JavaPlugin
 
 
     @SuppressWarnings("unchecked")
-    public void replaceClass(Class<? extends Entity> replace, String name, int id) throws BedWarsException {
+    public void replaceClass(Class<? extends Entity> replace, String name, int id) throws Exception {
 
-
-        try {
-            Field c = EntityTypes.class.getDeclaredField("c");
-            c.setAccessible(true);
-            Map<String, Class<? extends Entity>> map = (Map<String, Class<? extends Entity>>) c.get(EntityTypes.class);
+            ChatSender sender = ChatSender.getInstance();
+            Field entityMap = EntityTypes.class.getDeclaredField("c");
+            entityMap.setAccessible(true);
+            Map<String, Class<? extends Entity>> map = (Map<String, Class<? extends Entity>>) entityMap.get(EntityTypes.class);
             map.remove(name);
 
-
-            Field e = EntityTypes.class.getDeclaredField("e");
-            e.setAccessible(true);
-            Map<Integer, Class<? extends Entity>> eMap = (Map<Integer, Class<? extends Entity>>) e.get(EntityTypes.class);
+            Field EntityIDMap = EntityTypes.class.getDeclaredField("e");
+            EntityIDMap.setAccessible(true);
+            Map<Integer, Class<? extends Entity>> eMap = (Map<Integer, Class<? extends Entity>>) EntityIDMap.get(EntityTypes.class);
             eMap.remove(id);
 
-            Method aMethod = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, int.class);
-            aMethod.setAccessible(true);
-            aMethod.invoke(EntityTypes.class, replace, name, id);
-        }
-        catch (Exception e) {
-         throw new RegistrationException("Could not replace "+replace.getSimpleName()+"");
-        }
+            Method methodRegisterEntity = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, int.class);
+            methodRegisterEntity.setAccessible(true);
+            methodRegisterEntity.invoke(EntityTypes.class, replace, name, id);
+            sender.sendConsoleMessage("Replaced entity definition "+name+" with class "+replace.getName(), Level.INFO);
 
     }
 
@@ -124,62 +111,60 @@ public final class BedWars extends JavaPlugin
     {
         ChatSender sender = ChatSender.getInstance();
         try {
-          replaceClass(dragon, DRAGON_NAME,DRAGON_ID);
-        }
-        catch (BedWarsException e)
-        {
-            sender.sendConsoleMessage("Failed to unregister Ender Dragon Override.", Level.WARNING);
-        }
-        
-
-        if (initialization==null)
-            return;
-
-        if (initialization.getArena() == null)
-            return;
+            replaceClass(dragon, DRAGON_NAME, DRAGON_ID);
 
 
-        if (initialization.getRunner()==null)
-            return;
+            if (initialization == null)
+                return;
 
-        GameRunner runner = initialization.getRunner();
+            if (initialization.getArena() == null)
+                return;
 
-        runner.setRunning(false);
-        initialization.getArena().getTeams().forEach((string, team) -> {
-            if (team!=null&&team.getForge()!=null)
-                team.getForge().disableForge();
-        });
-      PacketHandler handler = runner.getPacketHandler();
 
-      if (handler!=null) {
-          for (Player player : Bukkit.getOnlinePlayers())
-              handler.removePlayer(player);
-      }
+            if (initialization.getRunner() == null)
+                return;
 
-      if (runner.getLoader() != null)
-            runner.getLoader().stop();
+            GameRunner runner = initialization.getRunner();
 
-        World world = initialization.getArena().getWorld();
-        Scoreboard initial = ((CraftWorld)world).getHandle().getScoreboard();
-        Collection<ScoreboardObjective> objectives = initial.getObjectives();
-        for (ScoreboardObjective objective: objectives)
-        {
-            for (Player player: Bukkit.getOnlinePlayers()) {
-                try {
-                    initial.unregisterObjective(objective);
-                    initial.handleObjectiveRemoved(objective);
-                    send(new PacketPlayOutScoreboardObjective(objective, 1), player);
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                 sender.sendConsoleMessage("Error occurred trying to unregister objective "+objective.getName()+" for "+player.getName(), Level.WARNING);
+            runner.setRunning(false);
+            initialization.getArena().getTeams().forEach((string, team) -> {
+                if (team != null && team.getForge() != null)
+                    team.getForge().disableForge();
+            });
+            PacketHandler handler = runner.getPacketHandler();
+
+            if (handler != null) {
+                for (Player player : Bukkit.getOnlinePlayers())
+                    handler.removePlayer(player);
+            }
+
+            if (runner.getLoader() != null)
+                runner.getLoader().stop();
+
+            World world = initialization.getArena().getWorld();
+            Scoreboard initial = ((CraftWorld) world).getHandle().getScoreboard();
+            Collection<ScoreboardObjective> objectives = initial.getObjectives();
+            for (ScoreboardObjective objective : objectives) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    try {
+                        initial.unregisterObjective(objective);
+                        initial.handleObjectiveRemoved(objective);
+                        send(new PacketPlayOutScoreboardObjective(objective, 1), player);
+                    } catch (IllegalArgumentException | IllegalStateException e) {
+                        sender.sendConsoleMessage("Error occurred trying to unregister objective " + objective.getName() + " for " + player.getName(), Level.WARNING);
+                    }
                 }
             }
+
+
+            Arena arena = initialization.getArena();
+            writeToFiles(arena);
+
+            //Save all the players things here and put them into their files.
         }
-
-
-        Arena arena = initialization.getArena();
-        writeToFiles(arena);
-
-        //Save all the players things here and put them into their files.
+        catch (Exception e) {
+            sender.sendConsoleMessage(e.getMessage(),Level.WARNING);
+        }
     }
 
     private void send(Packet<?> packet, Player player)
@@ -192,13 +177,14 @@ public final class BedWars extends JavaPlugin
         Collection<BattlePlayer> registered = arena.getPlayers().values();
 
         //writing to bar file
-        registered.forEach(battlePlayer -> {
+        for (BattlePlayer bp: registered) {
 
-            HotbarManager barManager = battlePlayer.getBarManager();
+            HotbarManager barManager = bp.getBarManager();
             if (barManager != null) {
                 ItemCategory[] barItems = barManager.getLayout();
 
-                GameFileWriter barWriter = new GameFileWriter(StringHelper.getHotBarPath(battlePlayer.getRawPlayer()), this);
+
+                GameFileWriter barWriter = new GameFileWriter(StringHelper.getHotBarPath(bp.getRawPlayer()), this);
                 barWriter.clear();
                 ArrayList<String> valueList = new ArrayList<>();
 
@@ -209,17 +195,17 @@ public final class BedWars extends JavaPlugin
 
 
             //writing to shop file
-            PlayerInventoryManager invManager = battlePlayer.getShopManager();
+            PlayerInventoryManager invManager = bp.getShopManager();
             if (invManager!=null) {
                 QuickBuyInventory playerShop = invManager.getQuickBuy();
                 ArrayList<ShopItemSet> shopSet = playerShop.packageInventory();
 
-                GameFileWriter shopWriter = new GameFileWriter(StringHelper.getInventoryPath(battlePlayer.getRawPlayer()), this);
+                GameFileWriter shopWriter = new GameFileWriter(StringHelper.getInventoryPath(bp.getRawPlayer()), this);
                 shopWriter.clear();
                 ArrayList<String> shopList = new ArrayList<>();
                 shopSet.forEach(pack -> shopList.add(pack == null ? ShopItem.EMPTY_SLOT.name() : pack.toString()));
                 shopWriter.write(shopList, false);
             }
-        });
+        }
     }
 }

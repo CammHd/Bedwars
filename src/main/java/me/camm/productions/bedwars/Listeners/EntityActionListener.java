@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.DeathMessages.Cause;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static me.camm.productions.bedwars.Util.Helpers.DamageHelper.sendDeathMessage;
-import static me.camm.productions.bedwars.Util.Helpers.DamageHelper.sendVoidNonDirectMessage;
+import static me.camm.productions.bedwars.Util.Helpers.DamageHelper.formatDeathMessage;
+import static me.camm.productions.bedwars.Util.Helpers.DamageHelper.formatDeathVoidNonDirect;
 
 /**
  * @author CAMM
@@ -75,7 +75,7 @@ public class EntityActionListener implements Listener
             if (System.currentTimeMillis() - millis > 10000)
             {
                 victim.handlePlayerIntoSpectator(handler, isFinal);
-                sendDeathMessage(null,victim,null,cause, isFinal);
+                formatDeathMessage(null,victim,null,cause, isFinal);
                 runner.attemptEndGame();
                 return;
             }
@@ -90,7 +90,7 @@ public class EntityActionListener implements Listener
                 if (!victim.equals(killer))
                  handleKillerStats(killer,isFinal);
 
-                sendDeathMessage(killer,victim,null,cause, isFinal);
+                formatDeathMessage(killer,victim,null,cause, isFinal);
 
                 victim.handlePlayerIntoSpectator(handler,isFinal, killer.getRawPlayer());
                 runner.attemptEndGame();
@@ -108,7 +108,7 @@ public class EntityActionListener implements Listener
 
 
                     //  //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                    sendDeathMessage(shooter,victim,null,cause, isFinal);
+                    formatDeathMessage(shooter,victim,null,cause, isFinal);
                     victim.handlePlayerIntoSpectator(handler,isFinal, shooter.getRawPlayer());
                     runner.attemptEndGame();
                     return;
@@ -132,7 +132,7 @@ public class EntityActionListener implements Listener
 
                     if (killer == null) {
                         //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                        sendDeathMessage(null,victim,null,cause, isFinal);
+                        formatDeathMessage(null,victim,null,cause, isFinal);
                         victim.handlePlayerIntoSpectator(handler, isFinal);
                         runner.attemptEndGame();
                         return;
@@ -142,7 +142,7 @@ public class EntityActionListener implements Listener
                         handleKillerStats(killer, isFinal);
 
 
-                    sendDeathMessage(killer,victim,null,cause, isFinal);
+                    formatDeathMessage(killer,victim,null,cause, isFinal);
 
 
                     victim.handlePlayerIntoSpectator(handler,isFinal, killer.getRawPlayer());
@@ -159,7 +159,7 @@ public class EntityActionListener implements Listener
                     if (owner == null)
                     {
 
-                        sendDeathMessage(null,victim,teamable, cause, isFinal);
+                        formatDeathMessage(null,victim,teamable, cause, isFinal);
                         victim.handlePlayerIntoSpectator(handler, isFinal);
                         runner.attemptEndGame();
                         return;
@@ -169,7 +169,7 @@ public class EntityActionListener implements Listener
                        handleKillerStats(owner,isFinal);
 
                     //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                    sendDeathMessage(owner,victim,teamable, cause, isFinal);
+                    formatDeathMessage(owner,victim,teamable, cause, isFinal);
                     victim.handlePlayerIntoSpectator(handler,isFinal, owner.getRawPlayer());
                     runner.attemptEndGame();
                     return;
@@ -178,7 +178,7 @@ public class EntityActionListener implements Listener
                 return;
             }
         }
-             sendDeathMessage(null,victim,null, cause, isFinal);
+             formatDeathMessage(null,victim,null, cause, isFinal);
             victim.handlePlayerIntoSpectator(handler, isFinal);
         runner.attemptEndGame();
     }
@@ -773,7 +773,7 @@ public class EntityActionListener implements Listener
 
                                         //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
                                         if (System.currentTimeMillis() - millis > 10000) {
-                                            sendDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
+                                            formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
                                             player.handlePlayerIntoSpectator(handler, isFinal);
 
                                             break VOID;
@@ -789,7 +789,7 @@ public class EntityActionListener implements Listener
                                             if (!killer.getTeam().equals(player.getTeam()))
                                               handleKillerStats(killer,isFinal);
                                             //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                                            sendDeathMessage(killer,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
+                                            formatDeathMessage(killer,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
                                             player.handlePlayerIntoSpectator(handler, isFinal, killer.getRawPlayer());
                                             break VOID;
                                         }
@@ -803,7 +803,7 @@ public class EntityActionListener implements Listener
                                                 if (!owner.getTeam().equals(player.getTeam()))
                                                   handleKillerStats(owner,isFinal);
 
-                                                sendDeathMessage(owner,player,teamable, EntityDamageEvent.DamageCause.VOID, isFinal);
+                                                formatDeathMessage(owner,player,teamable, EntityDamageEvent.DamageCause.VOID, isFinal);
                                                 player.handlePlayerIntoSpectator(handler, isFinal, owner.getRawPlayer());
                                                 break VOID;
                                             }
@@ -829,7 +829,7 @@ public class EntityActionListener implements Listener
                                                         handleKillerStats(currentPlayer, isFinal);
                                                 }
 
-                                                sendVoidNonDirectMessage(currentPlayer, player, damager instanceof Arrow ? Cause.PROJECTILE_VOID: Cause.FIREBALL_VOID,isFinal);
+                                                formatDeathVoidNonDirect(currentPlayer, player, damager instanceof Arrow ? Cause.PROJECTILE_VOID: Cause.FIREBALL_VOID,isFinal);
                                                 player.handlePlayerIntoSpectator(handler, isFinal, currentPlayer.getRawPlayer());
                                                 break VOID;
                                             }
@@ -856,7 +856,7 @@ public class EntityActionListener implements Listener
                                                     if (!owner.getTeam().equals(player.getTeam()))
                                                      handleKillerStats(owner, isFinal);
 
-                                                    sendVoidNonDirectMessage(owner, player, Cause.TNT_VOID,isFinal);
+                                                    formatDeathVoidNonDirect(owner, player, Cause.TNT_VOID,isFinal);
                                                     player.handlePlayerIntoSpectator(handler, isFinal, owner.getRawPlayer());
                                                     break VOID;
                                                 }
@@ -867,7 +867,7 @@ public class EntityActionListener implements Listener
 
                                     }
                                     //  //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                                    sendDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
+                                    formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
                                     player.handlePlayerIntoSpectator(handler, !player.getTeam().doesBedExist());
                                 }
                                 runner.attemptEndGame();

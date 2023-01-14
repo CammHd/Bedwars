@@ -14,6 +14,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
 
@@ -62,6 +63,8 @@ public class Forge implements Runnable {
 
     }
 
+
+
     public Forge(double x, double y, double z, World world, TeamColor color, long initialTime, Plugin plugin, double pickup)  //construct
     {
         this.recount = false;
@@ -95,6 +98,10 @@ public class Forge implements Runnable {
         spawningRandom = new WeightedRandom<>(materials);
 
     }
+
+
+
+
 
     public static String getKeyword(){
         return FORGE;

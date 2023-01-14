@@ -1,18 +1,17 @@
-package me.camm.productions.bedwars.Arena.GameRunning;
+package me.camm.productions.bedwars.Arena.Game;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Events.ActionEvent;
-import me.camm.productions.bedwars.Arena.GameRunning.Events.GameEndAction;
+import me.camm.productions.bedwars.Arena.Game.Events.ActionEvent;
+import me.camm.productions.bedwars.Arena.Game.Events.GameEndAction;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerTrackerManager;
 import me.camm.productions.bedwars.Arena.Players.Scoreboards.PlayerBoard;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Items.SectionInventories.Inventories.InventoryOptionable;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
 import me.camm.productions.bedwars.Listeners.PacketHandler;
 import me.camm.productions.bedwars.Entities.ShopKeeper;
 import me.camm.productions.bedwars.Generators.Generator;
 import me.camm.productions.bedwars.Listeners.*;
-import me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime;
+import me.camm.productions.bedwars.Arena.Game.Events.EventTime;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.ExecutableBoundaryLoader;
 import me.camm.productions.bedwars.Util.Helpers.*;
 import org.bukkit.Bukkit;
@@ -32,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.TIME;
-import static me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime.*;
+import static me.camm.productions.bedwars.Arena.Game.Events.EventTime.*;
 
 
 /*

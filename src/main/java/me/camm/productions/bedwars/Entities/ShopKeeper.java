@@ -102,6 +102,9 @@ public class ShopKeeper
             if (properties!=null)
                 profile.getProperties().put("textures", new Property("textures", properties[0], properties[1]));
 
+
+
+
     }
 
     public int getId()

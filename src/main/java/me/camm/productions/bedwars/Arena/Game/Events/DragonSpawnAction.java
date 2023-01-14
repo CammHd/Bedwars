@@ -1,6 +1,6 @@
-package me.camm.productions.bedwars.Arena.GameRunning.Events;
+package me.camm.productions.bedwars.Arena.Game.Events;
 
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
+import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;

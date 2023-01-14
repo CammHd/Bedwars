@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Generators;
 
 
-import me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime;
+import me.camm.productions.bedwars.Arena.Game.Events.EventTime;
 import me.camm.productions.bedwars.Util.Locations.BlockRegisterType;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-import static me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime.*;
+import static me.camm.productions.bedwars.Arena.Game.Events.EventTime.*;
 
 /**
  * @author CAMM

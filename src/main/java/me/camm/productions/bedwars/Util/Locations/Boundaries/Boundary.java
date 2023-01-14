@@ -20,4 +20,8 @@ public abstract class Boundary<T extends Number> implements IRegistratable {
 
     }
 
+    public void register(World world, String type, int blocks, Plugin plugin) {
+
+    }
+
 }
