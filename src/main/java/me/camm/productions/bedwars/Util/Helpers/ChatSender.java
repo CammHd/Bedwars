@@ -22,7 +22,7 @@ public class ChatSender
     }
 
     public void sendConsoleMessage(String message, Level l){
-        logger.log(l,"[BEDWARS] "+message);
+        logger.log(l,"[BEDWARS-CONSOLE] "+message);
     }
 
 

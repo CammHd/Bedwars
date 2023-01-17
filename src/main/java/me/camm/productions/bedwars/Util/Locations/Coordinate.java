@@ -85,8 +85,6 @@ public class Coordinate implements IRegistratable
         }
         else
             block.setMetadata(type, value);
-
-
     }
 
     public double getX()

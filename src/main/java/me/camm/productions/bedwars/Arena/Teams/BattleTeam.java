@@ -302,7 +302,7 @@ public class BattleTeam
         this.isEliminated = true;
 
         bed.replace(Material.AIR,Material.BED_BLOCK,bedBreakData,arena.getWorld());
-        bed.unregister(BED.getData(), arena.getWorld(), arena.getPlugin());
+        bed.unregister(arena.getWorld());
         sender.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "TEAM ELIMINATED >> " + ChatColor.RESET + teamColor.getChatColor() + getCapitalizedColor() + " Team" + ChatColor.RED + " has been eliminated!");
         players.values().forEach(player ->player.setEliminated(true));
 
@@ -328,9 +328,8 @@ todo add sound packet
             return;
 
         sendTeamTitle(BED_DESTROYED.getMessage(), LAST_LIFE_WARNING.getMessage(), 10, 40,10);  //Say that their bed has been destroyed
-
         bed.replace(Material.AIR, Material.BED_BLOCK, bedBreakData, arena.getWorld());
-        bed.unregister(BED.getData(), arena.getWorld(), arena.getPlugin());
+        bed.unregister(arena.getWorld());
         bedBroken = true;
     }
 
