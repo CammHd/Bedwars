@@ -209,8 +209,8 @@ public class Arena
 
       setRegistering(true);
 
-              for (Generator generator: generators)
-                  generator.registerBox();
+      for (Generator generator: generators)
+          generator.registerBox();
 
       setRegistering(false);
 

@@ -4,6 +4,7 @@ package me.camm.productions.bedwars.Util.Locations.Boundaries;
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
+import me.camm.productions.bedwars.Util.Locations.RegisterType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +15,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class GameBoundary extends Boundary<Integer>
