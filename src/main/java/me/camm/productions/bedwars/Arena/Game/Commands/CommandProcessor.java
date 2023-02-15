@@ -8,6 +8,7 @@ import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.BedWars;
 import me.camm.productions.bedwars.Files.TeamFileJsonParser;
 import me.camm.productions.bedwars.Files.WorldDataJsonParser;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Validation.BedWarsException;
 import org.bukkit.ChatColor;
@@ -65,14 +66,13 @@ public class CommandProcessor {
         WorldDataJsonParser fileReader = new WorldDataJsonParser();
 
             arena = fileReader.getArena();
-
-
         if (arena==null)
             throw new InitializationException("Was not able to init the arena! (Check the config)");
 
+        BlockTagManager.initialize(arena);
+
 
         messager.sendMessage("Attempting to register the map. Expect some lag.");
-
         arena.registerMap();
 
         try {

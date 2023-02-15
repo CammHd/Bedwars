@@ -5,12 +5,10 @@ import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.TeamTraps.ITrap;
 import me.camm.productions.bedwars.Util.DataSets.TimeSet;
-import me.camm.productions.bedwars.Util.Locations.BlockRegisterType;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.PacketSound;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
-import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -20,8 +18,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
+
+
+/*
+   @author bipi
+   @author CAMM
+ */
 public class ExecutableBoundaryLoader implements Runnable
 {
     private final Object lock;
@@ -56,7 +59,6 @@ public class ExecutableBoundaryLoader implements Runnable
     }
 
     public void resume(){
-     //   waiting = false;
         synchronized (lock) {
             lock.notify();
         }
@@ -73,132 +75,17 @@ public class ExecutableBoundaryLoader implements Runnable
 
 
                 synchronized (lock) {
-
                     if (primedTraps.size() == 0 && coolingTeams.size() == 0 && healAuras.size() == 0) {
-
-                      //  waiting = true;
                            lock.wait();
                     }
                 }
-
 
                     Thread.sleep(1000);
                     nextSecond();
 
                     players.forEach(player -> {
-                        Location loc = player.getRawPlayer().getLocation();
-                        Block block = loc.getBlock();
-
-                        TRAPS:
-                        {
-                            if (primedTraps.isEmpty())
-                                break TRAPS;
-
-                            if (!player.getRawPlayer().isOnline())
-                                break TRAPS;
-
-                            if (!player.getIsAlive() || player.getIsEliminated())
-                                break TRAPS;
-
-                            if (!block.hasMetadata(BlockRegisterType.TRAP.getData()))
-                                break TRAPS;
-
-
-
-
-                            BattleTeam current = null;
-
-
-                            Iterator<BattleTeam> traps = primedTraps.iterator();
-                            while (traps.hasNext()) {
-                                BattleTeam team = traps.next();
-
-                                if (!team.doesBedExist()) {
-                                    primedTraps.remove(team);
-                                    continue;
-                                }
-
-                                if (block.hasMetadata(team.getTeamColor().getName()))
-                                {
-                                    current = team;
-                                    break;
-                                }
-
-                            }
-
-
-                                if (current == null)
-                                    break TRAPS;
-
-                                if (player.getTeam().equals(current))
-                                    break TRAPS;
-
-                                if (System.currentTimeMillis() - player.getLastMilk() <= 30000 )
-                                   break TRAPS;
-
-
-
-                               ITrap activated = current.activateNextTrap();
-                               if (activated != null)
-                               {
-                                   current.sendTeamMessage(ChatColor.RED+"[TRAP] Your "+activated.name()+" was activated by "+player.getTeam().getTeamColor().getName()+" team!");
-                                   current.sendTeamTitle(activated.getTrapTitle().getMessage(),"",5,40,5);
-                                   current.sendTeamSoundPacket(PacketSound.ENDERMAN);
-
-                                   primedTraps.remove(current);
-                                   coolingTeams.add(new TimeSet(current, System.currentTimeMillis()));
-
-                               }
-
-
-
-
-                        }
-
-                        HEALS:{
-                            if (healAuras.isEmpty())
-                                break HEALS;
-
-                            BattleTeam current = null;
-
-                            if (!block.hasMetadata(BlockRegisterType.AURA.getData()))
-                                break HEALS;
-
-
-                            for (BattleTeam team: healAuras)
-                                {
-                                    Coordinate coordinate = team.getAura().getRandomCoordinateWithin();
-                                    team.sendTeamPacket(new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY,true,(float)coordinate.getX(),(float)coordinate.getY(),(float)coordinate.getZ(),0,0,0,(float)0.1,5));
-
-                                    if (!block.hasMetadata(team.getTeamColor().getName()))
-                                        continue;
-
-                                    current = team;
-                                    break;
-
-                                }
-
-                                if (current == null)
-                                    break HEALS;
-                                //use bukkit runnable here
-                                if (!player.getTeam().equals(current)) {
-                                    break HEALS;
-
-                                }
-                                    new BukkitRunnable() {
-                                        @Override
-                                        public void run() {
-                                            //use bukkit runnable here
-                                            player.getRawPlayer().addPotionEffect(HEALING);
-                                            cancel();
-                                        }
-                                    }.runTask(arena.getPlugin());
-
-
-                                //PotionEffectType type, int duration, int amplifier, boolean ambient
-
-
-                        }
+                        checkTraps(player);
+                        checkHeals(player);
                     });
             }
         }
@@ -224,7 +111,7 @@ public class ExecutableBoundaryLoader implements Runnable
                 }
 
                 primedTraps.add(team);
-            }
+             }
            }
         }
         else {
@@ -234,6 +121,129 @@ public class ExecutableBoundaryLoader implements Runnable
         }
 
     }
+
+
+
+        /*
+
+        Traps : loop over all players
+           for all players which are on a different team than the trap's team
+              if the player is in the trap area,
+               then activate the trap
+
+
+        Heal pools are opposite - only activate for players on same team
+
+
+         */
+
+
+    public void checkTraps(BattlePlayer player){
+
+        if (primedTraps.isEmpty())
+             return;
+
+        if (!player.getRawPlayer().isOnline())
+            return;
+
+        if (!player.getIsAlive() || player.getIsEliminated())
+            return;
+
+
+        BattleTeam current = null;
+
+
+        for (BattleTeam team : primedTraps) {
+            if (!team.doesBedExist()) {
+                primedTraps.remove(team);
+                continue;
+            }
+
+            if (team.equals(player.getTeam()))
+                continue;
+
+            Location loc = player.getRawPlayer().getLocation();
+            if (team.getTrapArea().containsCoordinate(loc.getX(), loc.getY(), loc.getZ())) {
+                current = team;
+                break;
+            }
+        }
+
+
+        if (current == null)
+            return;
+
+        final int MAGIC_MILK = 30000;
+        if (System.currentTimeMillis() - player.getLastMilk() <= MAGIC_MILK)
+            return;
+
+        ITrap activated = current.activateNextTrap();
+        if (activated != null)
+        {
+            current.sendTeamMessage(ChatColor.RED+"[TRAP] Your "+activated.name()+" was activated by "+player.getTeam().getTeamColor().getName()+" team!");
+            current.sendTeamTitle(activated.getTrapTitle().getMessage(),"",5,40,5);
+            current.sendTeamSoundPacket(PacketSound.ENDERMAN);
+
+            primedTraps.remove(current);
+            coolingTeams.add(new TimeSet(current, System.currentTimeMillis()));
+
+        }
+
+
+
+
+    }
+
+
+    public void checkHeals(BattlePlayer player){
+
+        /*
+        If the player is on the same team, and they are in the boundary, then they get regeneration
+         */
+
+
+
+        BattleTeam team = player.getTeam();
+
+        if (!healAuras.contains(team) )
+            return;
+
+
+        Coordinate c = team.getAura().getRandomCoordinateWithin();
+        //EnumParticle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, int... var11) {
+
+        PacketPlayOutWorldParticles particles = new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY,true,
+                (float)c.getX(), (float)c.getY(), (float)c.getZ(),0,0,0,0,1);
+
+        team.sendTeamPacket(particles);
+        if(player.getTeam().getAura().containsEntity(player.getRawPlayer()))
+        {
+
+            Player p = player.getRawPlayer();
+
+
+            //must be in a bukkitrunnable or it will throw exception
+            new BukkitRunnable()
+            {
+                //HEALING
+                @Override
+                public void run()
+                {   ///
+                    p.addPotionEffect(HEALING,true);
+                    cancel();
+                }
+            }.runTask(arena.getPlugin());
+        }
+
+
+    }
+
+
+
+
+
+
+
 
     private synchronized void nextSecond()
     {
@@ -246,7 +256,8 @@ public class ExecutableBoundaryLoader implements Runnable
         TimeSet next = coolingTeams.get(0);//1
 
         //traps have 20 sec cooldown
-        while ( (millis - next.getMillis() > 20000) && (!coolingTeams.isEmpty() ))
+        final int COOLDOWN = 20000;
+        while ( (millis - next.getMillis() > COOLDOWN) && (!coolingTeams.isEmpty() ))
         {
             BattleTeam team = next.getTeam();
             if (team.nextTrap() != null && team.doesBedExist())

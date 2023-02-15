@@ -178,6 +178,16 @@ public class GameBoundary extends Boundary<Integer>
         }
     }
 
+    public void registerWithOverrides(byte tag) {
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    blockTagManager.overrideTag(x,y,z, tag);
+                }
+            }
+        }
+    }
+
 
 
     public void registerAll(byte tag){
@@ -256,6 +266,17 @@ public class GameBoundary extends Boundary<Integer>
     public boolean containsCoordinate(int x, int y, int z)
     {
         return (x1<=x && x<=x2) && (y1<=y && y<=y2) && (z1<=z && z<=z2);
+    }
+
+    public boolean containsCoordinate(double x, double y, double z)
+    {
+        return (x1<=x && x<=x2) && (y1<=y && y<=y2) && (z1<=z && z<=z2);
+    }
+
+    public boolean containsEntity(Entity entity)
+    {
+        Location loc = entity.getLocation();
+        return (x1<= loc.getX() && loc.getX()<=x2) && (y1<= loc.getY() && loc.getY() <=y2) && (z1<= loc.getZ() && loc.getZ() <=z2);
     }
 
     private void sendInfo(String type)

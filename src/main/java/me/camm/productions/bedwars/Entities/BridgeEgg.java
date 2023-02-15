@@ -9,10 +9,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.MAP;
-
-
-
 /**
  * @author CAMM
  * Models a bridge egg object that the player throws
@@ -72,7 +68,7 @@ public class BridgeEgg
 
                 //make a filler object, and then fill the area.
                 BridgeFiller fillZone = new BridgeFiller(current,filler);
-                fillZone.fill(Material.WOOL,data, world,MAP.getData(),plugin);
+                fillZone.fill(Material.WOOL,data, world);
                 iterations ++;
 
             }

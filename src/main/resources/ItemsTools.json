@@ -2,7 +2,7 @@
   "IRON_PICKAXE": {
     "Name": "Iron Pick",
     "Lore": "",
-    "Degradable": true,
+    "Degradable": "true or false. Set to false if it's the lowest tier",
     "Replaces Tiers": true,
     "Upgrade": "GOLD_PICKAXE",
     "Downgrade": "WOOD_PICKAXE (or null if there isn't one)",
@@ -12,6 +12,4 @@
     "Cost Material": "IRON_INGOT"
 
   }
-
-
 }

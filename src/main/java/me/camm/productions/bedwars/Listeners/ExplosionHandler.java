@@ -176,6 +176,10 @@ public class ExplosionHandler implements Listener
                 Block block = directions.get(rays).blockAtDistance(distance);
                 boolean broken = directions.get(rays).conflict(block); //determine if the block should be broken.
 
+                /*
+                 BTM.canExplosivesBreak(entity, directions.get(rays))
+                 */
+
                 if (!broken) {
                     if (directions.get(rays).lostStrength())  //If the vector has lost power, then remove it to save resources.
                         directions.remove(rays);

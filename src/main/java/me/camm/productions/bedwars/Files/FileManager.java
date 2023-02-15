@@ -24,6 +24,8 @@ public class FileManager
         INSTRUCTIONS("Instructions.txt"),
         TEAM_DATA("TeamData.json"),
         WORLD_DATA("WorldData.json"),
+
+       EVENTS("Events.json"),
         CREDITS("ContributorList.txt");
 
         final String data;

@@ -28,13 +28,14 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
+//import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
 
 
 
 /*
 This class listens for and handles interactions which involve blocks
 @author CAMM
+@author bipi
  */
 public class BlockInteractListener implements Listener
 {
@@ -71,6 +72,7 @@ public class BlockInteractListener implements Listener
         Block block = event.getBlockPlaced();
         Player placer = event.getPlayer();
 
+
         //if the player isn't registered, return and cancel.
         if (!players.containsKey(placer.getUniqueId())) {
             event.setCancelled(true);
@@ -86,28 +88,31 @@ public class BlockInteractListener implements Listener
             return;
         }
 
+        BlockTagManager manager = BlockTagManager.get();
 
-        if ((block.hasMetadata(BASE.getData())||block.hasMetadata(GENERATOR.getData()))||!block.hasMetadata(ARENA.getData()))
-        {
+        if (!manager.isInbounds(block)) {
+            placer.sendMessage(ChatColor.RED + "You cannot place blocks here!");
             event.setCancelled(true);
-            placer.sendMessage(ChatColor.RED+"You cannot place blocks here!");
-        }
-        else if (block.hasMetadata(MAP.getData()))  //if it's a map block and it is air [broken]
-        {
-            //if it has map metadata, then allow the place and remove the metadata.
-            //this metadata was only applied on the initial register, so if you can make a block change,
-            //then the block has been broken prior.
-            block.removeMetadata(MAP.getData(),plugin);
+            return;
         }
 
-        //if the event hasn't been cancelled, test if it is a block with special operations
-        if (!event.isCancelled())
+        if (manager.hasTag(block)) {
+
+            byte tag = manager.getTag(block);
+            if (!(tag == BlockTag.ALL.getTag()) || (tag == BlockTag.NONE.getTag())) {
+                placer.sendMessage(ChatColor.RED + "You cannot place blocks here!");
+                event.setCancelled(true);
+                return;
+            }
+
+
+        }
+
+        Material type = event.getBlockPlaced().getType();
+        switch (type)       //test if tnt, sponge, chest
         {
-            Material type = event.getBlockPlaced().getType();
-            switch (type)       //test if tnt, sponge, chest
-            {
-                case TNT:
-                    summonTNT(event,player);
+            case TNT:
+                summonTNT(event, player);
 
                     //summon tnt
 
@@ -125,8 +130,8 @@ public class BlockInteractListener implements Listener
                     //get the player team and create a popup tower
 
                 break;
-            }
         }
+
     }
 
     //method to handle when players try to place blocks in spectators. We just allow the event in this case.
@@ -135,6 +140,13 @@ public class BlockInteractListener implements Listener
     {
         event.setBuildable(true);
     }
+
+    /*
+    EntityExplodeEvent
+      -> event.getBlocks
+
+      1:
+     */
 
     @EventHandler
     public void onBlockBreak(@NotNull BlockBreakEvent event)
@@ -283,7 +295,15 @@ public class BlockInteractListener implements Listener
     {
         //If a block has any metadata about the sponge, then we cancel the event and return.
         Block to = event.getToBlock();
-        if (to.hasMetadata(BASE.getData())||to.hasMetadata(GENERATOR.getData())) {
+        BlockTagManager manager = BlockTagManager.get();
+
+        if (!manager.isInbounds(to)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        byte tag = manager.getTag(to);
+        if (tag != BlockTag.ALL.getTag()) {
             event.setCancelled(true);
             return;
         }

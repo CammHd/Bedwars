@@ -234,6 +234,7 @@ public class WorldDataJsonParser extends JsonParser
     /*
     Creates a generator object from a json object and an arena
     Throws an exception if there is an issue.
+    TODO Refactor generators to make use of the tier time read from the config
      */
     private Generator construct(JsonObject parent, Arena arena) throws IllegalArgumentException {
 
@@ -249,6 +250,10 @@ public class WorldDataJsonParser extends JsonParser
     }
 
 
+    /*
+    Attempts to read from a json object, the spawn location of the generator.
+    Takes a json object with the Location tag and a json object content
+     */
     private Coordinate parseGenLocation(JsonObject parent) throws IllegalArgumentException {
         if (!parent.has(GenKeyword.LOCATION.data)) {
 
@@ -265,6 +270,11 @@ public class WorldDataJsonParser extends JsonParser
 
 
 
+    /*
+    Returns an array of the time it takes for a generator to spawn an item
+    Takes a json object with the Speeds tag and content of a json object
+    Array length is always 3, for there are 3 tiers to a generator
+     */
     private int[] parseTierTime(JsonObject parent) {
 
         ChatSender sender = ChatSender.getInstance();
@@ -279,7 +289,7 @@ public class WorldDataJsonParser extends JsonParser
         }
         parent = (JsonObject) elem;
 
-        int[] values = new int[]{-1, -1, -1};
+        int[] generatorTimes = new int[]{-1, -1, -1};
 
         Set<Map.Entry<String, JsonElement>> elems = parent.entrySet();
         for (Map.Entry<String, JsonElement> entry : elems) {
@@ -287,7 +297,6 @@ public class WorldDataJsonParser extends JsonParser
            String key = entry.getKey();
            char c = key.charAt(key.length() -1);
            String value = entry.getValue().toString();
-           System.out.println("value: "+value);
 
 
            if (!Character.isDigit(c))
@@ -299,8 +308,8 @@ public class WorldDataJsonParser extends JsonParser
                 if (time <= 0)
                     throw new IllegalArgumentException("Time must be greater than 0 for generators");
 
-                if (values[tier-1] == -1)
-                    values[tier-1] = time;
+                if (generatorTimes[tier-1] == -1)
+                    generatorTimes[tier-1] = time;
 
             }
             catch (NumberFormatException | IndexOutOfBoundsException e) {
@@ -314,15 +323,20 @@ public class WorldDataJsonParser extends JsonParser
         }
 
 
-        for (int slot = 0 ; slot < values.length ; slot ++) {
-            if (values[slot] < 0)
+        for (int slot = 0 ; slot < generatorTimes.length ; slot ++) {
+            if (generatorTimes[slot] <= 0)
                 throw new IllegalArgumentException("Missing time for generator at tier "+(slot+1)+" for generator");
         }
 
-        return values;
+        return generatorTimes;
     }
 
 
+    /*
+       Builds a list of generators from data read from json files
+       If a generator has bad data, it is skipped
+       Returns: list of generators
+     */
     private List<Generator> build(JsonObject parent, Arena arena) throws IllegalArgumentException{
 
         ChatSender sender = ChatSender.getInstance();

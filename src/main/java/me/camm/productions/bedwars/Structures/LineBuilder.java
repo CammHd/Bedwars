@@ -1,5 +1,7 @@
 package me.camm.productions.bedwars.Structures;
 
+import me.camm.productions.bedwars.Util.BlockTag;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -10,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static me.camm.productions.bedwars.Structures.TowerParameter.*;
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
 
 public class LineBuilder
 {
@@ -19,10 +20,7 @@ public class LineBuilder
     private final byte color;
     private final World world;
     private final Plugin plugin;
-
-
-
-
+   private final BlockTagManager manager;
 
 
 
@@ -33,6 +31,8 @@ public class LineBuilder
         this.zMultiplier = zMultiplier;
         this.world = world;
         this.color = color;
+
+        manager = BlockTagManager.get();
     }
 
 
@@ -120,11 +120,8 @@ public class LineBuilder
             drawSegmentedX(battlementLocation.clone().add(xMultiplier,0,0), BATTLEMENT_SIZE.getMeasurement(), MAIN_BATTLEMENTS.getMeasurement());
             drawJumpedZ(SIDE_BATTLEMENTS.getMeasurement(),SIDE_BATTLEMENT_GAP.getMeasurement(),battlementLocation.clone().add(0,0,zMultiplier),false);
 
-
-
             drawSegmentedX(battlementLocation.clone().add(xMultiplier,0,PLATFORM_LENGTH.getMeasurement()*zMultiplier),BATTLEMENT_SIZE.getMeasurement(),MAIN_BATTLEMENTS.getMeasurement());
             drawJumpedZ(SIDE_BATTLEMENTS.getMeasurement(),SIDE_BATTLEMENT_GAP.getMeasurement(),battlementLocation.clone().add(LENGTH_WITH_BATTLEMENTS.getMeasurement()*xMultiplier,0,zMultiplier),false);
-
 
         }
         else
@@ -362,6 +359,7 @@ public class LineBuilder
 
 
 
+    //direction byte for block data
     private byte faceToDirection(BlockFace face)
     {
         byte direction;
@@ -372,11 +370,9 @@ public class LineBuilder
                 direction = 3;
                 break;
 
-
             case EAST:
                 direction = 4;
                 break;
-
 
             case WEST:
                 direction = 5;
@@ -390,75 +386,62 @@ public class LineBuilder
     }
 
 
-
     @SuppressWarnings("deprecation")
     public void placeLadder(Location loc, BlockFace face)
     {
-        new BukkitRunnable()
-        {
 
-            public void run()
-            {
+        Block block = loc.getBlock();
 
-                Block block = loc.getBlock();
-                if (block.getType()==Material.AIR)
-                {
-//ENTITY_ITEM_PICKUP  , ITEM_PICKUP
+        if (!manager.isInbounds(block))
+            return;
 
-                    if (block.hasMetadata(ARENA.getData())&&    //if the loc is valid
-                            !block.hasMetadata(GENERATOR.getData())&&
-                            !block.hasMetadata(BASE.getData())
-                    )
-                    {
-                       playSound(loc);
-                        block.setType(Material.LADDER);
-                        block.setData(faceToDirection(face));
-                        removeData(block);
-                    }
-                }
-            }
-        }.runTaskLater(plugin, DELAY.getMeasurement());
+        if (block.getType() != Material.AIR)
+            return;
 
+        if (!manager.hasTag(block) || (manager.getTag(block) == BlockTag.ALL.getTag())) {
+
+            //may need to add a delay here of 5 ticks
+            playSound(loc);
+            block.setType(Material.LADDER);
+            block.setData(faceToDirection(face),true);
+        }
     }
+
+
+
 
     @SuppressWarnings("deprecation")
     public void placeBlock(Location loc)
     {
-
         Block block = world.getBlockAt(loc);
-        if (block.getType()==Material.AIR&&
-                block.hasMetadata(ARENA.getData())&&
-                !block.hasMetadata(GENERATOR.getData())&&
-                !block.hasMetadata(BASE.getData())
-        ) {
+        if (block.getType() != Material.AIR)
+            return;
+
+        if (!manager.isInbounds(block))
+            return;
+
+        if (!manager.hasTag(block)) {
             playSound(loc);
             block.setType(Material.WOOL);
             block.setData(color);
-            removeData(block);
+            return;
         }
+
+        byte tag = manager.getTag(block);
+
+        if (tag == BlockTag.ALL.getTag()) {
+            playSound(loc);
+            block.setType(Material.WOOL);
+            block.setData(color);
+
+        }
+
     }
 
-
-    private void removeData(Block block)
-    {
-        block.removeMetadata(MAP.getData(),plugin);
-        block.removeMetadata(BED.getData(),plugin);
-        block.removeMetadata(CHEST.getData(),plugin);
-    }
 
     private void playSound(Location loc)
     {
-        Sound sound;
-
-        try
-        {
-            sound = Sound.valueOf("ITEM_PICKUP");
-        }
-        catch (Exception e)
-        {
-            sound = Sound.valueOf("ENTITY_ITEM_PICKUP");
-        }
-        loc.getWorld().playSound(loc,sound,1,1);
+        loc.getWorld().playSound(loc,Sound.ITEM_PICKUP,1,1);
     }
 
 

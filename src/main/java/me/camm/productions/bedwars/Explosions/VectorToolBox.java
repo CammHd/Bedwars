@@ -1,6 +1,8 @@
 package me.camm.productions.bedwars.Explosions;
 
 
+import me.camm.productions.bedwars.Util.BlockTag;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import org.bukkit.Material;
 
 import org.bukkit.block.Block;
@@ -10,7 +12,6 @@ import org.bukkit.entity.EntityType;
 
 import java.util.Random;
 
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
 
 
 /**
@@ -19,15 +20,10 @@ Helper for vectors
  */
 public class VectorToolBox
 {
-    private static final String MAP_DATA;
-    private static final String BED_DATA;
-    private static final String CHEST_DATA;
+
     private static final Random rand;
 
     static {
-        MAP_DATA = MAP.getData();
-        BED_DATA = BED.getData();
-        CHEST_DATA = CHEST.getData();
         rand = new Random();
     }
 
@@ -42,7 +38,6 @@ public class VectorToolBox
 
     isDistinctlyColorable refers to colors.
     if is wood, then false, else, if clay or wool, true
-
      */
     public static boolean isDataDestructable(byte data, boolean isDistinctlyColorable, Block block, int[] colors)
     {
@@ -94,11 +89,6 @@ public class VectorToolBox
 
 
 
-
-
-
-
-
     /*
     @Author CAMM
     This method returns whether the block has metadata, and if the block type is oak wood (data==0)
@@ -106,7 +96,7 @@ public class VectorToolBox
      */
     private static boolean checkWoodData(byte data, Block block)
     {
-        return data==0&& !block.hasMetadata(MAP_DATA);
+        return data==0 && BlockTagManager.get().isInbounds(block);
     }
 
 
@@ -131,10 +121,22 @@ public class VectorToolBox
             }
         }
 
-        return canBreak &&
-                (!block.hasMetadata(MAP_DATA) &&
-                !block.hasMetadata(BED_DATA) &&
-                !block.hasMetadata(CHEST_DATA));
+        BlockTagManager manager = BlockTagManager.get();
+
+        //no tag -> map block
+        if (!manager.hasTag(block))
+            return false;
+
+        if (!manager.isInbounds(block))
+            return false;
+
+       byte tag = manager.getTag(block.getX(), block.getY(), block.getZ());
+
+        //ensure it's not a bed, chest, generator
+       if (tag != BlockTag.ALL.hashCode())
+           return false;
+
+        return canBreak;
 
     }
 

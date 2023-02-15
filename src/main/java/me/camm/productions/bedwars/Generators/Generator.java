@@ -2,7 +2,7 @@ package me.camm.productions.bedwars.Generators;
 
 
 import me.camm.productions.bedwars.Arena.Game.Events.EventTime;
-import me.camm.productions.bedwars.Util.Locations.BlockRegisterType;
+import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import org.bukkit.*;
@@ -28,6 +28,7 @@ public class Generator
 {
 
     private final static int GROUPED_PLAYER_NUMBER;
+    private static final String TAG = "GENERATOR";
 
 
     //number to check for when deciding the cap for diamond and emerald spawn amounts
@@ -81,7 +82,7 @@ public class Generator
     public Generator(Coordinate location, World world, GeneratorType type, Plugin plugin, GameBoundary box)  //construct
     {
         this.box = box;
-        this.name = BlockRegisterType.GENERATOR.getData();
+        this.name = TAG;
         this.x = location.getX();
         this.y = location.getY();
         this.z = location.getZ();
@@ -170,7 +171,7 @@ public class Generator
     //getters, setters and helpers
     public void registerBox()
     {
-        box.register(world,name,1,plugin);  //register all blocks
+        box.registerAll(BlockTag.NONE.getTag());
     }
 
     public void setPlayerNumber(int newNumber)

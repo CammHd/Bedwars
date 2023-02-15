@@ -26,7 +26,7 @@ public enum TeamItem {
             "T1: +50% resources - 2 diamonds", "T2: +100% resources - 4 diamonds", "T3: Spawn emeralds - 6 diamonds",
             "T4: 200% resources - 8 diamonds"},new int[]{2,4,6,8}, Material.DIAMOND,false),
 
-    SLOT_BARRIER(Material.STAINED_GLASS_PANE, new String[]{ChatColor.GRAY+"\u21e7 Upgrades"+ChatColor.DARK_GRAY+" \u21e9 Trap Slots"}, new String[]{}, new int[]{-2},Material.AIR,false),
+    SLOT_BARRIER(Material.STAINED_GLASS_PANE, new String[]{ChatColor.GRAY+"⇧ Upgrades"+ChatColor.DARK_GRAY+" ⇩ Trap Slots"}, new String[]{}, new int[]{-2},Material.AIR,false),
 
     SLOT_TRAP_ONE(Material.STAINED_GLASS, new String[]{ChatColor.WHITE+"Trap slot 1"}, new String[]{"This is a slot for a trap."}, new int[]{-1}, Material.AIR,false),
     SLOT_TRAP_TWO(Material.STAINED_GLASS, new String[]{ChatColor.WHITE+"Trap slot 2"}, new String[]{"This is a slot for a trap."}, new int[]{-1}, Material.AIR,false),

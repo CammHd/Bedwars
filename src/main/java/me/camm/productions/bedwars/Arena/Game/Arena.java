@@ -9,16 +9,16 @@ import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInven
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
-import me.camm.productions.bedwars.Util.Locations.RegisterType;
+
 import me.camm.productions.bedwars.Util.PacketSound;
 import me.camm.productions.bedwars.Validation.BedWarsException;
 import me.camm.productions.bedwars.Validation.RegistrationException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
+
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
+
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -29,8 +29,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.*;
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.ARENA;
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.MAP;
+
 
 /**
  * @author CAMM
@@ -231,8 +230,6 @@ public class Arena
   }
 
   public void unregisterMap(){
-      bounds.unregister(world, ARENA.getData(), plugin);
-      bounds.unregister(world, MAP.getData(),plugin);
 
      for (BattleTeam team:  teams.values()) {
          team.unregisterBase();
@@ -271,14 +268,6 @@ public class Arena
       return arrayValues;
   }
 
-  /*
-  @unused
-   hides the eliminated players from all players (This is done somewhere else.)
-   */
-  public void hideEliminated(){
-      for (BattlePlayer player: players.values())
-          player.hideEliminatedPlayers();
-  }
 
     /*
        sends a sound to players in a given area around an origin

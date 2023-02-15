@@ -2,9 +2,11 @@ package me.camm.productions.bedwars.Listeners;
 
 import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
+import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.Entities.ActiveEntities.DreamDefender;
 import me.camm.productions.bedwars.Entities.ActiveEntities.ThrownFireball;
+import me.camm.productions.bedwars.Util.BlockTag;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -33,16 +35,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.BASE;
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.GENERATOR;
 
-
+/*
+@author CAMM
+ */
 public class ItemUseListener implements Listener
 {
     private final Plugin plugin;
     private final PacketHandler handler;
     private final EntityActionListener entityListener;
-
 
     private final HashMap<UUID, Long> coolDown;
     private final Arena arena;
@@ -52,6 +53,8 @@ public class ItemUseListener implements Listener
 
     private final static HashSet<UUID> messaged;
 
+    private final BlockTagManager manager;
+
     static {
         DELAY = 500;
         DIVISION = 1000;
@@ -59,6 +62,10 @@ public class ItemUseListener implements Listener
     }
 
 
+    /*
+    @author bipi
+    @author CAMM
+     */
     public ItemUseListener(Plugin plugin, Arena arena, PacketHandler handler, EntityActionListener entityListener)
     {
         this.plugin = plugin;
@@ -66,6 +73,8 @@ public class ItemUseListener implements Listener
         this.arena = arena;
         this.handler = handler;
         this.entityListener = entityListener;
+        this.manager = BlockTagManager.get();
+
     }
 
     @EventHandler
@@ -151,50 +160,83 @@ public class ItemUseListener implements Listener
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand();
         Block block = event.getClickedBlock();
+        Material mat = block.getType();
 
         if (!players.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             return;
         }
 
+
         BattlePlayer currentPlayer = players.get(player.getUniqueId());
+        if(currentPlayer.getIsEliminated())
+        {
+            event.setCancelled(true);
+            return;
+        }
 
-        if (block != null) {
+        if (mat == Material.WORKBENCH) {
+            event.setCancelled(true);
+            return;
+        }
 
-            if (block.getType()==Material.CHEST) {
 
-                for (BattleTeam team : arena.getTeams().values()) {
-                    if (team.getChest().isBlock(arena.getWorld(), block)) {
-
-                        if (currentPlayer.getIsEliminated()) {
-                            event.setCancelled(true);
-                            return;
-                        }
-
-                        if ((currentPlayer.getTeam().equals(team))) {
-                            return;
-                        }
-
-                        if (team.isEliminated())
-                            return;
-                        else {
-                            event.setCancelled(true);
-                            player.sendMessage(team.getTeamColor().getChatColor() + team.getTeamColor().getName() + " is not eliminated yet!");
-                        }
-                        return;
-                    }
-                }
-            }
-
-            if (block.getType() == Material.WORKBENCH)
-                event.setCancelled(true);
+    if(!manager.hasTag(block))
+    {
+        event.setCancelled(true);
+        return;
     }
 
+    /*
+    block is not air
+
+    if block is chest, or block has team tag
+    then we gotta do checks
+
+    otherwise we can use item
+     */
+
+    if (block.getType()==Material.CHEST) {
+        if (!isChestInteractable(block, currentPlayer)) {
+            event.setCancelled(true);
+        }
+     }
+        handleItemUse(event, player, stack, block, currentPlayer, manager);
+    }
+
+    /*
+    returns whether the chest is interactable
+    @pre: block is guaranteed a chest
+     */
+    public boolean isChestInteractable(Block block, BattlePlayer currentPlayer)
+    {
+        BlockTagManager manager = BlockTagManager.get();
+        byte tag = manager.getTag(block);
+        TeamColor color = manager.toColorFromTag(tag);
+
+        //check whether or not the player can open by checking if the chest is eliminated or their own
+        //if it is, then chest can open
 
 
+      ///if the player has permission to open the chest, then the colors are the same
+        if (currentPlayer.getTeam().getTeamColor().equals(color)) {
+            return true;
 
+        }
+        else if ( color != null ){
 
+            if (arena.getTeams().get(color.getName()).isEliminated())
+                return true;
 
+            currentPlayer.sendMessage(color.getChatColor() + color.getName() + " is not eliminated yet!");
+            return false;
+        }
+
+        return false;
+
+    }
+
+    private void handleItemUse(PlayerInteractEvent event, Player player, ItemStack stack, Block block, BattlePlayer currentPlayer, BlockTagManager manager) {
         if (stack == null)
             return;
 
@@ -210,7 +252,7 @@ public class ItemUseListener implements Listener
                if (action==Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
                {
                    event.setCancelled(true);
-                   updateMap(event.getPlayer());
+                   updateCooldowns(event.getPlayer());
                }
                 break;
 
@@ -221,7 +263,7 @@ public class ItemUseListener implements Listener
                     if (type != EntityType.IRON_GOLEM)
                         return;
 
-                    DreamDefender golem = new DreamDefender(currentPlayer.getTeam(), currentPlayer,arena,event.getClickedBlock().getLocation(),entityListener);
+                    DreamDefender golem = new DreamDefender(currentPlayer.getTeam(), currentPlayer,arena, event.getClickedBlock().getLocation(),entityListener);
                     golem.spawn();
                     updateInventory(player,Material.MONSTER_EGG);
                 }
@@ -237,10 +279,19 @@ public class ItemUseListener implements Listener
                     BlockFace face = event.getBlockFace();
                     blockLoc.add(face.getModX(),face.getModY(),face.getModZ());
                     Block waterPlace = blockLoc.getBlock();
-                    if (waterPlace.hasMetadata(GENERATOR.getData())||waterPlace.hasMetadata(BASE.getData())) {
-                       event.setCancelled(true);
-                       return;
+
+                    if (!manager.hasTag(waterPlace)) {
+                        event.setCancelled(true);
+                        return;
                     }
+
+                    byte tag = manager.getTag(waterPlace);
+
+                    if (tag == BlockTag.NONE.getTag()) {
+                        event.setCancelled(true);
+                        return;
+                    }
+
 
                     if (player.getGameMode() == GameMode.CREATIVE)
                         return;
@@ -272,6 +323,7 @@ public class ItemUseListener implements Listener
         }
     }
 
+
     @EventHandler
     public void onEntityInteract(PlayerInteractAtEntityEvent event)
     {
@@ -281,7 +333,7 @@ public class ItemUseListener implements Listener
             if (event.getPlayer().getInventory().getItemInHand().getType()==Material.FIREBALL&&isRegistered(event.getPlayer())) {
                 event.setCancelled(true);
                 //updating the hashmap and also shooting a fireball if possible.
-                updateMap(event.getPlayer());
+                updateCooldowns(event.getPlayer());
             }
         }
 
@@ -291,7 +343,7 @@ public class ItemUseListener implements Listener
 
 
 
-    public void updateMap(Player player)
+    public void updateCooldowns(Player player)
     {
         Map<UUID, BattlePlayer> players = arena.getPlayers();
         if (!players.containsKey(player.getUniqueId()))

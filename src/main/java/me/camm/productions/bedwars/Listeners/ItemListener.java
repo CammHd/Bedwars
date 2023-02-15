@@ -7,6 +7,7 @@ import me.camm.productions.bedwars.Generators.Forge;
 import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
 import me.camm.productions.bedwars.Items.ItemDatabases.TieredItem;
 
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import org.bukkit.Location;
@@ -30,8 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.ARENA;
 
 public class ItemListener implements Listener
 {
@@ -60,7 +59,8 @@ public class ItemListener implements Listener
     @EventHandler
     public void onItemDespawn(ItemDespawnEvent event)
     {
-        if (event.getLocation().getBlock().hasMetadata(ARENA.getData())) {
+        BlockTagManager manager = BlockTagManager.get();
+        if (manager.isInbounds(event.getLocation().getBlock())) {
             event.setCancelled(true);
             Item item = event.getEntity();
             item.setTicksLived(1);

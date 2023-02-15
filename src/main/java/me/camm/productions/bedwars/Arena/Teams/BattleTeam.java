@@ -13,23 +13,20 @@ import me.camm.productions.bedwars.Items.SectionInventories.Inventories.Inventor
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.TrackerInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.TeamInventoryConfig;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
+import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.ExecutableBoundaryLoader;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
-import me.camm.productions.bedwars.Util.Locations.RegisterType;
-import me.camm.productions.bedwars.Util.Locations.IRegistratable;
+
 import me.camm.productions.bedwars.Util.PacketSound;
-import me.camm.productions.bedwars.Util.Tuple3;
-import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+
 import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.TileEntityBeacon;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -41,9 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static me.camm.productions.bedwars.Arena.Teams.TeamTitle.BED_DESTROYED;
 import static me.camm.productions.bedwars.Arena.Teams.TeamTitle.LAST_LIFE_WARNING;
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
-import static me.camm.productions.bedwars.Util.Locations.RegisterType.*;
-
 
 public class BattleTeam
 {
@@ -75,7 +69,9 @@ public class BattleTeam
     private final Arena arena;
 
     private final GameBoundary bed;
-    private volatile boolean bedBroken;
+
+    private final GameBoundary unbreakable;
+
     private final Coordinate chest;
     private final GameBoundary aura;
     private final GameBoundary trapArea;
@@ -90,15 +86,13 @@ public class BattleTeam
     private volatile boolean isEliminated;
     private final Forge forge;
 
+    private volatile boolean bedBroken;
     private boolean canStartForge;
     private final Location teamSpawn;
 
 
     private final String teamPrefix;
     private final static String teamPostfix;
-    private final Tuple3<String, IRegistratable,RegisterType>[] teamBounds;
-
-
 
 
     private static final byte[] bedBreakData;
@@ -154,20 +148,8 @@ public class BattleTeam
                 upgrades.put(item, 1);
         }
 
+        this.unbreakable = unbreakable;
         this.dragonSpawnNumber = 1;
-
-        teamBounds = new Tuple3[]{
-                new Tuple3<>(BED.getData(),this.bed,NOT_AIR),
-                new Tuple3<>(CHEST.getData(),this.chest,null),
-                new Tuple3<>(BASE.getData(), unbreakable,AIR_ONLY),
-                new Tuple3<>(AURA.getData(),this.aura,EVERYTHING),
-                new Tuple3<>(teamColor.getName(),this.aura,EVERYTHING),
-                new Tuple3<>(TRAP.getData(),this.trapArea,EVERYTHING),
-                new Tuple3<>(teamColor.getName(),this.trapArea,EVERYTHING)
-        };
-
-
-
 
     }
 
@@ -319,14 +301,13 @@ public class BattleTeam
 @Author CAMM
 Marks the current team as on their last lives.
 It is up to the calling method to update the scoreboards of the players.
-
-todo add sound packet
  */
     public synchronized void putOnLastStand()
     {
         if (isEliminated||!doesBedExist())
             return;
 
+        sendTeamSoundPacket(PacketSound.WITHER);
         sendTeamTitle(BED_DESTROYED.getMessage(), LAST_LIFE_WARNING.getMessage(), 10, 40,10);  //Say that their bed has been destroyed
         bed.replace(Material.AIR, Material.BED_BLOCK, bedBreakData, arena.getWorld());
         bed.unregister(arena.getWorld());
@@ -589,27 +570,18 @@ todo add sound packet
     public void registerBase()
     {
         World world = arena.getWorld();
-        Plugin plugin = arena.getPlugin();
+        byte tag = teamColor.getTag().getTag();
 
-        for (Tuple3<String, IRegistratable,RegisterType> tuple: teamBounds) {
-            IRegistratable bounding = tuple.getB();
-            RegisterType type = tuple.getC();
-
-            if (type == null) {
-                bounding.register(world, tuple.getA(), plugin);
-            }
-            else
-                 bounding.register(world, tuple.getA(), type.getType(), plugin);
-        }
+        bed.registerWithOverrides(tag);
+        chest.registerWithOverrides(tag);
+        unbreakable.registerAir(world, BlockTag.NONE.getTag());
     }
 
     public void unregisterBase(){
-
         World world = arena.getWorld();
-        Plugin plugin = arena.getPlugin();
-        for (Tuple3<String, IRegistratable, RegisterType> tuple: teamBounds) {
-            tuple.getB().unregister(world, tuple.getA(), plugin);
-        }
+        bed.unregister(world);
+        chest.unregister();
+        unbreakable.unregister(world);
     }
 
     //sends a packet to all players on the team

@@ -1,5 +1,8 @@
 package me.camm.productions.bedwars.Structures;
 
+import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Util.BlockTag;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,7 +17,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static me.camm.productions.bedwars.Structures.TowerParameter.*;
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
 
 public class Tower
 {
@@ -32,9 +34,6 @@ public class Tower
 
     private int xBaseLength;
     private int zBaseLength;
-
-    private int xPrimeLength;
-    private int zPrimeLength;
 
     private BlockFace face;
 
@@ -58,41 +57,59 @@ public class Tower
     {
         event.setCancelled(true);
         Block block = event.getBlockPlaced();
-        if (block.hasMetadata(ARENA.getData())&&     //if the placement location is valid
-                !block.hasMetadata(GENERATOR.getData())&&
-                !block.hasMetadata(BASE.getData())
-        )
-            ;
-        else {
+        BlockTagManager manager = BlockTagManager.get();
+
+        if (!manager.isInbounds(block)) {
             event.getPlayer().sendMessage(ChatColor.RED+"You cannot place blocks here!");
             return;
         }
 
+        if (!manager.hasTag(block)) {
+            if (transact(event))
+                construct();
+            return;
+        }
+
+        if (manager.getTag(block) == BlockTag.ALL.getTag()) {
+            if (transact(event))
+              construct();
+            return;
+        }
+
+        event.getPlayer().sendMessage(ChatColor.RED+"You cannot place blocks here!");
+
+    }
+
+    private boolean transact(BlockPlaceEvent event){
 
         final ItemStack empty = new ItemStack(Material.AIR, 1);
         Player player = event.getPlayer();
         Inventory inv = player.getInventory();
+
         for (int slot=0;slot<player.getInventory().getSize();slot++)
         {
-            if (player.getInventory().getItem(slot)!=null&&player.getInventory().getItem(slot).getItemMeta()!=null)
+            if (inv.getItem(slot) == null) continue;
+            ItemStack item = inv.getItem(slot);
+
+            if (item.getItemMeta() == null) continue;
+
+            if (item.getType() != Material.CHEST || !ShopItem.POPUP_TOWER.name.equalsIgnoreCase(item.getItemMeta().getDisplayName()))
+                continue;
+
+            if (item.getAmount()>1)
             {
-                ItemStack stack = player.getInventory().getItem(slot);
-                if (stack.getType()==Material.CHEST)
-                {
-                  if (stack.getAmount()>1)
-                  {
-                      stack.setAmount(stack.getAmount()-1);
-                      inv.setItem(slot,stack);
-                  }
-                  else
-                  {
-                      inv.setItem(slot, empty);
-                  }
-                    construct();
-                    return;
-                }
+                item.setAmount(item.getAmount()-1);
+                inv.setItem(slot,item);
             }
+            else
+                inv.setItem(slot, empty);
+
+
+            return true;
+
         }
+        return false;
+
     }
 
 
@@ -258,19 +275,21 @@ A yaw of 270 represents the positive x direction. [E]
     {
         Location initial = placedLocation.clone();
 
+        int xPrimeLength;
         if (xBaseLength==BASE_LENGTH.getMeasurement())
             xPrimeLength = PRIME_TWO.getMeasurement();
         else
             xPrimeLength = PRIME_ONE.getMeasurement();
 
 
+        int zPrimeLength;
         if (zBaseLength==BASE_LENGTH.getMeasurement())
             zPrimeLength = PRIME_TWO.getMeasurement();
         else
             zPrimeLength = PRIME_ONE.getMeasurement();
 
-        initial.setX(placedLocation.getBlockX()+((xDirection*-1)*xPrimeLength)); //((xDirection*-1)*xPrimeLength))
-        initial.setZ(placedLocation.getBlockZ()+((zDirection*-1)*zPrimeLength));
+        initial.setX(placedLocation.getBlockX()+((xDirection*-1)* xPrimeLength)); //((xDirection*-1)*xPrimeLength))
+        initial.setZ(placedLocation.getBlockZ()+((zDirection*-1)* zPrimeLength));
 
         this.startLocation = initial;
 
