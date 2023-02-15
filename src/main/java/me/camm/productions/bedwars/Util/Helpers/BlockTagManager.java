@@ -123,7 +123,7 @@ public class BlockTagManager {
         // Based on Java Arrays hashcode function
 
      //   return (x * 786433L + y) * 786433L + z;
-        return ((786433L + x) * 786433L + y) * 78633L + z;
+        return ((786433L + x) * 786433L + y) * 786433L + z;
 
 
         //Did testing. larger numbers = better. does not matter if numbers are same
@@ -348,6 +348,11 @@ public class BlockTagManager {
         long index = hashBlock(x, y, z);
         return blocks.get(index);
 
+    }
+
+    public byte getTag(Block block)
+    {
+        return getTag(block.getX(), block.getY(), block.getZ());
     }
 
 
