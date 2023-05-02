@@ -237,7 +237,13 @@ public class GameRunner
 
 
         PluginManager manager = plugin.getServer().getPluginManager();
-        Listener[] handlers = new Listener[]{droppedListener, mobSpawnListener, damageListener, blockListener, explosionListener, itemListener, projectileListener};
+        Listener[] handlers = new Listener[]{droppedListener,
+                mobSpawnListener,
+                damageListener,
+                blockListener,
+                explosionListener,
+                itemListener,
+                projectileListener};
         for (Listener listener: handlers) {
             manager.registerEvents(listener, plugin);
         }

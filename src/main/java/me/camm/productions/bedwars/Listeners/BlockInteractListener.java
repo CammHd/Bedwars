@@ -76,6 +76,8 @@ public class BlockInteractListener implements Listener {
 
         //if the player isn't registered, return and cancel.
         if (!players.containsKey(placer.getUniqueId())) {
+
+
             event.setCancelled(true);
             placer.sendMessage(ChatColor.RED + "You're not registered!");
             return;
@@ -103,7 +105,7 @@ public class BlockInteractListener implements Listener {
         if (manager.hasTag(block)) {
 
             byte tag = manager.getTag(block);
-            if (!(tag == BlockTag.ALL.getTag()) || (tag == BlockTag.NONE.getTag())) {
+            if (tag == BlockTag.NONE.getTag()) {
                 placer.sendMessage(ChatColor.RED + "You cannot place blocks here!");
                 event.setCancelled(true);
                 return;
@@ -149,6 +151,7 @@ public class BlockInteractListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(@NotNull BlockBreakEvent event) {
+
 
         Block block = event.getBlock();
         BlockTagManager blocks = BlockTagManager.get();
