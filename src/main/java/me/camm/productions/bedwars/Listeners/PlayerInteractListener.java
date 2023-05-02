@@ -29,6 +29,8 @@ import org.bukkit.material.SpawnEgg;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +41,7 @@ import java.util.UUID;
 /*
 @author CAMM
  */
-public class ItemUseListener implements Listener
+public class PlayerInteractListener implements Listener
 {
     private final Plugin plugin;
     private final PacketHandler handler;
@@ -66,7 +68,7 @@ public class ItemUseListener implements Listener
     @author bipi
     @author CAMM
      */
-    public ItemUseListener(Plugin plugin, Arena arena, PacketHandler handler, EntityActionListener entityListener)
+    public PlayerInteractListener(Plugin plugin, Arena arena, PacketHandler handler, EntityActionListener entityListener)
     {
         this.plugin = plugin;
         this.coolDown = new HashMap<>();
@@ -74,7 +76,6 @@ public class ItemUseListener implements Listener
         this.handler = handler;
         this.entityListener = entityListener;
         this.manager = BlockTagManager.get();
-
     }
 
     @EventHandler
@@ -93,9 +94,6 @@ public class ItemUseListener implements Listener
         if (stack.getType()==Material.POTION) {
 
             //If it is an invis potion.
-
-            //Unfinished. Use packets to see if the player should be set to visible
-            //and also do it in the damage listener.
             PotionMeta meta = (PotionMeta) stack.getItemMeta();
             if (meta.hasCustomEffect(PotionEffectType.INVISIBILITY)) {
                 BattlePlayer battlePlayer = arena.getPlayers().get(player.getUniqueId());
@@ -132,11 +130,12 @@ public class ItemUseListener implements Listener
                 @Override
                 public void run()
                 {
-                    if (System.currentTimeMillis()- battlePlayer.getLastMilk() > 30000)
-                        battlePlayer.sendMessage(ChatColor.RED+"Your Magic Milk ran out!");
-                    cancel();
+                    if (System.currentTimeMillis()- battlePlayer.getLastMilk() >= 30000) {
+                        battlePlayer.sendMessage(ChatColor.RED + "Your Magic Milk ran out!");
+                        cancel();
+                    }
                 }
-            }.runTaskLater(plugin,600);
+            }.runTaskTimer(plugin,600,20);
         }
     }
 
@@ -144,6 +143,7 @@ public class ItemUseListener implements Listener
 
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event){
+
 
         BattlePlayer player = arena.getPlayers().getOrDefault(event.getPlayer().getUniqueId(),null);
         if (player == null)
@@ -156,51 +156,48 @@ public class ItemUseListener implements Listener
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event) {
 
+         //issue is here.
+
         Map<UUID, BattlePlayer> players = arena.getPlayers();
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand();
+
+
         Block block = event.getClickedBlock();
-        Material mat = block.getType();
 
         if (!players.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
-            return;
+           return;
         }
 
-
         BattlePlayer currentPlayer = players.get(player.getUniqueId());
+
+
         if(currentPlayer.getIsEliminated())
         {
             event.setCancelled(true);
             return;
         }
 
-        if (mat == Material.WORKBENCH) {
-            event.setCancelled(true);
+        if (block == null) {
+            handleItemUse(event,player,stack,null,currentPlayer,manager);
             return;
         }
 
 
-    if(!manager.hasTag(block))
-    {
-        event.setCancelled(true);
-        return;
-    }
+        Material mat = block.getType();
+        if (mat == Material.WORKBENCH) {
+            event.setCancelled(true);
+          //  return;
+        }
 
-    /*
-    block is not air
-
-    if block is chest, or block has team tag
-    then we gotta do checks
-
-    otherwise we can use item
-     */
 
     if (block.getType()==Material.CHEST) {
         if (!isChestInteractable(block, currentPlayer)) {
             event.setCancelled(true);
         }
      }
+
         handleItemUse(event, player, stack, block, currentPlayer, manager);
     }
 
@@ -228,7 +225,7 @@ public class ItemUseListener implements Listener
             if (arena.getTeams().get(color.getName()).isEliminated())
                 return true;
 
-            currentPlayer.sendMessage(color.getChatColor() + color.getName() + " is not eliminated yet!");
+            currentPlayer.sendMessage(color.getChatColor() + color.getName() + " must be eliminated before you can open that!");
             return false;
         }
 
@@ -236,7 +233,7 @@ public class ItemUseListener implements Listener
 
     }
 
-    private void handleItemUse(PlayerInteractEvent event, Player player, ItemStack stack, Block block, BattlePlayer currentPlayer, BlockTagManager manager) {
+    private void handleItemUse(PlayerInteractEvent event, Player player,@Nullable ItemStack stack, @Nullable Block block,@NotNull BattlePlayer currentPlayer,@NotNull BlockTagManager manager) {
         if (stack == null)
             return;
 
@@ -252,7 +249,7 @@ public class ItemUseListener implements Listener
                if (action==Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)
                {
                    event.setCancelled(true);
-                   updateCooldowns(event.getPlayer());
+                   updateCDAndShoot(event.getPlayer());
                }
                 break;
 
@@ -327,23 +324,23 @@ public class ItemUseListener implements Listener
     @EventHandler
     public void onEntityInteract(PlayerInteractAtEntityEvent event)
     {
+
         Entity clicked = event.getRightClicked();
+        Player player = event.getPlayer();
         if (clicked.getType()!= EntityType.ARMOR_STAND)
         {
-            if (event.getPlayer().getInventory().getItemInHand().getType()==Material.FIREBALL&&isRegistered(event.getPlayer())) {
+            if (player.getInventory().getItemInHand().getType()==Material.FIREBALL&&isRegistered(player)) {
                 event.setCancelled(true);
                 //updating the hashmap and also shooting a fireball if possible.
-                updateCooldowns(event.getPlayer());
+                updateCDAndShoot(player);
             }
         }
 
-        //add code here for the golems and the snowballs and enderpearls.
-        //also put in above method.
     }
 
 
 
-    public void updateCooldowns(Player player)
+    public void updateCDAndShoot(Player player)
     {
         Map<UUID, BattlePlayer> players = arena.getPlayers();
         if (!players.containsKey(player.getUniqueId()))

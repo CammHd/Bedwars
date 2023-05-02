@@ -4,6 +4,7 @@ import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
 import me.camm.productions.bedwars.Arena.Teams.BedMessage;
+import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.Arena.Teams.TeamTitle;
 import me.camm.productions.bedwars.Entities.ActiveEntities.GameTNT;
 import me.camm.productions.bedwars.Structures.SoakerSponge;
@@ -18,7 +19,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.plugin.Plugin;
@@ -64,8 +64,9 @@ public class BlockInteractListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST)   //determines the state of the block
+    @EventHandler  //determines the state of the block
     public void onBlockPlace(@NotNull BlockPlaceEvent event) {
+
 
         //get the hashmap of the players and the event info
         Map<UUID, BattlePlayer> players = arena.getPlayers();
@@ -80,12 +81,14 @@ public class BlockInteractListener implements Listener {
             return;
         }
 
+
         //if the player is dead, stop it
         BattlePlayer player = players.get(placer.getUniqueId());
         if (player.getIsEliminated() || (!player.getIsAlive())) {
             event.setCancelled(true);
             return;
         }
+
 
         BlockTagManager manager = BlockTagManager.get();
 
@@ -95,6 +98,8 @@ public class BlockInteractListener implements Listener {
             return;
         }
 
+
+
         if (manager.hasTag(block)) {
 
             byte tag = manager.getTag(block);
@@ -103,11 +108,13 @@ public class BlockInteractListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-
-
         }
 
-        Material type = event.getBlockPlaced().getType();
+        manager.addBlock(block.getX(), block.getY(), block.getZ(), BlockTag.ALL.getTag());
+
+
+
+        Material type = block.getType();
         switch (type)       //test if tnt, sponge, chest
         {
             case TNT:
@@ -139,12 +146,6 @@ public class BlockInteractListener implements Listener {
         event.setBuildable(true);
     }
 
-    /*
-    EntityExplodeEvent
-      -> event.getBlocks
-
-      1:
-     */
 
     @EventHandler
     public void onBlockBreak(@NotNull BlockBreakEvent event) {
@@ -180,35 +181,12 @@ public class BlockInteractListener implements Listener {
             if (isBedBroken(block, broke)) {
                 return;
             }
+            else event.setCancelled(true);
         }
-
 
         if (BlockTag.ALL.getTag() != blocks.getTag(block)) {
             event.setCancelled(true);
             whoBroke.sendMessage(ChatColor.RED + "You can't break blocks here!");
-            return;
-        }
-
-
-
-        BattleTeam comparison = null;
-        for (BattleTeam team : arena.getTeams().values()) {
-            Coordinate chest = team.getChest();
-            if (chest.isBlock(arena.getWorld(), block)) {
-                comparison = team;
-                break;
-            }
-        }
-
-        if (comparison == null)
-            return;
-
-        if (comparison.isEliminated())
-            return;
-
-        if (!broke.getTeam().equals(comparison)) {
-            event.setCancelled(true);
-            broke.sendMessage(ChatColor.RED + "You cannot open that chest while " + comparison.getTeamColor().getName() + "is not eliminated!");
         }
     }
 
@@ -223,35 +201,15 @@ public class BlockInteractListener implements Listener {
 
 
         //Attempt to find the team that the bed belonged to.
-        BattleTeam broken = null;
-
-
-        for (BattleTeam team: arena.getTeams().values())
-        {
-            if (team.getBed().containsCoordinate(x,y,z))
-            {
-                broken = team;
-                break;
-            }
-        }
-
-
-        //If we can't find a team that the bed belonged to, send an error message.
-
-
+        BlockTagManager manager = BlockTagManager.get();
+        TeamColor color = manager.toColorFromTag(manager.getTag(block));
+        BattleTeam broken = arena.getTeams().getOrDefault(color.getName(), null);
 
         if (broken == null) {
             sender.sendConsoleMessage(" A bed was broken at "+x+", "+y+", "+z+" ." +
                     "It was registered, but couldn't find a team it belonged to!",Level.WARNING);
             return false;
         }
-
-
-
-        //we need to cancel the event regardless so that putOnLastStand() can work,
-        // or if the player isn't on a team, or if the player isn't alive.
-
-
 
         //If the player tried to break their own bed.
 

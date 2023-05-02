@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty.*;
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName.QUICK_BUY;
@@ -78,6 +79,20 @@ public class QuickBuyInventory extends ShopInventory {
             set.add(new ShopItemSet(ItemHelper.getPackingAssociate(current.getStack()),current.getSlot()));
 
         return set;
+    }
+
+
+    public List<String> getFileEntries() {
+        List<ShopItemSet> packaged = packageInventory();
+        List<String> values = new ArrayList<>();
+
+        String empty = ShopItem.EMPTY_SLOT.name();
+        for (ShopItemSet set: packaged) {
+            if (set == null)
+                values.add(empty);
+            else values.add(set.toString());
+        }
+        return values;
     }
 
     @Override

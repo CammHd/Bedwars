@@ -29,7 +29,7 @@ public class PacketHandler extends ItemHelper
     static HashMap<Integer, UUID> invisiblePlayers;
     private final Arena arena;
     private final ArrayList<ShopKeeper> keepers;
-    private ChatSender sender;
+    private final ChatSender sender;
 
 
     static {
@@ -51,6 +51,8 @@ public class PacketHandler extends ItemHelper
     {
      return channels.containsKey(player.getUniqueId());
     }
+
+
 
     public synchronized void addInvisiblePlayer(Player player)
     {
@@ -78,8 +80,6 @@ public class PacketHandler extends ItemHelper
             @Override
             public void channelRead(ChannelHandlerContext channelHandlerContext, Object o) throws Exception
             {
-
-
 
                 if (o instanceof PacketPlayInUseEntity)
                 {
@@ -292,6 +292,7 @@ public class PacketHandler extends ItemHelper
             }
             catch (RuntimeException e) {
           sender.sendConsoleMessage("Unable to remove "+player.getName()+" from the packet handler", Level.WARNING);
+          e.printStackTrace();
             }
         });
         channels.remove(player.getUniqueId());

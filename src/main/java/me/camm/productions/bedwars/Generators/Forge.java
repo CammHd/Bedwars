@@ -14,7 +14,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
 
@@ -56,10 +55,12 @@ public class Forge implements Runnable {
 
     private static final String FORGE = "FORGE";
 
+    private static int number;
+
     static {
-      //  PICKUP_DISTANCE = 1.5;
         MAX_GOLD = 16;
         MAX_IRON = 48;
+        number = 0;
 
     }
 
@@ -74,9 +75,12 @@ public class Forge implements Runnable {
         this.world = world;
         this.tier = 0;
         this.plugin = plugin;
-        this.type = FORGE;
-        this.pickup = pickup;
 
+        this.type = FORGE+number;
+        number ++;
+
+
+        this.pickup = pickup;
         this.spawnTime = initialTime;
         this.isAlive = true;
         this.id = UUID.randomUUID();
@@ -304,6 +308,7 @@ public class Forge implements Runnable {
                     }
                     catch (InterruptedException e)
                     {
+                        e.printStackTrace();
                         disableForge();
                     }
                 }

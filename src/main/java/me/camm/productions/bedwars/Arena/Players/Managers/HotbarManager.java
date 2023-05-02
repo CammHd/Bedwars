@@ -20,6 +20,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty.HOT_BAR_END;
 import static me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory.*;
 
@@ -165,6 +168,18 @@ public class HotbarManager
     public ItemCategory[] getLayout()
     {
         return layout;
+    }
+
+    public List<String> getFileEntries(){
+        List<String> entries = new ArrayList<>();
+        for (ItemCategory category: getLayout()) {
+            if (category == null) {
+                entries.add(null);
+            }
+            else entries.add(category.toString());
+        }
+        return entries;
+
     }
 
     public void display(Player player) {

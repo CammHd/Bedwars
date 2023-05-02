@@ -88,6 +88,7 @@ public class FileManager
                 writer.write(s + "\n");
             }
         } catch (IOException e) {
+
           return false;
         }
         return true;

@@ -10,7 +10,11 @@ import me.camm.productions.bedwars.Files.TeamFileJsonParser;
 import me.camm.productions.bedwars.Files.WorldDataJsonParser;
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
+import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Validation.BedWarsException;
+import me.camm.productions.bedwars.Validation.CommandPermissionException;
+import me.camm.productions.bedwars.Validation.InitializationException;
+import me.camm.productions.bedwars.Validation.StateException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -70,9 +74,14 @@ public class CommandProcessor {
             throw new InitializationException("Was not able to init the arena! (Check the config)");
 
         BlockTagManager.initialize(arena);
+        GameBoundary.initializeTagManager();
+
+        /////////////////////////////
 
 
         messager.sendMessage("Attempting to register the map. Expect some lag.");
+        final long timeInitial = System.currentTimeMillis();
+
         arena.registerMap();
 
         try {
@@ -88,19 +97,22 @@ public class CommandProcessor {
             //the arena
 
 
-            if (teams==null||teams.size()<=1)
-                throw new InitializationException("The teams are invalid!"+
-                    (teams==null?(" teams are not defined"):(" There must be more than 1 team")));
+            if (teams==null||teams.size()<=1) {
+                throw new InitializationException("The teams are invalid!" +
+                        (teams == null ? (" teams are not defined") : (" There must be more than 1 team")));
+            }
 
-            arena.addTeams(teams);
-            runner = new GameRunner(plugin, arena);
-            arena.registerTeamZones();
+        arena.addTeams(teams);
+        runner = new GameRunner(plugin, arena);
 
+        //check if this.runner was not null.
+        //if it was, then reset the packethandler.
 
+        arena.registerTeamZones();
+        this.runner = runner;
 
-
-                this.runner = runner;
-                return runner;
+        messager.sendMessage("Registered the map! Took "+(System.currentTimeMillis() - timeInitial)+" ms.");
+        return runner;
     }
 
 
@@ -226,6 +238,8 @@ public class CommandProcessor {
     }
 
 
+
+
     /*
      *
      * @param player sender of the command
@@ -255,6 +269,8 @@ public class CommandProcessor {
     }
 
 
+
+
     /*
      * Checks if the player has permission to run a command
      *
@@ -270,35 +286,16 @@ public class CommandProcessor {
         Plugin p = BedWars.getInstance();
         PluginCommand command = p.getServer().getPluginCommand(word.getWord());
         if (command == null)
-            return new PermissionException(ChatColor.RED+"You have no permission!");
+            return new CommandPermissionException(ChatColor.RED+"You have no permission!");
 
 
         String permMessage = command.getPermissionMessage();
-        return new PermissionException(permMessage == null ? ChatColor.RED+"You have no permission!": permMessage);
+        return new CommandPermissionException(permMessage == null ? ChatColor.RED+"You have no permission!": permMessage);
 
     }
+
+
 
 }
 
 
-
-
-
-
-
-class PermissionException extends BedWarsException{
-    public PermissionException(String message){
-        super(message);
-    }
-}
-class InitializationException extends BedWarsException{
-    public InitializationException(String message) {
-        super(message);
-    }
-}
-
-class StateException extends BedWarsException {
-    public StateException(String message) {
-        super(message);
-    }
-}

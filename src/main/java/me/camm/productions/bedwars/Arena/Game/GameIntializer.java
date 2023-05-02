@@ -1,13 +1,13 @@
 package me.camm.productions.bedwars.Arena.Game;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
+
 import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
 import me.camm.productions.bedwars.Arena.Game.Commands.CommandProcessor;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 
-
+import me.camm.productions.bedwars.Validation.BedWarsException;
+import me.camm.productions.bedwars.Validation.CommandException;
+import me.camm.productions.bedwars.Validation.CommandPermissionException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -66,6 +66,7 @@ public class GameIntializer implements CommandExecutor
 
         //if we cannot find a matching word, return
         if (word  == null) {
+            sender.sendMessage(command.getUsage());
             return false;
         }
 
@@ -89,8 +90,6 @@ public class GameIntializer implements CommandExecutor
                         arena.unregisterMap();
                     }
 
-
-
                     runner = processor.initRunner(sender, plugin);
                     arena = runner.getArena();
                     break;
@@ -111,14 +110,23 @@ public class GameIntializer implements CommandExecutor
                   processor.unregister(sender);
                     break;
 
-                case END:
-                 processor.manualEndGame(sender);
-                    break;
             }
         }
+        catch (CommandPermissionException e) {
+            sender.sendMessage(command.getPermissionMessage());
+            sender.sendMessage("You require permission node: "+command.getPermission());
+        }
+        catch (CommandException e) {
+                sender.sendMessage(e.getMessage());
+        }
+        catch (BedWarsException e) {
+            sender.sendMessage(ChatColor.RED+e.getMessage());
+            messager.sendConsoleMessage(e.getMessage(),Level.WARNING);
+        }
         catch (Exception e) {
-                messager.sendConsoleMessage(e.getMessage(), Level.WARNING);
-                e.printStackTrace();
+            sender.sendMessage(ChatColor.RED+"Error occurred trying to execute command \""+label+"\". Check the console for more info.");
+            messager.sendConsoleMessage(e.getMessage(),Level.WARNING);
+            e.printStackTrace();
         }
         return true;
     }

@@ -65,7 +65,7 @@ public class GameRunner
     These are the classes with the listeners.
      */
     private BlockInteractListener blockListener;
-    private ItemUseListener itemListener;
+    private PlayerInteractListener itemListener;
     private ExplosionHandler explosionListener;
     private ItemListener droppedListener;
     private EntityActionListener.LocationManager npcManager;
@@ -216,13 +216,7 @@ public class GameRunner
 
         //updating the team statuses for the players after we decide which ones are eliminated, etc
         TeamHelper.updateTeamBoardStatus(registered);
-
-
-
-        //Initiating the listeners
         initListeners();
-
-
         start();
 
 
@@ -230,12 +224,15 @@ public class GameRunner
 
     public void initListeners(){
 
+
+        blockListener = new BlockInteractListener(plugin, arena);
         droppedListener = new ItemListener(arena);
         mobSpawnListener = new MobSpawnListener();
-        damageListener = new EntityActionListener(arena,plugin,this);
-        blockListener = new BlockInteractListener(plugin, arena);
-        explosionListener = new ExplosionHandler(plugin, arena,damageListener);
-        itemListener = new ItemUseListener(plugin,arena,packetHandler,damageListener);
+
+       damageListener = new EntityActionListener(arena,plugin,this);
+       explosionListener = new ExplosionHandler(plugin, arena,damageListener);
+        itemListener = new PlayerInteractListener(plugin,arena,packetHandler,damageListener);
+
         projectileListener = new ProjectileListener(plugin, arena, damageListener);
 
 
@@ -244,7 +241,6 @@ public class GameRunner
         for (Listener listener: handlers) {
             manager.registerEvents(listener, plugin);
         }
-
 
         for (BattlePlayer player: registered)
         {

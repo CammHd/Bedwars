@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -31,7 +32,7 @@ public class BlockTagManager {
    public static BlockTagManager get(){
 
        if (arena == null)
-           throw new IllegalStateException();
+           throw new IllegalStateException("Arena was not init before the BlockTagManager!");
 
         if (helper == null)
          helper = new BlockTagManager();
@@ -100,7 +101,7 @@ public class BlockTagManager {
 
 
 
-    public static void initialize(Arena gameArena){
+    public static void initialize(@NotNull Arena gameArena){
        arena = gameArena;
     }
 
@@ -340,7 +341,7 @@ public class BlockTagManager {
     }
 
 
-/**
+/*
 @pre a check has been done to see if the block has a tag
  */
     public byte getTag(int x, int y, int z)

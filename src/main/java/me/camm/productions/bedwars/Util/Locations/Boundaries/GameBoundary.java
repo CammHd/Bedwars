@@ -2,10 +2,8 @@ package me.camm.productions.bedwars.Util.Locations.Boundaries;
 
 
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
-import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.Locations.RegisterType;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,17 +13,16 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 
 public class GameBoundary extends Boundary<Integer>
 {
     private Integer[] bounds;
     private final Random rand;
-    private static ChatSender sender;
-    private final BlockTagManager blockTagManager;
-    public static ConcurrentMap<Long, Byte> blocks = new ConcurrentHashMap<>(1000);
+
+    private static BlockTagManager blockTagManager;
+  //  public static ConcurrentMap<Long, Byte> blocks = new ConcurrentHashMap<>(1000); //block tag manager class deals with this
+
 
     public GameBoundary(Integer[] bounds) {
         this.bounds = bounds;
@@ -33,8 +30,25 @@ public class GameBoundary extends Boundary<Integer>
         analyze();
         reArrange();
         dissectArray();
-        sender = ChatSender.getInstance();
-       blockTagManager = BlockTagManager.get();
+     //   sender = ChatSender.getInstance();
+        //the blockTagmanager should be initialized externally.
+        //the arena requires boundaries, but the boundaries require an arena for the blocktagmanager.
+        //initialize the tag manager when boundaries after arena is constructed, but before they are used.
+
+    }
+
+
+    /*
+
+    Sets the blocktagmanager variable for all boundaries.
+    @pre: The arena must be constructed first and initialized in the BlockTagManager class
+    with BlockTagManager.initialize(Arena gameArena)
+
+    This method should be called before any operations involving the boundaries are done
+    and after the arena is init
+     */
+    public static void initializeTagManager(){
+        blockTagManager = BlockTagManager.get();
     }
 
 
@@ -107,6 +121,7 @@ public class GameBoundary extends Boundary<Integer>
     @SuppressWarnings("deprecation")
     public void replace(Material replacement, Material toReplace, byte[] toReplaceData, World world)
     {
+
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
                 for (int z = z1; z <= z2; z++) {
@@ -163,8 +178,6 @@ public class GameBoundary extends Boundary<Integer>
             }
         }
     }
-
-    //todo Fix Memory Leak
 
     public void register(World world, byte tag, RegisterType type) {
         if(type == RegisterType.EVERYTHING)
@@ -249,6 +262,7 @@ public class GameBoundary extends Boundary<Integer>
     //registering all materials except for that provided, and air
 
 
+    @Deprecated //need to update to be compatible with new metadata system
     public void unregister(World world, String type, Plugin plugin) {
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
@@ -258,7 +272,7 @@ public class GameBoundary extends Boundary<Integer>
                 }
             }
         }
-        sendUnregistry(type);
+        //sendUnregistry(type);
 
     }
 
@@ -277,16 +291,6 @@ public class GameBoundary extends Boundary<Integer>
     {
         Location loc = entity.getLocation();
         return (x1<= loc.getX() && loc.getX()<=x2) && (y1<= loc.getY() && loc.getY() <=y2) && (z1<= loc.getZ() && loc.getZ() <=z2);
-    }
-
-    private void sendInfo(String type)
-    {
-        sender.sendMessage(ChatColor.YELLOW + "[MAP REGISTER] Registered Zone from (x1=" + x1 + ",y1=" + y1 + ",z1=" + z1 + ") to (x2=" + x2 + ",y2=" + y2 + ",z2=" + z2 + ") with " + type);
-    }
-
-
-    private void sendUnregistry(String type) {
-        sender.sendMessage(ChatColor.YELLOW + "[MAP REGISTER] Unregistered Zone from (x1=" + x1 + ",y1=" + y1 + ",z1=" + z1 + ") to (x2=" + x2 + ",y2=" + y2 + ",z2=" + z2 + ") from " + type);
     }
 
     public Integer[] getValues() {

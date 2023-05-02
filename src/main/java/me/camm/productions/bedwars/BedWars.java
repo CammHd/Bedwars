@@ -26,12 +26,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public final class BedWars extends JavaPlugin
@@ -113,13 +112,11 @@ public final class BedWars extends JavaPlugin
         try {
             replaceClass(dragon, DRAGON_NAME, DRAGON_ID);
 
-
             if (initialization == null)
                 return;
 
             if (initialization.getArena() == null)
                 return;
-
 
             if (initialization.getRunner() == null)
                 return;
@@ -156,7 +153,6 @@ public final class BedWars extends JavaPlugin
                 }
             }
 
-
             Arena arena = initialization.getArena();
             writeToFiles(arena);
 
@@ -173,38 +169,35 @@ public final class BedWars extends JavaPlugin
     }
 
 
-    private void writeToFiles(Arena arena) {
+    private void writeToFiles(Arena arena) throws IOException {
         Collection<BattlePlayer> registered = arena.getPlayers().values();
+        ChatSender sender = ChatSender.getInstance();
 
         //writing to bar file
         for (BattlePlayer bp: registered) {
 
+            File[] playerFiles = FileManager.getPlayerFiles(bp.getRawPlayer());
             HotbarManager barManager = bp.getBarManager();
+            String name = bp.getRawPlayer().getName();
             if (barManager != null) {
-                ItemCategory[] barItems = barManager.getLayout();
-
-
-                GameFileWriter barWriter = new GameFileWriter(StringHelper.getHotBarPath(bp.getRawPlayer()), this);
-                barWriter.clear();
-                ArrayList<String> valueList = new ArrayList<>();
-
-                Arrays.stream(barItems).forEach(item -> valueList.add(
-                        item == null ? null : item.toString()));
-                barWriter.write(valueList, false);
+                List<String> barEntries = barManager.getFileEntries();
+               boolean success = FileManager.write(barEntries, false, playerFiles[1]);
+               if (!success)
+                   sender.sendConsoleMessage("Could not write hot bar manager data for player "
+                           +name+". Skipping.",Level.WARNING);
             }
-
 
             //writing to shop file
             PlayerInventoryManager invManager = bp.getShopManager();
-            if (invManager!=null) {
+            if (invManager != null) {
                 QuickBuyInventory playerShop = invManager.getQuickBuy();
-                ArrayList<ShopItemSet> shopSet = playerShop.packageInventory();
+                List<String> inventoryData = playerShop.getFileEntries();
+               boolean success = FileManager.write(inventoryData, false, playerFiles[0]);
 
-                GameFileWriter shopWriter = new GameFileWriter(StringHelper.getInventoryPath(bp.getRawPlayer()), this);
-                shopWriter.clear();
-                ArrayList<String> shopList = new ArrayList<>();
-                shopSet.forEach(pack -> shopList.add(pack == null ? ShopItem.EMPTY_SLOT.name() : pack.toString()));
-                shopWriter.write(shopList, false);
+                if (!success)
+                    sender.sendConsoleMessage("Could not write quick buy customization data for player "
+                            +name+". Skipping.",Level.WARNING);
+
             }
         }
     }

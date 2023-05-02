@@ -12,6 +12,7 @@ import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 
 import me.camm.productions.bedwars.Util.PacketSound;
 import me.camm.productions.bedwars.Validation.BedWarsException;
+import me.camm.productions.bedwars.Validation.CommandException;
 import me.camm.productions.bedwars.Validation.RegistrationException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -202,7 +203,7 @@ public class Arena
   public void registerMap() throws BedWarsException
   {
       if (isRegistering())
-          throw new RegistrationException("Concurrent request for set up. The arena is already doing so!");
+          throw new CommandException("Concurrent request for set up. The arena is already doing so!");
 
       final long time = System.currentTimeMillis();
 
