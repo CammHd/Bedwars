@@ -110,6 +110,10 @@ public class GameIntializer implements CommandExecutor
                   processor.unregister(sender);
                     break;
 
+                case END:
+                    processor.manualEndGame(sender);
+                    break;
+
             }
         }
         catch (CommandPermissionException e) {
