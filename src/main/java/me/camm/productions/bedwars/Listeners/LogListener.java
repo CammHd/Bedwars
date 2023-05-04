@@ -68,7 +68,8 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
         Map<UUID,BattlePlayer> registeredPlayers = arena.getPlayers();
 
         if (packetHandler!=null) {
-            if (packetHandler.contains(event.getPlayer()))
+            System.out.println("in log listener logout - uuid="+packetHandler.getArena().getDebugUUID());
+            if (packetHandler.channelsContains(event.getPlayer()))
                 packetHandler.removePlayer(event.getPlayer());
         }
 
@@ -179,12 +180,6 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
                 current.handlePlayerIntoSpectator(packetHandler,true);
             else
                 current.handlePlayerRespawn(packetHandler);
-
-        }
-
-        if (arena.isSpent()) {
-            current.sendMessage(ChatColor.YELLOW+"The game is over.");
-            return;
         }
 
         current.getRawPlayer().setScoreboard(arena.getHealthBoard());  //refreshing the board.
@@ -196,7 +191,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
             return;
 
 
-        if (packetHandler.contains(player)) {
+        if (packetHandler.channelsContains(player)) {
             packetHandler.removePlayer(player);
         }
         packetHandler.addPlayer(player);

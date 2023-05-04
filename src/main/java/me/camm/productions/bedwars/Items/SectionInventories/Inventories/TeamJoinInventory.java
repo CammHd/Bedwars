@@ -54,7 +54,7 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
         init();
     }
 
-    @SuppressWarnings("deprecration")
+    @SuppressWarnings("deprecation")
     private void init(){
         int slot = 0;
         for (BattleTeam currentTeam: teams)
@@ -83,7 +83,7 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
     }
 
     public void operate(InventoryClickEvent event) {
-       boolean cancel =  InventoryOperationHelper.triedToPlaceIn(event, this);
+       boolean cancel = InventoryOperationHelper.triedToPlaceIn(event, this);
 
         if (cancel)
             event.setCancelled(true);
@@ -104,6 +104,12 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
   */
     private void registerToTeam(InventoryClickEvent event) throws IOException
     {
+
+        System.out.println("tjInv adding player to team uuid="+arena.getDebugUUID());
+
+
+
+
         Inventory inv = event.getClickedInventory();
         HumanEntity player = event.getWhoClicked();
         Map<UUID, BattlePlayer> registeredPlayers = arena.getPlayers();

@@ -81,7 +81,6 @@ public class InventoryListener implements Listener {
         IGameInventory gameInventory = monitors.getOrDefault(clicked.hashCode(), null);
 
 
-
         if (gameInventory == null) {
          InventoryOperationHelper.handleDefaultRestrictions(event, arena);
         }

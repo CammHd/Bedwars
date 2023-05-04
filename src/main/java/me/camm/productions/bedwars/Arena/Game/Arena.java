@@ -59,7 +59,7 @@ public class Arena
 
 
   private volatile boolean settingUp;
-  boolean spent;
+
 
 
 
@@ -82,6 +82,11 @@ public class Arena
     private IGameInventory chatInv;
     private IGameInventory selectionInv;
 
+    private final UUID debug;
+
+    public UUID getDebugUUID(){
+        return debug;
+    }
 
 
     /*
@@ -97,13 +102,15 @@ public class Arena
   public Arena(GameBoundary bounds, Coordinate spectatorSpawn, int voidLevel, World world, Plugin plugin)
   {
 
+      debug = UUID.randomUUID();
+      System.out.println("created new arena with uuid "+debug);
 
       chatInv = new QuickChatInventory(this);
       selectionInv = new ActionSelectionInventory(this);
 
       sender = ChatSender.getInstance();
       settingUp = false;
-      spent = false;
+
       playerAssignment = 0;
       this.bounds = bounds;
       this.voidLevel = voidLevel;
@@ -234,15 +241,12 @@ public class Arena
 
      for (BattleTeam team:  teams.values()) {
          team.unregisterBase();
-         team.empty();
      }
-     spent = true;
+
 
   }
 
-  public boolean isSpent(){
-      return spent;
-  }
+
 
   //registers the zones for the teams
   public void registerTeamZones()

@@ -24,7 +24,7 @@ import java.util.logging.Level;
  This class is used to set-up parameters for the game.
  @author CAMM
  */
-public class GameIntializer implements CommandExecutor
+public class GameInitializer implements CommandExecutor
 {
     private final Plugin plugin;
     private static Arena arena;
@@ -34,7 +34,7 @@ public class GameIntializer implements CommandExecutor
     private final HashMap<String, CommandKeyword> words;
 
     //construct
-    public GameIntializer(Plugin plugin)
+    public GameInitializer(Plugin plugin)
     {
 
        this.plugin = plugin;
@@ -48,6 +48,12 @@ public class GameIntializer implements CommandExecutor
            words.put(word.getWord(),word);
 
 
+    }
+
+    public void reset(){
+        arena = null;
+        runner = null;
+        this.processor = new CommandProcessor();
     }
 
     @Override
@@ -90,8 +96,9 @@ public class GameIntializer implements CommandExecutor
                         arena.unregisterMap();
                     }
 
-                    runner = processor.initRunner(sender, plugin);
+                    runner = processor.initRunner(sender, plugin,this);
                     arena = runner.getArena();
+                    System.out.println("setting up the arena uuid="+arena.getDebugUUID());
                     break;
 
                 case SHOUT:

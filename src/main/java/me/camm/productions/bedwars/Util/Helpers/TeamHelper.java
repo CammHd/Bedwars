@@ -35,4 +35,12 @@ public class TeamHelper
             board.switchPrimaryBuffer();
         }
     }
+
+    public static boolean allTeamsEliminated(Collection<BattleTeam> teams){
+        for (BattleTeam team: teams) {
+            if (!team.isEliminated())
+                return false;
+        }
+        return true;
+    }
 }

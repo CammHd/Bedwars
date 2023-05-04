@@ -73,10 +73,7 @@ public class GameRunner
     private EntityActionListener damageListener;
     private LogListener playerLogListener;
     private ProjectileListener projectileListener;
-
-
     private InventoryListener invListener;
-
 
     private ExecutableBoundaryLoader boundaryLoader;
     private PlayerTrackerManager trackerManager;
@@ -89,11 +86,14 @@ public class GameRunner
 
     private final ChatSender sender;
 
+    private final GameInitializer initializer;
+
 
     //constructor
-    public GameRunner(Plugin plugin, Arena arena)
+    public GameRunner(Plugin plugin, Arena arena, GameInitializer initializer)
     {
         this.plugin = plugin;
+        this.initializer = initializer;
         this.arena = arena;
         sender = ChatSender.getInstance();
         registered = null;
@@ -154,6 +154,8 @@ public class GameRunner
      */
     public void prepareAndStart()
     {
+
+        System.out.println("Preparing and starting: uuid="+arena.getDebugUUID());
 
         //the registered players won't change during the game since you cannot unregister/register,
         //so doing .values() to transfer the info to a collection is fine.
@@ -251,7 +253,7 @@ public class GameRunner
         for (BattlePlayer player: registered)
         {
             player.instantiateConfig(isInflated);
-            if (!packetHandler.contains(player.getRawPlayer()))
+            if (!packetHandler.channelsContains(player.getRawPlayer()))
                 packetHandler.addPlayer(player.getRawPlayer());
         }
 
@@ -472,14 +474,16 @@ as a string.
      */
     public void attemptEndGame(){
 
-
-
         if (!isRunning)
             return;
 
-        BattleTeam candidate = TeamHelper.isVictorFound(arena.getTeams().values());
+        Collection<BattleTeam> teams = arena.getTeams().values();
+        BattleTeam candidate = TeamHelper.isVictorFound(teams);
                 if (candidate!=null)
                     this.endGame(candidate);
+                else if (TeamHelper.allTeamsEliminated(teams))
+                    this.endGame(null);
+
         TeamHelper.updateTeamBoardStatus(registered);
     }
 
@@ -505,12 +509,6 @@ as a string.
         boundaryLoader.stop();
         trackerManager.setRunning(false);
 
-        for (BattleTeam team : teams) {
-            team.getForge().disableForge();
-            team.getTeamQuickBuy().removeNPC();
-            team.getTeamGroupBuy().removeNPC();
-
-        }
 
 
         if (candidate!=null) {
@@ -540,14 +538,22 @@ as a string.
             player.removeInvisibilityEffect();
 
 
-
-
             for (Player possiblyHidden: Bukkit.getOnlinePlayers()) {
                 player.getRawPlayer().showPlayer(possiblyHidden);
             }
         }
 
+        for (BattleTeam team : teams) {
+            team.getForge().disableForge();
+            team.getTeamQuickBuy().removeNPC();
+            team.getTeamGroupBuy().removeNPC();
+            team.empty();
 
+        }
+
+
+        packetHandler.clearEntries();
+        initializer.reset();
     }
 
 

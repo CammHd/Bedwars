@@ -725,7 +725,8 @@ public class BattlePlayer
     public void handlePlayerFirstSpawn()
     {
         player.getInventory().clear();
-
+        player.setFlying(false);
+        player.setAllowFlight(false);
         setSurvival();
         setEliminated(false);
         team.teleportToBase(player);
@@ -773,6 +774,9 @@ public class BattlePlayer
         player.setFireTicks(0);
         player.setRemainingAir(300);
         player.setFoodLevel(20);
+
+        ((CraftPlayer)player).getHandle().removeAllEffects();
+
     }
 
     /*
@@ -942,6 +946,11 @@ public class BattlePlayer
             fieldC.set(packet, score);
             fieldD.set(packet,PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE);
 
+            fieldA.setAccessible(false);
+            fieldB.setAccessible(false);
+            fieldC.setAccessible(false);
+            fieldD.setAccessible(false);
+
             return packet;
         }
         catch (Exception e)
@@ -1034,7 +1043,7 @@ public class BattlePlayer
         TieredItem prevUpgrade = ItemHelper.getNextTier(pickCloned);
         TieredItem currentUpgrade = ItemHelper.getNextTier(pick);
 
-        shopManager.replaceItem(prevUpgrade == null ? pick.getItem(): prevUpgrade.getItem(),currentUpgrade == null ? pick.getItem() : currentUpgrade.getItem());
+        shopManager.replaceItem(prevUpgrade == null ? pick.getItem(): prevUpgrade.getItem(), currentUpgrade == null ? pick.getItem() : currentUpgrade.getItem());
 
     }
 

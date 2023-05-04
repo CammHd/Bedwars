@@ -1,6 +1,7 @@
 package me.camm.productions.bedwars.Arena.Game.Commands;
 
 import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Arena.Game.GameInitializer;
 import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
@@ -46,6 +47,8 @@ public class CommandProcessor {
         messager = ChatSender.getInstance();
     }
 
+
+
     /*
      *
      * @param sender commandsender
@@ -53,7 +56,7 @@ public class CommandProcessor {
      * @return a game runner
      * @throws BedWarsException if the sender has no perms, or if a problem occurred
      */
-    public GameRunner initRunner(CommandSender sender, Plugin plugin) throws Exception {
+    public GameRunner initRunner(CommandSender sender, Plugin plugin, GameInitializer initializer) throws Exception {
 
         //make sure they have the permission
         if (noPermission(sender, SETUP))
@@ -103,7 +106,7 @@ public class CommandProcessor {
             }
 
         arena.addTeams(teams);
-        runner = new GameRunner(plugin, arena);
+        runner = new GameRunner(plugin, arena, initializer);
 
         //check if this.runner was not null.
         //if it was, then reset the packethandler.
@@ -226,7 +229,7 @@ public class CommandProcessor {
             throw getPermException(REGISTER);
 
         if (runner==null)
-            throw new StateException(ChatColor.RED+"The arena is not setup!");
+            throw new StateException(ChatColor.RED+"The arena is not set up! Please do /setup first!");
 
         if (runner.getArena().isRegistering())
             throw new StateException(ChatColor.RED+"The arena is still in the process of registering zones!");
@@ -256,11 +259,11 @@ public class CommandProcessor {
             throw getPermException(UNREGISTER);
 
         if (runner == null) {
-            throw new StateException(ChatColor.RED+"The arena is not set up!");
+            throw new StateException(ChatColor.RED+"The arena is not set up! Please do /setup first!");
         }
 
         if (runner.isRunning()){
-            throw new StateException(ChatColor.RED+"The game is running! You can't unregister now!");
+            throw new StateException(ChatColor.RED+"You can't unregister while the game is running!");
         }
 
          runner.unregisterPlayer(p);

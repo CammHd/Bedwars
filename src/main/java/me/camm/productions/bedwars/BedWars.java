@@ -2,21 +2,16 @@ package me.camm.productions.bedwars;
 
 import me.camm.productions.bedwars.Arena.Game.Arena;
 import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
-import me.camm.productions.bedwars.Arena.Game.GameIntializer;
+import me.camm.productions.bedwars.Arena.Game.GameInitializer;
 import me.camm.productions.bedwars.Arena.Game.GameRunner;
 import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
 import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
 import me.camm.productions.bedwars.Listeners.PacketHandler;
 import me.camm.productions.bedwars.Files.FileManager;
-import me.camm.productions.bedwars.Files.GameFileWriter;
-import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuyInventory;
-import me.camm.productions.bedwars.Util.DataSets.ShopItemSet;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
-import me.camm.productions.bedwars.Util.Helpers.StringHelper;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -35,7 +30,7 @@ import java.util.logging.Level;
 
 public final class BedWars extends JavaPlugin
 {
-    private GameIntializer initialization;
+    private GameInitializer initialization;
     private final String DRAGON_NAME = "EnderDragon";
     private final int DRAGON_ID = 63;
     private final Class<? extends Entity> gameDragon = GameDragon.class;
@@ -62,7 +57,7 @@ public final class BedWars extends JavaPlugin
 
            replaceClass(gameDragon, DRAGON_NAME, DRAGON_ID);
 
-           initialization = new GameIntializer(this);
+           initialization = new GameInitializer(this);
 
            for (CommandKeyword word : CommandKeyword.values()) {
                getCommand(word.getWord()).setExecutor(initialization);
