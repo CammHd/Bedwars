@@ -1,19 +1,19 @@
 package me.camm.productions.bedwars.Util.Randoms;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
 //@author CAMM
 public class WeightedRandom<T extends WeightedItem<?>>
 {
-    private final ArrayList<T> items;
+    private final List<T> items;
     private final static Random rand;
 
     static{
         rand = new Random();
     }
-    public WeightedRandom(ArrayList<T> items)
+    public WeightedRandom(List<T> items)
     {
         this.items = items;
         if (items == null || items.size() == 0)

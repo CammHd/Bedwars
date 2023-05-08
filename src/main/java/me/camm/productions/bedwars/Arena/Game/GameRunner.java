@@ -6,6 +6,7 @@ import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
 import me.camm.productions.bedwars.Arena.Players.Managers.PlayerTrackerManager;
 import me.camm.productions.bedwars.Arena.Players.Scoreboards.PlayerBoard;
 import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
+import me.camm.productions.bedwars.Generators.Forge;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
 import me.camm.productions.bedwars.Listeners.PacketHandler;
 import me.camm.productions.bedwars.Entities.ShopKeeper;
@@ -16,6 +17,7 @@ import me.camm.productions.bedwars.Util.Locations.Boundaries.ExecutableBoundaryL
 import me.camm.productions.bedwars.Util.Helpers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -155,7 +157,7 @@ public class GameRunner
     public void prepareAndStart()
     {
 
-        System.out.println("Preparing and starting: uuid="+arena.getDebugUUID());
+
 
         //the registered players won't change during the game since you cannot unregister/register,
         //so doing .values() to transfer the info to a collection is fine.
@@ -534,8 +536,11 @@ as a string.
             Player raw = player.getRawPlayer();
             raw.setAllowFlight(true);
             raw.setFlying(true);
+            raw.setCanPickupItems(true);
+            ((CraftPlayer)raw).getHandle().collidesWithEntities = true;
             packetHandler.removePlayer(raw);
             player.removeInvisibilityEffect();
+
 
 
             for (Player possiblyHidden: Bukkit.getOnlinePlayers()) {
@@ -544,7 +549,7 @@ as a string.
         }
 
         for (BattleTeam team : teams) {
-            team.getForge().disableForge();
+            team.getForge().stopForge();
             team.getTeamQuickBuy().removeNPC();
             team.getTeamGroupBuy().removeNPC();
             team.empty();

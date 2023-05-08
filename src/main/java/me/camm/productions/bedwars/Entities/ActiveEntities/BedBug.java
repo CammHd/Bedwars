@@ -116,7 +116,7 @@ public class BedBug implements ILifeTimed
                 TARGET:
                 {
                     if (bug.getTarget()!=null&&target!=null) {
-                        if (bug.getTarget().equals(target.getRawPlayer()) && target.getIsAlive())
+                        if (bug.getTarget().equals(target.getRawPlayer()) && target.isAlive())
                          break TARGET;
                     }
                     bug.setTarget(null);
@@ -125,7 +125,7 @@ public class BedBug implements ILifeTimed
 
 
                     for (BattlePlayer player : players) {
-                        if (!player.getIsAlive())
+                        if (!player.isAlive())
                             continue;
 
                         if (player.getTeam().equals(team))

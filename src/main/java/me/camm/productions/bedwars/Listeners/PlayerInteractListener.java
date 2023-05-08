@@ -156,8 +156,6 @@ public class PlayerInteractListener implements Listener
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event) {
 
-         //issue is here.
-
         Map<UUID, BattlePlayer> players = arena.getPlayers();
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand();
@@ -173,7 +171,7 @@ public class PlayerInteractListener implements Listener
         BattlePlayer currentPlayer = players.get(player.getUniqueId());
 
 
-        if(currentPlayer.getIsEliminated())
+        if(currentPlayer.isEliminated())
         {
             event.setCancelled(true);
             return;
@@ -186,9 +184,8 @@ public class PlayerInteractListener implements Listener
 
 
         Material mat = block.getType();
-        if (mat == Material.WORKBENCH) {
+        if (mat == Material.WORKBENCH || mat == Material.BED_BLOCK) {
             event.setCancelled(true);
-          //  return;
         }
 
 
@@ -327,7 +324,7 @@ public class PlayerInteractListener implements Listener
 
         Entity clicked = event.getRightClicked();
         Player player = event.getPlayer();
-        if (clicked.getType()!= EntityType.ARMOR_STAND)
+        if (clicked.getType()!= EntityType.ARMOR_STAND && clicked.getType() != EntityType.PLAYER)
         {
             if (player.getInventory().getItemInHand().getType()==Material.FIREBALL&&isRegistered(player)) {
                 event.setCancelled(true);

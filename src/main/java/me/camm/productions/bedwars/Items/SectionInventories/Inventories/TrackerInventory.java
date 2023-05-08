@@ -40,7 +40,7 @@ public class TrackerInventory extends InventoryOptionable {
                 continue;
 
 
-            if (team.doesBedExist())
+            if (team.getBedExists())
             {
                 allBroken = false;
                 break;

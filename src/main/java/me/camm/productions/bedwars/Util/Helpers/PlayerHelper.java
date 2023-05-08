@@ -17,7 +17,7 @@ public class PlayerHelper {
             String entry = team.getDisplayScoreboardEntry();
             if (team.isEliminated())
                 previousName = entry + " " + TEAM_DEAD.getPhrase();
-            else if (!team.doesBedExist())
+            else if (!team.getBedExists())
                 previousName = entry + " " + team.getRemainingPlayers();
             else
                 previousName = entry + " " + TEAM_ALIVE.getPhrase();

@@ -84,7 +84,7 @@ public class DreamDefender implements ILifeTimed
                 {
 
                     if (golem.getTarget()!=null && target != null) {
-                        if (golem.getTarget().equals(target.getRawPlayer()) && target.getIsAlive())
+                        if (golem.getTarget().equals(target.getRawPlayer()) && target.isAlive())
                             break TARGET;
                     }
                     target = null;
@@ -94,7 +94,7 @@ public class DreamDefender implements ILifeTimed
 
 
                     for (BattlePlayer player : players) {
-                        if (!player.getIsAlive())
+                        if (!player.isAlive())
                             continue;
 
                         if (player.getTeam().equals(team))

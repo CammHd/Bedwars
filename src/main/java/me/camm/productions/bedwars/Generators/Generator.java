@@ -113,10 +113,6 @@ public class Generator
             loaded.load();
 
 
-
-
-
-
         switch (genType)
         {
             case DIAMOND:

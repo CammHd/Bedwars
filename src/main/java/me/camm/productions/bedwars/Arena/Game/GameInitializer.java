@@ -5,14 +5,13 @@ import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
 import me.camm.productions.bedwars.Arena.Game.Commands.CommandProcessor;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 
-import me.camm.productions.bedwars.Validation.BedWarsException;
-import me.camm.productions.bedwars.Validation.CommandException;
-import me.camm.productions.bedwars.Validation.CommandPermissionException;
+import me.camm.productions.bedwars.Exceptions.BedWarsException;
+import me.camm.productions.bedwars.Exceptions.CommandException;
+import me.camm.productions.bedwars.Exceptions.CommandPermissionException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import org.bukkit.plugin.Plugin;
 
@@ -60,12 +59,6 @@ public class GameInitializer implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
 
-        //make sure the sender is a player
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED+"Must be a player to use this command.");
-            return true;
-        }
-
         //try to get the enum value from the label.
         label = label.toLowerCase().trim();
         CommandKeyword word = words.getOrDefault(label, null);
@@ -98,7 +91,6 @@ public class GameInitializer implements CommandExecutor
 
                     runner = processor.initRunner(sender, plugin,this);
                     arena = runner.getArena();
-                    System.out.println("setting up the arena uuid="+arena.getDebugUUID());
                     break;
 
                 case SHOUT:
@@ -106,7 +98,8 @@ public class GameInitializer implements CommandExecutor
                     break;
 
                 case REGISTER:
-                    processor.registerPlayer((Player)sender);
+
+                    processor.registerPlayer(sender);
                     break;
 
                 case START:

@@ -9,7 +9,7 @@ import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import me.camm.productions.bedwars.Util.Helpers.TeamHelper;
-import me.camm.productions.bedwars.Validation.RegistrationException;
+import me.camm.productions.bedwars.Exceptions.RegistrationException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryCustom;
@@ -105,11 +105,6 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
     private void registerToTeam(InventoryClickEvent event) throws IOException
     {
 
-        System.out.println("tjInv adding player to team uuid="+arena.getDebugUUID());
-
-
-
-
         Inventory inv = event.getClickedInventory();
         HumanEntity player = event.getWhoClicked();
         Map<UUID, BattlePlayer> registeredPlayers = arena.getPlayers();
@@ -170,7 +165,7 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
         else  // If they were not in the team before.
         {
             BattleTeam team = arena.getTeams().get(name);
-            currentPlayer = new BattlePlayer((Player) event.getWhoClicked(), team, arena, arena.assignPlayerNumber());
+            currentPlayer = new BattlePlayer((Player) event.getWhoClicked(), team, arena);
             //Since the player board is initialized before the player joins, we get the incorrect amount of players on the team initially.
 
             boolean isAdded = team.addPlayer(currentPlayer);

@@ -121,7 +121,7 @@ public final class BedWars extends JavaPlugin
             runner.setRunning(false);
             initialization.getArena().getTeams().forEach((string, team) -> {
                 if (team != null && team.getForge() != null)
-                    team.getForge().disableForge();
+                    team.getForge().stopForge();
             });
             PacketHandler handler = runner.getPacketHandler();
 

@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import org.bukkit.inventory.ItemStack;
-
+import org.bukkit.metadata.MetadataValue;
 
 
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import java.util.UUID;
 public class ItemListener implements Listener
 {
     private final Arena arena;
-    private final HashMap<String, Forge> forges;
+    private final HashMap<Integer, Forge> forges;
 
     public ItemListener(Arena arena)
     {
@@ -44,7 +44,7 @@ public class ItemListener implements Listener
 
         for (BattleTeam team: arena.getTeams().values()) {
             Forge forge = team.getForge();
-            forges.put(forge.getId().toString(),forge);
+            forges.put(forge.getId(),forge);
         }
     }
 
@@ -73,69 +73,73 @@ public class ItemListener implements Listener
         Map<UUID, BattlePlayer> players = arena.getPlayers();
         UUID id = event.getPlayer().getUniqueId();
 
+        BattlePlayer initiator = players.getOrDefault(id,null);
 
-        if (!players.containsKey(id))
+        if (initiator == null)
             return;
 
-        BattlePlayer player = players.get(id);
-
-            if (!player.getIsAlive() || player.getIsEliminated())
-            {
+        if (!initiator.isAlive() || initiator.isEliminated()) {
                 event.setCancelled(true);
                 return;
-            }
+        }
 
-            String name = event.getItem().getName();
-            ItemStack picked = event.getItem().getItemStack().clone();
-
-
+            ItemStack picked = event.getItem().getItemStack();
             if (ItemHelper.isItemInvalid(picked))
                 return;
 
             TieredItem tiered = ItemHelper.isTieredItem(ItemHelper.getAssociate(picked));
 
-
             if (tiered != null)
             {
                 if (ItemHelper.isSword(tiered.getItem())) {
-                    ItemHelper.clearAll(ShopItem.WOODEN_SWORD.sellMaterial,player.getRawPlayer().getInventory());
+                    ItemHelper.clearAll(ShopItem.WOODEN_SWORD.sellMaterial,initiator.getRawPlayer().getInventory());
+                    return;
                 }
-
             }
-            else if (ItemHelper.isCurrencyItem(picked))
-            {
 
-                Location loc = player.getTeam().getForge().getForgeLocation();
-                double distanceSquared = player.getTeam().getForge().getDistance();
-                distanceSquared *= distanceSquared;
+            if (!ItemHelper.isCurrencyItem(picked)) {
+                return;
+            }
 
                 Item pickup = event.getItem();
                 if (!pickup.hasMetadata(Forge.getKeyword()))
                     return;
 
-                Forge forge = null;
-                if (name != null) {
-                    forge = forges.getOrDefault(name, null);
+                Forge pickupForge = null;
+                for (MetadataValue value: pickup.getMetadata(Forge.getKeyword())) {
+                    if (!(value.value() instanceof Integer))
+                        continue;
+                    pickupForge = forges.getOrDefault((Integer)value.value(),null);
                 }
 
-                if (forge != null)
-                    forge.updateChildren(picked.getType(),picked.getAmount());
+                if (pickupForge == null) {
+                    return;
+                }
 
-                for (BattlePlayer current : player.getTeam().getPlayers().values()) {
-                    if (!(current.getTeam().equals(player.getTeam()) && !current.equals(player))) {
-                    continue;
-                    }
+                if (picked.getType() == Material.IRON_INGOT) {
+                    pickupForge.updateIronCount(picked.getAmount());
+                }
+                else if (picked.getType() == Material.GOLD_INGOT) {
+                    pickupForge.updateGoldCount(picked.getAmount());
+                }
 
-                    if (current.getRawPlayer().getLocation().distanceSquared(loc) > distanceSquared)
+            Location forgeLocation = initiator.getTeam().getForge().getForgeLocation();
+            final double pickUpDistanceSquared = Math.pow(initiator.getTeam().getForge().getPickupDistance(),2);
+
+                for (BattlePlayer teamMate : initiator.getTeam().getPlayers().values()) {
+                    if (teamMate.equals(initiator))
                         continue;
 
-                    if (current.getRawPlayer().getInventory().firstEmpty() != -1 &&
-                                (current.getIsAlive() && !current.getIsEliminated()))
-                            current.getRawPlayer().getInventory().addItem(picked);
+                    Player rawPlayer = teamMate.getRawPlayer();
 
+                    if (rawPlayer.getLocation().distanceSquared(forgeLocation) > pickUpDistanceSquared)
+                        continue;
 
+                    if (rawPlayer.getInventory().firstEmpty() != -1 &&
+                                (teamMate.isAlive() && !teamMate.isEliminated()))
+                            teamMate.getRawPlayer().getInventory().addItem(picked);
                 }
-            }
+
 
     }
 
@@ -149,8 +153,6 @@ public class ItemListener implements Listener
         if (!registered.containsKey(player.getUniqueId()))
             return;
 
-
-
         Item dropped = event.getItemDrop();
 
         ItemStack stack = dropped.getItemStack();
@@ -159,13 +161,10 @@ public class ItemListener implements Listener
 
         BattlePlayer current = registered.get(player.getUniqueId());
 
-        if (!current.getIsAlive()) {
+        if (!current.isAlive()) {
             event.setCancelled(true);
             return;
         }
-
-
-
         ShopItem item = ItemHelper.getAssociate(stack);
 
         if ( (ItemHelper.isAxe(stack) || ItemHelper.isPick(stack))) {

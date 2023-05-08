@@ -220,7 +220,7 @@ public class GameDragon extends EntityEnderDragon implements IGameAutonomous
                 else
                 {
 
-                   if (currentTarget != null && !currentTarget.getIsAlive() && !currentTarget.getIsEliminated()) {
+                   if (currentTarget != null && !currentTarget.isAlive() && !currentTarget.isEliminated()) {
                         currentTarget = null;
                         target = null;
                    }
@@ -528,7 +528,7 @@ public class GameDragon extends EntityEnderDragon implements IGameAutonomous
 
         BattlePlayer nextTarget = players[rand.nextInt(players.length)];
         while (iterations < 10 && nextTarget.getTeam().equals(team) &&
-                !(nextTarget.getIsAlive() && !(nextTarget.getIsEliminated()) && nextTarget.getRawPlayer().isOnline())) {
+                !(nextTarget.isAlive() && !(nextTarget.isEliminated()) && nextTarget.getRawPlayer().isOnline())) {
             nextTarget = players[rand.nextInt(players.length)];
             iterations ++;
         }
@@ -536,7 +536,7 @@ public class GameDragon extends EntityEnderDragon implements IGameAutonomous
 
         if (nextTarget.getTeam().equals(this.team))
             return;
-        else if (nextTarget.getIsAlive() && !(nextTarget.getIsEliminated()) && nextTarget.getRawPlayer().isOnline()) {
+        else if (nextTarget.isAlive() && !(nextTarget.isEliminated()) && nextTarget.getRawPlayer().isOnline()) {
             handleEntityTarget(nextTarget.getRawPlayer());
             targetTime = System.currentTimeMillis();
             currentTarget = nextTarget;

@@ -101,10 +101,6 @@ public class BattlePlayer
     //Board object for their scores.
     private PlayerBoard board;
 
-    //Their number in the game.
-    private final int number;
-
-
     //The team they belong to.
     private BattleTeam team;
 
@@ -131,6 +127,10 @@ public class BattlePlayer
     private final Map<Integer, IGameInventory> accessibleInventories;
 
 
+    private static int scoreboardId = 0;
+    private final int playerScoreboardId;
+
+
 
 
 
@@ -143,14 +143,14 @@ public class BattlePlayer
 
 
     //constructor
-    public BattlePlayer(Player player, BattleTeam team, Arena arena, int number) throws IOException
+    public BattlePlayer(Player player, BattleTeam team, Arena arena) throws IOException
     {
 
         this.arena = arena;
         this.team = team;
         this.tracking = null;
 
-        this.number = number;
+        this.playerScoreboardId = scoreboardId ++;
         this.player = player;
 
         this.isEliminated = false;
@@ -196,7 +196,7 @@ public class BattlePlayer
         unregister(healthBoard);
 
         //registering a separate team for them.
-        playerTeam = healthBoard.registerNewTeam(team.getTeamColor().getName()+number);
+        playerTeam = healthBoard.registerNewTeam(team.getTeamColor().getName()+ playerScoreboardId);
         playerTeam.setPrefix(team.getTeamPrefix());
         playerTeam.setSuffix(team.getTeamPostfix());
         player.setScoreboard(healthBoard);
@@ -228,7 +228,7 @@ public class BattlePlayer
     {
         try {
             playerTeam.removePlayer(player);
-            healthBoard.getTeam(team.getTeamColor().getName() + number).unregister();
+            healthBoard.getTeam(team.getTeamColor().getName() + playerScoreboardId).unregister();
         }
         catch (NullPointerException | IllegalStateException | IllegalArgumentException ignored)
         {
@@ -543,7 +543,7 @@ public class BattlePlayer
                if (current.equals(this))
                   continue;
 
-               if (current.getIsAlive())
+               if (current.isAlive())
                    current.getRawPlayer().hidePlayer(player);
                else
                    current.getRawPlayer().showPlayer(player);
@@ -636,7 +636,7 @@ public class BattlePlayer
                 {
                     setTimeTillRespawn(eliminationTime-seconds);
 
-                    if (team.doesBedExist())
+                    if (team.getBedExists())
                         sendRespawnTitle(TeamTitle.YOU_DIED,TeamTitle.RESPAWN_AFTER,getTimeTillRespawn(),0,60,10);
                     else
                         sendRespawnTitle(TeamTitle.BED_DESTROYED,TeamTitle.RESPAWN_AFTER,getTimeTillRespawn(),0,60,10);
@@ -1115,7 +1115,7 @@ public class BattlePlayer
         return timeTillRespawn;
     }
 
-    public synchronized boolean getIsAlive()
+    public synchronized boolean isAlive()
     {
         return this.isAlive;
     }
@@ -1129,11 +1129,6 @@ public class BattlePlayer
    {
        return player;
    }
-
-    public int getNumber()
-    {
-        return number;
-    }
 
     public synchronized int getKills()
     {
@@ -1186,11 +1181,15 @@ public class BattlePlayer
         return shopManager;
     }
 
+    public int getNumber(){
+        return playerScoreboardId;
+    }
+
     public ChatOptionSelectionInventory getChatOptionInv() {
         return chatOptionInv;
     }
 
-    public synchronized boolean getIsEliminated()
+    public synchronized boolean isEliminated()
     {
         return this.isEliminated;
     }

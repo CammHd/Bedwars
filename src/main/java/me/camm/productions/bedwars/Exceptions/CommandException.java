@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Validation;
+package me.camm.productions.bedwars.Exceptions;
 
 public class CommandException extends BedWarsException {
     public CommandException(String message) {

@@ -103,7 +103,7 @@ public class ExecutableBoundaryLoader implements Runnable
 
         if (trap) {
             synchronized (primedTraps) {
-            if (!primedTraps.contains(team) && team.doesBedExist()) {
+            if (!primedTraps.contains(team) && team.getBedExists()) {
 
                 for (TimeSet set: coolingTeams)
                 {
@@ -147,7 +147,7 @@ public class ExecutableBoundaryLoader implements Runnable
         if (!player.getRawPlayer().isOnline())
             return;
 
-        if (!player.getIsAlive() || player.getIsEliminated())
+        if (!player.isAlive() || player.isEliminated())
             return;
 
 
@@ -155,7 +155,7 @@ public class ExecutableBoundaryLoader implements Runnable
 
 
         for (BattleTeam team : primedTraps) {
-            if (!team.doesBedExist()) {
+            if (!team.getBedExists()) {
                 primedTraps.remove(team);
                 continue;
             }
@@ -261,7 +261,7 @@ public class ExecutableBoundaryLoader implements Runnable
         while ( (millis - next.getMillis() > COOLDOWN) && (!coolingTeams.isEmpty() ))
         {
             BattleTeam team = next.getTeam();
-            if (team.nextTrap() != null && team.doesBedExist())
+            if (team.nextTrap() != null && team.getBedExists())
             {
                 synchronized (primedTraps) {
                     coolingTeams.remove(0);

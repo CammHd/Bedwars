@@ -1,4 +1,4 @@
-package me.camm.productions.bedwars.Validation;
+package me.camm.productions.bedwars.Exceptions;
 
 public abstract class BedWarsException extends RuntimeException {
 

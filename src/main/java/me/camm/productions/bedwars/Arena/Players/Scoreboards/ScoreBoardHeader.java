@@ -36,8 +36,8 @@ public enum ScoreBoardHeader
     HEALTH_CATEGORY("Health"),
     HEALTH_CATEGORY_TWO("Health 2"),
     HEALTH_CRITERIA("health"),
-    OBJECTIVE_ONE("Primary"),
-    OBJECTIVE_TWO("Buffer"),
+    PRIMARY_OBJECTIVE("Primary"),
+    BUFFER_OBJECTIVE("Buffer"),
     INITIALIZER_ONE("INTIALIZER_ONE"),
     INITIALIZER_TWO("INITIALIZER_TWO"),
 

@@ -41,7 +41,7 @@ public class BedBreakAction extends GameActionPhysical {
 
             //if the team's bed does not exist, then send an additional message that says that all beds are destroyed
 
-            if (!battleTeam.doesBedExist())
+            if (!battleTeam.getBedExists())
                 battleTeam.sendTeamTitle(ALL_BEDS_DESTROYED.getMessage(), "",10,40,10);
                 //10, 40, and 10 are just arbitrary values. We could have them as any positive int. It's just that these values
             //work out well (The numbers are in values of ticks. 20 ticks = 1 second)

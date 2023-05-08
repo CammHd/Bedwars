@@ -1,28 +1,35 @@
 package me.camm.productions.bedwars.Generators;
 
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
+import com.google.common.base.Predicate;
+import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Randoms.WeightedItem;
 import me.camm.productions.bedwars.Util.Randoms.WeightedRandom;
-import org.bukkit.Chunk;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityItem;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
+
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Level;
 
-/**
- * @author CAMM
- * class for a forge in the game
- */
 public class Forge implements Runnable {
-    private final String type;
+
+    private long lastInteraction;
+    private final int id;
     private final World world;
     private final Location location;
     private final Plugin plugin;
@@ -30,82 +37,128 @@ public class Forge implements Runnable {
     private int goldCount, ironCount;
     private boolean recount;
 
-    private final UUID id;
-
-    private final String color;
-
     private final long initialTime;
     private volatile long spawnTime;
-
-
     private volatile int tier;
     private volatile boolean isAlive;
     private final double pickup;
-
     private final Random spawningTimeRand;
 
-  //  private static final double PICKUP_DISTANCE;
-    private static final int MAX_GOLD;
-    private static final int MAX_IRON;
+
 
     //weighted random for spawning items
     private final WeightedRandom<WeightedItem<Material>> spawningRandom;
     private final WeightedItem<Material> emeraldChance;
-    private final WeightedItem<Material> goldChance;
 
+
+    private volatile Material nextSpawn;
+    private static int forgeCount;
     private static final String FORGE = "FORGE";
 
-    private static int number;
+
+    private static int maxGold;
+    private static int maxIron;
+
+    private static double goldChance;
+    private static double ironChance;
+
+    private static final Predicate<Entity> isItemCheck;
+
 
     static {
-        MAX_GOLD = 16;
-        MAX_IRON = 48;
-        number = 0;
+        maxGold = 16;
+        maxIron = 48;
+        forgeCount = 0;
+
+        ironChance = 0.8;
+        goldChance = 0.2;
+
+        isItemCheck = new Predicate<Entity>() {
+            @Override
+            public boolean apply(@Nullable Entity entity) {
+                if (entity == null)
+                    return false;
+
+                return entity instanceof EntityItem;
+            }
+        };
+
 
     }
 
 
 
-    public Forge(double x, double y, double z, World world, TeamColor color, long initialTime, Plugin plugin, double pickup)  //construct
+    public Forge(double x, double y, double z, World world, long initialTime, Plugin plugin, double pickup)  //construct
     {
         this.recount = false;
         this.location = new Location(world, x, y, z);
-        this.color = color.getName();
         this.initialTime = initialTime;
         this.world = world;
         this.tier = 0;
         this.plugin = plugin;
 
-        this.type = FORGE+number;
-        number ++;
+        this.id = forgeCount;
+        forgeCount ++;
 
 
         this.pickup = pickup;
         this.spawnTime = initialTime;
         this.isAlive = true;
-        this.id = UUID.randomUUID();
         ironCount = goldCount = 0;
 
 
-        Chunk chunk = world.getChunkAt(location);
-        if (!chunk.isLoaded())
-            chunk.load();
-
         spawningTimeRand = new Random();
         emeraldChance = new WeightedItem<>(Material.EMERALD, 0);
-        goldChance = new WeightedItem<>(Material.GOLD_INGOT, 0);
 
         ArrayList<WeightedItem<Material>> materials = new ArrayList<>();
-        materials.add(new WeightedItem<>(Material.IRON_INGOT, 0.8));
-        materials.add(goldChance);
+        materials.add(new WeightedItem<>(Material.IRON_INGOT, ironChance));
+        materials.add(new WeightedItem<>(Material.GOLD_INGOT, goldChance));
+
         materials.add(emeraldChance);
         spawningRandom = new WeightedRandom<>(materials);
 
+        nextSpawn = null;
+        lastInteraction = System.currentTimeMillis();
+
+    }
+
+    //@pre the forge is not created yet
+    public static void setMaxGold(int newNumber){
+    maxGold = newNumber;
+    }
+
+    //@pre the forge is not created yet
+    public static void setMaxIron(int newNumber) {
+        maxIron = newNumber;
     }
 
 
+    //@pre The forge is not created yet
+    public static void setGoldChance(double chance) {
+        goldChance = chance;
+    }
+
+    //@pre the forge is not created yet
+    public static void setIronChance(double chance) {
+        ironChance = chance;
+    }
+
+    public synchronized void updateGoldCount(int subtract){
+        goldCount -= subtract;
+    }
+
+    public synchronized void updateIronCount(int subtract) {
+        ironCount -= subtract;
+    }
 
 
+    public Plugin getPlugin(){
+        return plugin;
+    }
+
+    public void queryRecount(){
+        this.recount = true;
+    }
 
     public static String getKeyword(){
         return FORGE;
@@ -117,18 +170,17 @@ public class Forge implements Runnable {
     }
 
     //returns the pickup distance
-    public double getDistance() {
+    public double getPickupDistance() {
         return pickup;
     }
 
     //disables the forge
-    public synchronized void disableForge() {
+    public synchronized void stopForge() {
         this.isAlive = false;
     }
 
-    //gets the team color of the forge
-    public String getColor() {
-        return color;
+    public int getId(){
+        return id;
     }
 
 
@@ -162,189 +214,137 @@ public class Forge implements Runnable {
         return (long) (spawnTime * (spawningTimeRand.nextDouble() * 1.5));
     }
 
-    //Spawns an item
-    public synchronized void spawnItem() {
-        int freedom = verifyCount();
-        Material mat;
 
-        switch (freedom) {
-            case -1:
-                mat = null;
-                break;
+    //drops an item onto the ground dependent on the material
+    private void spawnItem() {
 
-            case 0:
-                mat = Material.IRON_INGOT;
-                break;
-
-            case 1:
-                mat = Material.GOLD_INGOT;
-                break;
-
-            default:
-                mat = spawningRandom.getNext().getItem();
-
+        if (!isAlive || !plugin.isEnabled()) {
+            stopForge();
+            return;
         }
 
-        if (mat == null)
+        if (nextSpawn == null)
             return;
 
-        drop(mat);
-    }
+        Material next = nextSpawn;
+        if (next == Material.GOLD_INGOT) {
+            goldCount++;
+        }
+        else if (next == Material.IRON_INGOT) {
+            ironCount ++;
+        }
 
-
-    //drops an item onto the ground dependant on the material
-    private void drop(Material mat) {
-        if (!isAlive || !plugin.isEnabled())
-            return;
-
-
-        /*
-        Gold chance is initially very small. We increase it to a max of 0.2
-         */
-        goldChance.setWeight(Math.min(goldChance.getWeight() + 0.01, 0.2));
 
         new BukkitRunnable() {
-            @Override
             public void run() {
-                Item spawned = world.dropItem(location, new ItemStack(mat, 1));
-                spawned.setCustomName(id.toString());
-                spawned.setVelocity(new Vector(0, 0, 0));
-                spawned.setMetadata(type, new FixedMetadataValue(plugin, 1));
-
-                if (mat == Material.IRON_INGOT) {
-                     ironCount ++;
-                }
-
-                if (mat == Material.GOLD_INGOT) {
-                    goldCount ++;
-                }
-
+                Item item = world.dropItem(location,new ItemStack(next,1));
+                item.setVelocity(new Vector(0,0,0));
+                item.setMetadata(FORGE,new FixedMetadataValue(plugin,id));
                 cancel();
             }
         }.runTask(plugin);
 
 
-
     }
 
     //updates the amount of gold or iron that the forge has spawned on the ground.
-    public synchronized void updateChildren(Material mat, int amount) {
+    public void calculateNextDrop() {
 
-        if (mat == Material.GOLD_INGOT) {
-            goldCount -= amount;
-
-            if (goldCount <=0 || goldCount >= MAX_GOLD)
-                recount = true;
-        }
-        else {
-            ironCount -= amount;
-
-            if (ironCount <=0 || ironCount >= MAX_IRON)
-                recount = true;
+        double millis = spawnTime * (goldCount + ironCount);
+        if (System.currentTimeMillis() >= millis + lastInteraction && (ironCount + goldCount >= maxIron + maxGold)) {
+            lastInteraction = System.currentTimeMillis();
+            queryRecount();
         }
 
-          }
+        Material next = Material.IRON_INGOT;
+        boolean restriction = false;
+
+        if (ironCount >= maxIron) {
+            next = Material.GOLD_INGOT;
+            restriction = true;
+        }
+
+        if (goldCount >= maxGold) {
+            next = restriction ? null: Material.IRON_INGOT;
+            restriction = true;
+        }
+
+        if (!restriction) {
+        next = spawningRandom.getNext().getItem();
+        }
+        nextSpawn = next;
+    }
 
 
+    //Updates the number of items on the ground
+    private void recount() {
 
-          //verifies that the forge is not spawning more than it's cap
-    private int verifyCount()
-        {
-            if (!recount) {
-                if (goldCount >= MAX_GOLD) //if gold is invalid
-                    return ironCount >= MAX_IRON ? SpawningFreedom.NO_SPAWNING.getFreedom() : SpawningFreedom.ONLY_IRON.getFreedom();
-                else
-                    return ironCount >= MAX_IRON ? SpawningFreedom.ONLY_GOLD.getFreedom() : SpawningFreedom.FULL_SPAWNING.getFreedom();
+        if (!recount)
+            return;
+
+        ironCount = goldCount = 0;
+
+        net.minecraft.server.v1_8_R3.World nmsWorld = ((CraftWorld) world).getHandle();
+        AxisAlignedBB checkArea = new AxisAlignedBB(location.getX() - pickup, location.getY() - pickup, location.getZ() - pickup,
+                location.getX() + pickup, location.getY() + pickup, location.getZ() + pickup);
+
+        Collection<Entity> items = nmsWorld.a((net.minecraft.server.v1_8_R3.Entity) null, checkArea, isItemCheck);
+        for (Entity nmsItem : items) {
+            CraftItem bukkitItem = (CraftItem) nmsItem.getBukkitEntity();
+
+
+            //if it was dropped by A forge
+            if (!bukkitItem.hasMetadata(FORGE))
+                continue;
+
+            boolean droppedByThisForge = bukkitItem.getMetadata(FORGE).stream().anyMatch(metadataValue -> {
+                return metadataValue.value() instanceof Integer && metadataValue.asInt() == this.id;
+            });
+
+            if (!droppedByThisForge)
+                continue;
+
+            switch (bukkitItem.getItemStack().getType()) {
+                case IRON_INGOT:
+                    ironCount++;
+                    break;
+
+                case GOLD_INGOT:
+                    goldCount++;
+                    break;
             }
-
-
-                int goldCount = 0;
-                int ironCount = 0;
-
-                Collection<Entity> nearby = world.getNearbyEntities(location, pickup, pickup, pickup);
-                for (Entity entity : nearby) {
-
-                    if (!(entity instanceof Item))
-                        continue;
-
-
-                    Item item = (Item) entity;
-                    if (!item.hasMetadata(type))
-                        continue;
-
-                    ItemStack stack = item.getItemStack();
-                    Material mat = stack.getType();
-
-                    switch (mat) {
-                        case GOLD_INGOT:
-                            goldCount += stack.getAmount();
-                            break;
-                        case IRON_INGOT:
-                            ironCount += stack.getAmount();
-                    }
-
-                }
-
-
-                if (goldCount >= MAX_GOLD) //if gold is invalid
-                    return ironCount >= MAX_IRON ? SpawningFreedom.NO_SPAWNING.getFreedom() : SpawningFreedom.ONLY_IRON.getFreedom();
-                else
-                    return ironCount >= MAX_IRON ? SpawningFreedom.ONLY_GOLD.getFreedom() : SpawningFreedom.FULL_SPAWNING.getFreedom();
-
         }
+        recount = false;
+    }
 
 
         //core thread for the spawning mechanic
     @Override
     public void run()
     {
-
                 while (isAlive)
                 {
                     try
                     {
                         Thread.sleep(randomize());
+                        if (recount)
+                            recount();
+
+                        calculateNextDrop();
                         spawnItem();
+
                     }
                     catch (InterruptedException e)
                     {
-                        e.printStackTrace();
-                        disableForge();
+                        ChatSender sender = ChatSender.getInstance();
+                        sender.sendConsoleMessage("Thread for forge at "+location.toString()+" was interrupted.", Level.WARNING);
                     }
                 }
-
-
-
     }
 
     //get the tier
     public synchronized int getTier(){
       return tier;
-    }
-
-    public UUID getId(){
-      return id;
-    }
-
-    private enum SpawningFreedom {
-      NO_SPAWNING(-1),  //Don't spawn anything
-        ONLY_IRON(0),
-        ONLY_GOLD(1),
-        FULL_SPAWNING(2);  //spawn everything
-
-      final int freedom;
-
-      SpawningFreedom(int freedom)
-      {
-          this.freedom = freedom;
-      }
-
-      int getFreedom()
-      {
-          return freedom;
-      }
-
-
     }
 
 }

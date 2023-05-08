@@ -12,10 +12,10 @@ import me.camm.productions.bedwars.Files.WorldDataJsonParser;
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
-import me.camm.productions.bedwars.Validation.BedWarsException;
-import me.camm.productions.bedwars.Validation.CommandPermissionException;
-import me.camm.productions.bedwars.Validation.InitializationException;
-import me.camm.productions.bedwars.Validation.StateException;
+import me.camm.productions.bedwars.Exceptions.BedWarsException;
+import me.camm.productions.bedwars.Exceptions.CommandPermissionException;
+import me.camm.productions.bedwars.Exceptions.InitializationException;
+import me.camm.productions.bedwars.Exceptions.StateException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -128,6 +128,11 @@ public class CommandProcessor {
      */
     public void shout(CommandSender sender, String[] args) throws BedWarsException{
 
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED+"You must be a player to use this command.");
+            return;
+        }
+
         //check if they have perms
         if (noPermission(sender, SHOUT))
             throw getPermException(SHOUT);
@@ -209,8 +214,11 @@ public class CommandProcessor {
         if (runner == null || !runner.isRunning())
             throw new StateException(ChatColor.RED+"The game is not running!");
 
+        if (sender instanceof Player) {
+            sender.sendMessage(ChatColor.GOLD+sender.getName()+" has ended the game with a manual override.");
+        }
+        else sender.sendMessage("The game has ended the game with a manual override.");
 
-        sender.sendMessage(ChatColor.GOLD+sender.getName()+" has ended the game with a manual override.");
         runner.endGame(null);
 
 
@@ -224,7 +232,12 @@ public class CommandProcessor {
      * @param sender Sender of the command
      * @throws BedWarsException if conditions are not met for safe registration
      */
-    public void registerPlayer(Player sender) throws BedWarsException{
+    public void registerPlayer(CommandSender sender) throws BedWarsException{
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED+"You must be a player to use this command.");
+            return;
+        }
         if (noPermission(sender, REGISTER))
             throw getPermException(REGISTER);
 
@@ -237,7 +250,7 @@ public class CommandProcessor {
         if (runner.isRunning())
             throw new StateException(ChatColor.RED+"The game is running! Wait for it to finish first!");
 
-        sender.openInventory((Inventory)runner.getJoinInventory());
+        ((Player)sender).openInventory((Inventory)runner.getJoinInventory());
     }
 
 
@@ -249,6 +262,11 @@ public class CommandProcessor {
      * @throws BedWarsException if several conditions are not met
      */
     public void unregister(CommandSender player) throws BedWarsException {
+
+        if (!(player instanceof Player)) {
+            player.sendMessage(ChatColor.RED+"You must be a player to use this command.");
+            return;
+        }
 
         //at this point, the commandsender should be a player
         // (this method is only called from the game initializer, which already checks that the sender is a player)

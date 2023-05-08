@@ -81,10 +81,10 @@ public class PlayerBoard
         this.isShowingPrimary = true;
         board = new Scoreboard();
 
-        this.primary = board.registerObjective(OBJECTIVE_ONE.getPhrase()+player.getNumber(),new ScoreboardBaseCriteria(DUMMY.getPhrase()));
+        this.primary = board.registerObjective(PRIMARY_OBJECTIVE.getPhrase()+player.getNumber(),new ScoreboardBaseCriteria(DUMMY.getPhrase()));
         this.primary.setDisplayName(TITLE.getPhrase());
 
-      this.buffer = board.registerObjective(OBJECTIVE_TWO.getPhrase()+player.getNumber(), new ScoreboardBaseCriteria(DUMMY.getPhrase()));
+       this.buffer = board.registerObjective(BUFFER_OBJECTIVE.getPhrase()+player.getNumber(), new ScoreboardBaseCriteria(DUMMY.getPhrase()));
        this.buffer.setDisplayName(TITLE.getPhrase());
 
 
@@ -205,7 +205,7 @@ public class PlayerBoard
 
 
             if (isInitialized) {
-                primary = board.registerObjective(OBJECTIVE_ONE.getPhrase() + player.getNumber(), new ScoreboardBaseCriteria(DUMMY.getPhrase()));
+                primary = board.registerObjective(PRIMARY_OBJECTIVE.getPhrase() + player.getNumber(), new ScoreboardBaseCriteria(DUMMY.getPhrase()));
                 primary.setDisplayName(TITLE.getPhrase());
             }
             else
@@ -233,7 +233,7 @@ public class PlayerBoard
                       }
                     );
 
-              buffer = board.registerObjective(OBJECTIVE_TWO.getPhrase() + player.getNumber(), new ScoreboardBaseCriteria(DUMMY.getPhrase()));
+              buffer = board.registerObjective(BUFFER_OBJECTIVE.getPhrase() + player.getNumber(), new ScoreboardBaseCriteria(DUMMY.getPhrase()));
               buffer.setDisplayName(TITLE.getPhrase());
         }
         scores.forEach((String, ScoreSet) ->
@@ -349,7 +349,7 @@ public class PlayerBoard
             String previousName;
             if (team.isEliminated())
                 previousName = team.getDisplayScoreboardEntry() + " " + TEAM_DEAD.getPhrase();
-            else if (!team.doesBedExist())
+            else if (!team.getBedExists())
                 previousName = team.getDisplayScoreboardEntry() + " " + team.getRemainingPlayers();
             else
                 previousName = team.getDisplayScoreboardEntry() + " " + TEAM_ALIVE.getPhrase();

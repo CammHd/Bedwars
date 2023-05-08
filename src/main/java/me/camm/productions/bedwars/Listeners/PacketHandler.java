@@ -34,8 +34,6 @@ public class PacketHandler extends ItemHelper
         this.keepers = shops;
         this.arena = arena;
         sender = ChatSender.getInstance();
-        System.out.println("In packet handler uuid="+arena.getDebugUUID());
-
     }
 
     public void clearEntries(){
@@ -82,7 +80,6 @@ public class PacketHandler extends ItemHelper
         ChannelPipeline line = channel.pipeline();
 
         BedwarsDuplexHandler handler = new BedwarsDuplexHandler(player,arena,this);
-        System.out.println("adding to packethandler-contains before?:"+line.toMap().containsKey(player.getName()));
 
         line.addBefore("packet_handler",player.getName(),handler);
         channels.put(player.getUniqueId(),channel);
@@ -100,16 +97,13 @@ public class PacketHandler extends ItemHelper
 
 
         Channel channel = ((CraftPlayer)player).getHandle().playerConnection.networkManager.channel;
-        System.out.println("rm player- uuid="+arena.getDebugUUID());
+
 
         ChannelPipeline pipe = channel.pipeline();
         if (pipe.toMap().containsKey(player.getName())) {
            pipe.remove(player.getName());
          }
         channels.remove(player.getUniqueId());
-
-        System.out.println("contains after ?:"+channel.pipeline().toMap().containsKey(player.getName()));
-
     }
 
 

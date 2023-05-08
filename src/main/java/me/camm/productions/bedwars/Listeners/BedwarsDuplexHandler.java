@@ -42,8 +42,6 @@ public class BedwarsDuplexHandler extends ChannelDuplexHandler {
             return;
         }
 
-            System.out.println("On channel read uuid="+arena.getDebugUUID());
-
             if (!arena.getPlayers().containsKey(player.getUniqueId()))
             {
                 super.channelRead(channelHandlerContext, o);
@@ -88,7 +86,7 @@ public class BedwarsDuplexHandler extends ChannelDuplexHandler {
 
             BattlePlayer openingPlayer = arena.getPlayers().get(player.getUniqueId());
 
-            if (!openingPlayer.getIsAlive()) {
+            if (!openingPlayer.isAlive()) {
                 super.channelRead(channelHandlerContext, o);
                 return;
             }

@@ -11,9 +11,8 @@ import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 
 import me.camm.productions.bedwars.Util.PacketSound;
-import me.camm.productions.bedwars.Validation.BedWarsException;
-import me.camm.productions.bedwars.Validation.CommandException;
-import me.camm.productions.bedwars.Validation.RegistrationException;
+import me.camm.productions.bedwars.Exceptions.BedWarsException;
+import me.camm.productions.bedwars.Exceptions.CommandException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -54,9 +53,6 @@ public class Arena
   //location of the spectator spawn
   private final Location specSpawn;
 
-  //we're using this to keep track of players
-  private static int playerAssignment;
-
 
   private volatile boolean settingUp;
 
@@ -77,16 +73,10 @@ public class Arena
 
     //registered players
     private final Map<UUID, BattlePlayer> players;
+    private final IGameInventory chatInv;
+    private final IGameInventory selectionInv;
 
 
-    private IGameInventory chatInv;
-    private IGameInventory selectionInv;
-
-    private final UUID debug;
-
-    public UUID getDebugUUID(){
-        return debug;
-    }
 
 
     /*
@@ -102,8 +92,7 @@ public class Arena
   public Arena(GameBoundary bounds, Coordinate spectatorSpawn, int voidLevel, World world, Plugin plugin)
   {
 
-      debug = UUID.randomUUID();
-      System.out.println("created new arena with uuid "+debug);
+
 
       chatInv = new QuickChatInventory(this);
       selectionInv = new ActionSelectionInventory(this);
@@ -111,7 +100,7 @@ public class Arena
       sender = ChatSender.getInstance();
       settingUp = false;
 
-      playerAssignment = 0;
+
       this.bounds = bounds;
       this.voidLevel = voidLevel;
 
@@ -186,25 +175,6 @@ public class Arena
   }
 
 
-  //gets the teams as an arraylist.
-    //use  new ArrayList<>(arena.getTeams().values()) instead or
-    //simply getTeams().values() for a collection if order doesn't matter.
-  @Deprecated
-  public ArrayList<BattleTeam> getTeamList()
-  {
-      ArrayList<BattleTeam> list = new ArrayList<>();
-      teams.forEach((String, BattleTeam)->
-              list.add(BattleTeam));
-      return list;
-  }
-
-
-  //gets a player number for a player
-  public synchronized int assignPlayerNumber()
-  {
-      playerAssignment++;
-      return playerAssignment;
-  }
 
   //registers the map
   public void registerMap() throws BedWarsException

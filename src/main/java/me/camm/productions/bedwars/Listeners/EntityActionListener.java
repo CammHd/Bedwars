@@ -63,7 +63,7 @@ public class EntityActionListener implements Listener
         }
 
         Player hurt = victim.getRawPlayer();
-        boolean isFinal = !victim.getTeam().doesBedExist();
+        boolean isFinal = !victim.getTeam().getBedExists();
 
         if (damageHistory.containsKey(hurt.getUniqueId()))
         {
@@ -329,7 +329,7 @@ public class EntityActionListener implements Listener
                     }
 
                     //If the player is a spectator
-                    if (!hurt.getIsAlive() ||  hurt.getIsEliminated())
+                    if (!hurt.isAlive() ||  hurt.isEliminated())
                     {
                         event.setCancelled(true);
                         return;
@@ -399,7 +399,7 @@ public class EntityActionListener implements Listener
             }
                 BattlePlayer playerHit = arenaPlayers.get(hit.getUniqueId());
 
-            if (!playerHit.getIsAlive() || playerHit.getIsEliminated())
+            if (!playerHit.isAlive() || playerHit.isEliminated())
             {
                 event.setCancelled(true);
                 return;
@@ -418,7 +418,7 @@ public class EntityActionListener implements Listener
                 }
 
 
-                if (playerOwner == null || !playerOwner.getIsAlive()|| playerOwner.getIsEliminated())
+                if (playerOwner == null || !playerOwner.isAlive()|| playerOwner.isEliminated())
                 {
                     event.setCancelled(true);
                     return;
@@ -437,7 +437,7 @@ public class EntityActionListener implements Listener
             IGameTeamable teamable = activeEntities.get(damager.getUniqueId());
             BattlePlayer hit = arenaPlayers.get(damaged.getUniqueId());
 
-            if (!hit.getIsAlive() ||  hit.getIsEliminated())
+            if (!hit.isAlive() ||  hit.isEliminated())
             {
                 event.setCancelled(true);
                 return;
@@ -486,7 +486,7 @@ public class EntityActionListener implements Listener
        return;
 
    BattlePlayer hurtPlayer = registered.get(hurt.getUniqueId());
-        if (!hurtPlayer.getIsAlive() ||  hurtPlayer.getIsEliminated())
+        if (!hurtPlayer.isAlive() ||  hurtPlayer.isEliminated())
         {
             event.setCancelled(true);
             return;
@@ -503,7 +503,7 @@ public class EntityActionListener implements Listener
         }
 
         BattlePlayer sourcePlayer = registered.get(((Player)source).getUniqueId());
-        if (!sourcePlayer.getIsAlive()||sourcePlayer.getIsEliminated()) {
+        if (!sourcePlayer.isAlive()||sourcePlayer.isEliminated()) {
             event.setCancelled(true);
             return;
         }
@@ -644,7 +644,7 @@ public class EntityActionListener implements Listener
             return;
         }
 
-        if (hurter.getIsEliminated() || !hurter.getIsAlive()) {
+        if (hurter.isEliminated() || !hurter.isAlive()) {
             event.setCancelled(true);
             return;
         }
@@ -755,11 +755,11 @@ public class EntityActionListener implements Listener
 
                             if (raw.getLocation().getY() <= arena.getVoidLevel())
                             {
-                                boolean isFinal = !player.getTeam().doesBedExist();
+                                boolean isFinal = !player.getTeam().getBedExists();
                                 VOID:
                                 {
 
-                                    if (player.getIsEliminated() || !player.getIsAlive()) {
+                                    if (player.isEliminated() || !player.isAlive()) {
                                         player.teleport(arena.getSpecSpawn());
                                         break VOID;
                                     }
@@ -868,7 +868,7 @@ public class EntityActionListener implements Listener
                                     }
                                     //  //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
                                     formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
-                                    player.handlePlayerIntoSpectator(handler, !player.getTeam().doesBedExist());
+                                    player.handlePlayerIntoSpectator(handler, !player.getTeam().getBedExists());
                                 }
                                 runner.attemptEndGame();
                             }

@@ -68,7 +68,6 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
         Map<UUID,BattlePlayer> registeredPlayers = arena.getPlayers();
 
         if (packetHandler!=null) {
-            System.out.println("in log listener logout - uuid="+packetHandler.getArena().getDebugUUID());
             if (packetHandler.channelsContains(event.getPlayer()))
                 packetHandler.removePlayer(event.getPlayer());
         }
@@ -79,7 +78,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
         //setting the quit message
         BattlePlayer current = registeredPlayers.get(event.getPlayer().getUniqueId());
 
-        if (current.getIsEliminated())
+        if (current.isEliminated())
             return;
 
 
@@ -96,7 +95,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
 
 
         //if is on last life
-        if (!team.doesBedExist())
+        if (!team.getBedExists())
         {
             //eliminate them
             sender.sendMessage(current.getTeam().getTeamColor().getChatColor()+current.getRawPlayer().getName()+ChatColor.YELLOW+" was on their last life! They have been eliminated!");
@@ -172,7 +171,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
 
         current.refactorPlayer(player);
 
-        isBedExists = team.doesBedExist();
+        isBedExists = team.getBedExists();
 
         if (runner.isRunning() && packetHandler != null)
         {
@@ -202,7 +201,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
             keeper.setRotation(player);
         }
 
-        current.handlePlayerIntoSpectator(packetHandler,!team.doesBedExist(),null);
+        current.handlePlayerIntoSpectator(packetHandler,!team.getBedExists(),null);
 
     }
 }

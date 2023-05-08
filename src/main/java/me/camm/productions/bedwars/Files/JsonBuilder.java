@@ -1,6 +1,5 @@
 package me.camm.productions.bedwars.Files;
 
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
 import me.camm.productions.bedwars.BedWars;
 import me.camm.productions.bedwars.Generators.Forge;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
@@ -40,7 +39,7 @@ public class JsonBuilder {
 
 
     //double x, double y, double z, World world, TeamColor color, long initialTime, Plugin plugin, double pickup
-    public static Forge buildForge(Map<String, String> values, World world, TeamColor color) {
+    public static Forge buildForge(Map<String, String> values, World world) {
         double[] coords = getXYZAsDouble(values);
         Plugin plugin = BedWars.getInstance();
 
@@ -55,10 +54,10 @@ public class JsonBuilder {
 
 
 
-        if (time == -1 || pickup == -1)
+        if (pickup <= 0 || time <= 0)
             throw new IllegalArgumentException("Forge speed, pickup values are invalid");
 
-        return new Forge(coords[0], coords[1], coords[2],world,color, time, plugin, pickup);
+        return new Forge(coords[0], coords[1], coords[2],world, time, plugin, pickup);
 
 
 

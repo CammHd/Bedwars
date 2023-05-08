@@ -154,7 +154,7 @@ public class TeamFileJsonParser extends JsonParser {
                         break;
 
                         case FORGE:
-                            forge = JsonBuilder.buildForge(entries, arena.getWorld(), color);
+                            forge = JsonBuilder.buildForge(entries, arena.getWorld());
                             break;
 
                         case TEAM_BUY:

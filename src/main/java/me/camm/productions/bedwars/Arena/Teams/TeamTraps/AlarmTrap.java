@@ -74,7 +74,7 @@ public class AlarmTrap extends GameTrap
 
                         while (iter.hasNext()) {
                             BattlePlayer trigger = iter.next();
-                            if (trigger != null && trigger.getIsAlive())
+                            if (trigger != null && trigger.isAlive())
                             {
 
 
@@ -83,7 +83,7 @@ public class AlarmTrap extends GameTrap
                                    continue;
 
 
-                                    if (note)
+                                if (note)
                                         team.sendTeamSoundPacket(PacketSound.ALARM);
                                     else
                                         team.sendTeamSoundPacket(PacketSound.ALARM_TWO);

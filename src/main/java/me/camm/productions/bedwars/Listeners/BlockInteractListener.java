@@ -12,7 +12,6 @@ import me.camm.productions.bedwars.Structures.Tower;
 import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
-import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.PacketSound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -86,7 +85,7 @@ public class BlockInteractListener implements Listener {
 
         //if the player is dead, stop it
         BattlePlayer player = players.get(placer.getUniqueId());
-        if (player.getIsEliminated() || (!player.getIsAlive())) {
+        if (player.isEliminated() || (!player.isAlive())) {
             event.setCancelled(true);
             return;
         }
@@ -174,7 +173,7 @@ public class BlockInteractListener implements Listener {
 
         BattlePlayer broke = arena.getPlayers().get(whoBroke.getUniqueId());
 
-        if (broke.getIsEliminated() || (!broke.getIsAlive())) {
+        if (broke.isEliminated() || (!broke.isAlive())) {
             event.setCancelled(true);
             return;
         }
@@ -216,7 +215,7 @@ public class BlockInteractListener implements Listener {
 
         //If the player tried to break their own bed.
 
-        if ((!broke.getIsAlive())||broke.getIsEliminated()) {
+        if ((!broke.isAlive())||broke.isEliminated()) {
             return false;
         }
 
@@ -241,7 +240,7 @@ public class BlockInteractListener implements Listener {
         {
             battlePlayer.playSound(PacketSound.WITHER);
 
-            if (battlePlayer.getIsAlive())
+            if (battlePlayer.isAlive())
                 battlePlayer.sendTitle(TeamTitle.BED_DESTROYED.getMessage(), TeamTitle.LAST_LIFE_WARNING.getMessage(), 10,40,10);
             else
                 battlePlayer.sendRespawnTitle(TeamTitle.BED_DESTROYED,TeamTitle.RESPAWN_AFTER, battlePlayer.getTimeTillRespawn(), 10,40,10);

@@ -304,7 +304,7 @@ It is up to the calling method to update the scoreboards of the players.
  */
     public synchronized void putOnLastStand()
     {
-        if (isEliminated||!doesBedExist())
+        if (isEliminated||!getBedExists())
             return;
 
         sendTeamSoundPacket(PacketSound.WITHER);
@@ -320,7 +320,12 @@ It is up to the calling method to update the scoreboards of the players.
     Starts the forge if it hasn't started yet.
      */
     public void startForge() {
+
         if (canStartForge) {
+
+            if (teamColor == TeamColor.BLUE)
+                return;
+
             Thread forgeThread = new Thread(forge);
             forgeThread.start();
             canStartForge = false;
@@ -614,7 +619,7 @@ It is up to the calling method to update the scoreboards of the players.
         return players;
     }
 
-    public boolean doesBedExist()
+    public boolean getBedExists()
     {
         if (!bedBroken) {
             boolean exists = bed.doesBoxContainBlock(Material.BED_BLOCK, arena.getWorld());
@@ -636,7 +641,7 @@ It is up to the calling method to update the scoreboards of the players.
 
         for (BattlePlayer player: players)
         {
-            if (!player.getIsEliminated()&&player.getRawPlayer().isOnline())
+            if (!player.isEliminated()&&player.getRawPlayer().isOnline())
                 remaining++;
         }
 
