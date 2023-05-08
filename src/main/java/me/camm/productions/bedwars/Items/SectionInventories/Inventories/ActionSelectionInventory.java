@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.ActionSelectionConfig;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty;

@@ -1,15 +1,15 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import me.camm.productions.bedwars.Util.Helpers.TeamHelper;
-import me.camm.productions.bedwars.Exceptions.RegistrationException;
+import me.camm.productions.bedwars.Util.Exceptions.RegistrationException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryCustom;

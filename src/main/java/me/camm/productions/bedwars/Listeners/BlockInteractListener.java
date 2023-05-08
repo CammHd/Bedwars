@@ -1,12 +1,12 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Arena.Teams.BedMessage;
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
-import me.camm.productions.bedwars.Arena.Teams.TeamTitle;
-import me.camm.productions.bedwars.Entities.ActiveEntities.GameTNT;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Teams.BedMessage;
+import me.camm.productions.bedwars.Game.Teams.TeamColor;
+import me.camm.productions.bedwars.Game.Teams.TeamTitle;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.GameTNT;
 import me.camm.productions.bedwars.Structures.SoakerSponge;
 import me.camm.productions.bedwars.Structures.Tower;
 import me.camm.productions.bedwars.Util.BlockTag;

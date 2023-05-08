@@ -1,16 +1,27 @@
 package me.camm.productions.bedwars.Files;
 
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.PlayerManagers.HotbarManager;
+import me.camm.productions.bedwars.Game.PlayerManagers.PlayerInventoryManager;
+import me.camm.productions.bedwars.Game.Teams.TeamColor;
 import me.camm.productions.bedwars.BedWars;
+import me.camm.productions.bedwars.Items.ItemProperties.ItemCategory;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
+import me.camm.productions.bedwars.Items.ShopItemSet;
+import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Level;
+
+import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty.HOT_BAR_END;
 
 /*
  * @author CAMM
@@ -209,6 +220,128 @@ public class FileManager
       return file;
 
     }
+
+
+
+    public static HotbarManager readBarFile(File barFile, Player player, Arena arena)
+    {
+        HotbarManager manager;
+        ChatSender sender = ChatSender.getInstance();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(barFile)))
+        {
+
+            ItemCategory[] set = new ItemCategory[HOT_BAR_END.getValue()];
+            BarContext context = new BarContext();
+            int line = 0;
+            String current = reader.readLine();
+
+            while (current!=null && line < set.length)
+            {
+                line ++;
+                try {
+                    ItemCategory category = context.process(current);
+                    set[line] = category;
+                }
+                catch (IllegalArgumentException e) {
+                    sender.sendConsoleMessage(" at line "+(line-1) +"in " +
+                            ""+player.getName()+"'s hot bar file", Level.INFO);
+                    set[line] = null;
+                }
+                current = reader.readLine();
+            }
+            reader.close();
+
+            manager = new HotbarManager(set,arena);
+            return manager;
+        }
+        catch (IOException e)
+        {
+            manager = new HotbarManager(arena);
+            return manager;
+        }
+    }
+
+    /*
+    Reads the inventory file and returns a manager for this
+     */
+    public static PlayerInventoryManager readInvFile(File inventoryFile, BattlePlayer player, boolean inflated, Arena arena)
+    {
+        ChatSender sender = ChatSender.getInstance();
+        try (BufferedReader reader = new BufferedReader(new FileReader(inventoryFile)))
+        {
+
+            //deal with the possibility of restricted items in the manager.
+            ArrayList<ShopItemSet> items = new ArrayList<>();
+            String current = reader.readLine();
+            int line = 0;
+            InventoryContext context = new InventoryContext();
+
+            while (current != null) {
+                line ++;
+                try {
+                    ShopItemSet set = context.process(current);
+                    items.add(set);
+                }
+                catch (IllegalArgumentException e) {
+                    sender.sendConsoleMessage(" at line "+(line-1)+" in "+player.getRawPlayer().getName()+"'s inv file",Level.INFO);
+                }
+                current = reader.readLine();
+            }
+
+            return new PlayerInventoryManager(items, inflated, arena, player);
+        }
+        catch (IOException e)
+        {
+            return new PlayerInventoryManager(inflated, arena, player);
+        }
+
+    }
+
+
+
+    static class InventoryContext{
+        public ShopItemSet process(String string) throws IllegalArgumentException {
+            StringTokenizer tk = new StringTokenizer(string);
+            String key = null;
+            String slotNumber;
+
+            try {
+                key = tk.nextToken();
+                slotNumber = tk.nextToken();
+
+                int slot = Integer.parseInt(slotNumber);
+                if (slot < 0)
+                    throw new IllegalArgumentException("Slot must be >= 0");
+
+                ShopItem item = ShopItem.valueOf(key);
+                return new ShopItemSet(item, slot);
+            }
+            catch (NoSuchElementException e) {
+                throw new IllegalArgumentException("Incorrect string format "+string);
+            }
+            catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(key == null ? "Item not found":"Unknown item "+key);
+            }
+        }
+    }
+
+    static class BarContext {
+        public @Nullable ItemCategory process(String string) throws IllegalArgumentException {
+            try {
+                string = string.trim();
+                ItemCategory cat = ItemCategory.valueOf(string);
+                if (cat==ItemCategory.NONE||cat==ItemCategory.NAV) {
+                    return null;
+                }
+                return cat;
+            }
+            catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Unknown item category "+string);
+            }
+        }
+    }
+
 
 
 

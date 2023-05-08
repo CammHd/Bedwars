@@ -3,7 +3,7 @@ package me.camm.productions.bedwars.Files;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Game.Arena;
 import me.camm.productions.bedwars.BedWars;
 
 import me.camm.productions.bedwars.Generators.Generator;

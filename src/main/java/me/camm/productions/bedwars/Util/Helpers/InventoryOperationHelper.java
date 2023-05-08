@@ -1,18 +1,17 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import com.google.gson.Gson;
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
-import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Arena.Teams.TeamTraps.*;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.PlayerManagers.HotbarManager;
+import me.camm.productions.bedwars.Game.PlayerManagers.PlayerInventoryManager;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Teams.Traps.*;
 import me.camm.productions.bedwars.Generators.Forge;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.HotbarEditorInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty;
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
-import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
-import me.camm.productions.bedwars.Items.ItemDatabases.TeamItem;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
+import me.camm.productions.bedwars.Items.ItemProperties.ItemCategory;
+import me.camm.productions.bedwars.Items.ItemProperties.TeamItem;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuyEditorInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuyInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.HotBarConfig;
@@ -37,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static me.camm.productions.bedwars.Items.ItemDatabases.ShopItem.TRACKER_ITEM;
+import static me.camm.productions.bedwars.Items.ItemProperties.ShopItem.TRACKER_ITEM;
 
 
 public class InventoryOperationHelper

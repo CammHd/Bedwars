@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.TeamColor;
 import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import org.bukkit.Location;

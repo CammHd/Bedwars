@@ -1,9 +1,6 @@
 package me.camm.productions.bedwars.Util;
 
 
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
-import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
-
 public enum BlockTag {
     RED((byte)1),
     BLUE((byte)2),

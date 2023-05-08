@@ -1,17 +1,17 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.DeathMessages.Cause;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
-import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.IGameOwnable;
-import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.IGameTeamable;
-import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.ILifeTimed;
-import me.camm.productions.bedwars.Entities.ShopKeeper;
-import me.camm.productions.bedwars.Util.DataSets.DamageSet;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.DeathMessages.DeathCause;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Teams.TeamColor;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.IGameOwnable;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.IGameTeamable;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.ILifeTimed;
+import me.camm.productions.bedwars.Game.Entities.ShopKeeper;
 import me.camm.productions.bedwars.Util.PacketSound;
+import me.camm.productions.bedwars.Util.Tuple2;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -38,10 +37,9 @@ import static me.camm.productions.bedwars.Util.Helpers.DamageHelper.formatDeathV
  */
 public class EntityActionListener implements Listener
 {
-    private final Plugin plugin;
     private final Arena arena;
     private final GameRunner runner;
-    private static final ConcurrentHashMap<UUID, DamageSet> damageHistory;
+    private static final ConcurrentHashMap<UUID, Tuple2<EntityDamageByEntityEvent,Long>> damageHistory;
     private static final ConcurrentHashMap<UUID, IGameTeamable> activeEntities;
     private final Map<UUID,BattlePlayer> arenaPlayers;
     private final PacketHandler handler;
@@ -50,6 +48,24 @@ public class EntityActionListener implements Listener
     static {
        damageHistory = new ConcurrentHashMap<>();
         activeEntities = new ConcurrentHashMap<>();
+    }
+
+    /*
+    - Associate indirect damage with players or entities on teams. (Use a hashmap and damageset class in util)
+    - also account for persistent items, and degradeable items. (This should be taken care of in the battleplayer class) [DONE! just need testing]
+
+    We will most likely also need to merge this class with a player move listener (for the void), and associate it with traps
+     and the heal pool as well.
+
+     */
+
+    public EntityActionListener(Arena arena, GameRunner runner)  //construct
+    {
+        this.arena = arena;
+        this.runner = runner;
+
+        arenaPlayers = arena.getPlayers();
+        handler = runner.getPacketHandler();
     }
 
 
@@ -67,8 +83,8 @@ public class EntityActionListener implements Listener
 
         if (damageHistory.containsKey(hurt.getUniqueId()))
         {
-            DamageSet set = damageHistory.get(hurt.getUniqueId());
-            long millis = set.getSystemTime();
+            Tuple2<EntityDamageByEntityEvent,Long> set = damageHistory.get(hurt.getUniqueId());
+            long millis = set.getSecondElem();
 
             //give the previous damager 10 seconds to kill the player. If the kill occurred more than 10 seconds later,
             // then nobody gets the kill for the player.
@@ -82,10 +98,12 @@ public class EntityActionListener implements Listener
 
             //so it was direct player damage
 
-            Entity damager = set.getEvent().getDamager();
+            EntityDamageByEntityEvent event = set.getFirstElem();
+            Entity damager = event.getDamager();
+
             if (players.containsKey(damager.getUniqueId()))
             {
-                BattlePlayer killer = players.get(set.getEvent().getDamager().getUniqueId());
+                BattlePlayer killer = players.get(damager.getUniqueId());
 
                 if (!victim.equals(killer))
                  handleKillerStats(killer,isFinal);
@@ -193,32 +211,10 @@ public class EntityActionListener implements Listener
 
     private void updateHistoryDamage(@NotNull BattlePlayer hurt, EntityDamageByEntityEvent event){
         if (damageHistory.containsKey(hurt.getUUID()))
-            damageHistory.replace(hurt.getUUID(),new DamageSet(event, System.currentTimeMillis()));
+            damageHistory.replace(hurt.getUUID(),new Tuple2<>(event,System.currentTimeMillis()));
         else
-            damageHistory.put(hurt.getUUID(),new DamageSet(event, System.currentTimeMillis()));
+            damageHistory.put(hurt.getUUID(),new Tuple2<>(event, System.currentTimeMillis()));
 
-    }
-
-
-
-
-    /*
-    - Associate indirect damage with players or entities on teams. (Use a hashmap and damageset class in util)
-    - also account for persistent items, and degradeable items. (This should be taken care of in the battleplayer class) [DONE! just need testing]
-
-    We will most likely also need to merge this class with a player move listener (for the void), and associate it with traps
-     and the heal pool as well.
-
-     */
-
-    public EntityActionListener(Arena arena, Plugin plugin, GameRunner runner)  //construct
-    {
-        this.arena = arena;
-        this.plugin = plugin;
-        this.runner = runner;
-
-        arenaPlayers = arena.getPlayers();
-        handler = runner.getPacketHandler();
     }
 
 
@@ -702,26 +698,18 @@ public class EntityActionListener implements Listener
     }
 
 
-
-
-
-
-
-
-    public static class LocationManager implements Runnable
+    public static class LocationManager extends BukkitRunnable
     {
         private final ArrayList<ShopKeeper> keepers;
         private final Arena arena;
-        private final Plugin plugin;
         private volatile boolean isRunning;
         private final PacketHandler handler;
         private final GameRunner runner;
 
-        public LocationManager(Plugin plugin, Arena arena, ArrayList<ShopKeeper> keepers, PacketHandler handler, GameRunner runner)
+        public LocationManager(Arena arena, ArrayList<ShopKeeper> keepers, PacketHandler handler, GameRunner runner)
         {
             this.arena = arena;
             this.keepers = keepers;
-            this.plugin = plugin;
             this.isRunning = true;
             this.handler = handler;
             this.runner = runner;
@@ -732,168 +720,156 @@ public class EntityActionListener implements Listener
             this.isRunning = isRunning;
         }
 
+        private void updateNPCs(BattlePlayer player, Player raw){
+            keepers.forEach(keeper -> {
+                if ((raw.getLocation().distanceSquared(keeper.getLocation())>2304)&&(!player.containsNPC(keeper.getId())))
+                {
+                    keeper.unloadNPC(raw);
+                    player.addResender(keeper);
+                }
+                //2304 is 48 ^2. We check if the distance is comparable to 48, but without the extra calculations of sqrt
+                else if (player.containsNPC(keeper.getId())&&raw.getLocation().distanceSquared(keeper.getLocation())<2304)
+                {
+                    player.removeResender(keeper.getId());
+                    keeper.sendNPC(raw);
+                    keeper.setRotation(raw);
+                }
+            });
 
+        }
+
+
+        private void defaults(BattlePlayer player, Player raw){
+            updateNPCs(player, raw);
+            raw.setFoodLevel(20);
+        }
 
         @Override
         public void run()
         {
             Map<UUID, BattlePlayer> players = arena.getPlayers();
-            new BukkitRunnable()
-            {
-                public void run()
-                {
+
                     if (!isRunning || !runner.isRunning())
                     {
                         cancel();
                         return;
                     }
 
-                       players.forEach((uuid, player) -> {
-                           Player raw = player.getRawPlayer();
+                    for (BattlePlayer player: players.values()) {
+                        Player rawPlayer = player.getRawPlayer();
+                        boolean finalDeath = !player.getTeam().getBedExists();
+
+                        if (rawPlayer.getLocation().getY() <= arena.getVoidLevel()) {
+                           defaults(player,rawPlayer);
+                           continue;
+                        }
+
+                        if (player.isEliminated() || !player.isAlive()) {
+                            player.teleport(arena.getSpecSpawn());
+                            defaults(player,rawPlayer);
+                            continue;
+                        }
+
+                        if (!damageHistory.containsKey(player.getUUID())) {
+                            formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, finalDeath);
+                            player.handlePlayerIntoSpectator(handler, !player.getTeam().getBedExists());
+                            runner.attemptEndGame();
+                            continue;
+                        }
+
+                        Tuple2<EntityDamageByEntityEvent,Long> damageEntry = damageHistory.get(player.getUUID());
+                        long eventSystemTime = damageEntry.getSecondElem();
+
+                        EntityDamageByEntityEvent event = damageEntry.getFirstElem();
+                        UUID attackerUUID = event.getDamager().getUniqueId();
+                        Entity damager = damageEntry.getFirstElem().getDamager();
+
+                        //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
+                        if (System.currentTimeMillis() - eventSystemTime > 10000) {
+                            formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, finalDeath);
+                            player.handlePlayerIntoSpectator(handler, finalDeath);
+                            runner.attemptEndGame();
+                            continue;
+                        }
+
+                        if (players.containsKey(attackerUUID))
+                        {
+                            BattlePlayer killer = players.get(attackerUUID);
+                            if (!killer.getTeam().equals(player.getTeam()))
+                                handleKillerStats(killer,finalDeath);
+
+                            formatDeathMessage(killer,player,null, EntityDamageEvent.DamageCause.VOID, finalDeath);
+                            player.handlePlayerIntoSpectator(handler, finalDeath, killer.getRawPlayer());
+                            runner.attemptEndGame();
+                            continue;
+                        }
 
 
+                        if (activeEntities.containsKey(attackerUUID)) {
+                            IGameTeamable teamable = activeEntities.get(attackerUUID);
 
-                            if (raw.getLocation().getY() <= arena.getVoidLevel())
-                            {
-                                boolean isFinal = !player.getTeam().getBedExists();
-                                VOID:
-                                {
+                            if (teamable instanceof IGameOwnable) {
+                                BattlePlayer owner = ((IGameOwnable) teamable).getOwner();
 
-                                    if (player.isEliminated() || !player.isAlive()) {
-                                        player.teleport(arena.getSpecSpawn());
-                                        break VOID;
-                                    }
+                                if (!owner.getTeam().equals(player.getTeam()))
+                                    handleKillerStats(owner,finalDeath);
 
-
-                                    if (damageHistory.containsKey(player.getUUID()))
-                                    {
-                                        DamageSet set = damageHistory.get(player.getUUID());
-                                        long millis = set.getSystemTime();
-
-
-                                        //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                                        if (System.currentTimeMillis() - millis > 10000) {
-                                            formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
-                                            player.handlePlayerIntoSpectator(handler, isFinal);
-
-                                            break VOID;
-                                        }
-
-
-
-                                        UUID id = set.getEvent().getDamager().getUniqueId();
-                                        if (players.containsKey(id))
-                                        {
-                                            BattlePlayer killer = players.get(set.getEvent().getDamager().getUniqueId());
-
-                                            if (!killer.getTeam().equals(player.getTeam()))
-                                              handleKillerStats(killer,isFinal);
-                                            //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                                            formatDeathMessage(killer,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
-                                            player.handlePlayerIntoSpectator(handler, isFinal, killer.getRawPlayer());
-                                            break VOID;
-                                        }
-
-                                        if (activeEntities.containsKey(id)) {
-                                            IGameTeamable teamable = activeEntities.get(id);
-
-                                            if (teamable instanceof IGameOwnable) {
-                                                BattlePlayer owner = ((IGameOwnable) teamable).getOwner();
-
-                                                if (!owner.getTeam().equals(player.getTeam()))
-                                                  handleKillerStats(owner,isFinal);
-
-                                                formatDeathMessage(owner,player,teamable, EntityDamageEvent.DamageCause.VOID, isFinal);
-                                                player.handlePlayerIntoSpectator(handler, isFinal, owner.getRawPlayer());
-                                                break VOID;
-                                            }
-                                        }
-
-                                        Entity damager = set.getEvent().getDamager();
-
-                                        //sendVoidNonDirectMessage(BattlePlayer killer, BattlePlayer victim, Cause cause, boolean isFinal, Arena arena)
-
-                                        if (damager instanceof Projectile) {
-                                            ProjectileSource source = ((Projectile)damager).getShooter();
-
-                                            if (!(source instanceof Player))
-                                                break VOID;
-
-                                            Player shooter = (Player) source;
-                                            BattlePlayer currentPlayer = players.getOrDefault(shooter.getUniqueId(),null);
-
-                                            if (currentPlayer != null) {
-
-
-                                                if (!currentPlayer.getTeam().equals(player.getTeam())) {
-                                                        handleKillerStats(currentPlayer, isFinal);
-                                                }
-
-                                                formatDeathVoidNonDirect(currentPlayer, player, damager instanceof Arrow ? Cause.PROJECTILE_VOID: Cause.FIREBALL_VOID,isFinal);
-                                                player.handlePlayerIntoSpectator(handler, isFinal, currentPlayer.getRawPlayer());
-                                                break VOID;
-                                            }
-
-
-                                        }
-
-                                        if (damager instanceof TNTPrimed) {
-
-                                            String name = damager.getCustomName();
-                                            BattlePlayer owner = null;
-                                            if (name != null)
-                                            {
-                                                for (BattlePlayer current: players.values()) {
-                                                    if (current.getRawPlayer().getUniqueId().toString().equalsIgnoreCase(name)) {
-                                                        owner = current;
-                                                        break;
-                                                    }
-                                                }
-
-
-                                                if (owner != null) {
-
-                                                    if (!owner.getTeam().equals(player.getTeam()))
-                                                     handleKillerStats(owner, isFinal);
-
-                                                    formatDeathVoidNonDirect(owner, player, Cause.TNT_VOID,isFinal);
-                                                    player.handlePlayerIntoSpectator(handler, isFinal, owner.getRawPlayer());
-                                                    break VOID;
-                                                }
-                                            }
-                                        }
-
-
-
-                                    }
-                                    //  //(BattlePlayer killer, BattlePlayer victim, IGameTeamable involved, EntityDamageEvent.DamageCause cause, Arena arena)
-                                    formatDeathMessage(null,player,null, EntityDamageEvent.DamageCause.VOID, isFinal);
-                                    player.handlePlayerIntoSpectator(handler, !player.getTeam().getBedExists());
-                                }
+                                formatDeathMessage(owner,player,teamable, EntityDamageEvent.DamageCause.VOID, finalDeath);
+                                player.handlePlayerIntoSpectator(handler, finalDeath, owner.getRawPlayer());
                                 runner.attemptEndGame();
+                                continue;
+                            }
+                        }
+
+
+                        if (damager instanceof Projectile) {
+                            ProjectileSource source = ((Projectile)damager).getShooter();
+
+                            if (!(source instanceof Player)) {
+                                player.handlePlayerIntoSpectator(handler, finalDeath, null);
+                                runner.attemptEndGame();
+                                continue;
                             }
 
-                            keepers.forEach(keeper -> {
-                                if ((raw.getLocation().distanceSquared(keeper.getLocation())>2304)&&(!player.containsNPC(keeper.getId())))
-                                {
-                                    keeper.unloadNPC(raw);
-                                    player.addResender(keeper);
+                            Player shooter = (Player) source;
+                            BattlePlayer currentPlayer = players.getOrDefault(shooter.getUniqueId(),null);
+
+                            if (currentPlayer != null) {
+
+                                if (!currentPlayer.getTeam().equals(player.getTeam())) {
+                                    handleKillerStats(currentPlayer, finalDeath);
                                 }
-                                //2304 is 48 ^2. We check if the distance is comparable to 48, but without the extra calculations of sqrt
-                                else if (player.containsNPC(keeper.getId())&&raw.getLocation().distanceSquared(keeper.getLocation())<2304)
-                                {
-                                    player.removeResender(keeper.getId());
-                                    keeper.sendNPC(raw);
-                                    keeper.setRotation(raw);
+
+                                formatDeathVoidNonDirect(currentPlayer, player, damager instanceof Arrow ? DeathCause.PROJECTILE_VOID: DeathCause.FIREBALL_VOID, finalDeath);
+                                player.handlePlayerIntoSpectator(handler, finalDeath, currentPlayer.getRawPlayer());
+                                runner.attemptEndGame();
+                                continue;
+                            }
+                        }
+
+
+                        if (damager instanceof Explosive) {
+
+                            String name = damager.getCustomName();
+                            BattlePlayer owner = null;
+                            if (name != null)
+                            {
+                                for (BattlePlayer current: players.values()) {
+                                    if (current.getRawPlayer().getUniqueId().toString().equalsIgnoreCase(name)) {
+                                        owner = current;
+                                        break;
+                                    }
                                 }
-                            });
 
-                            raw.setFoodLevel(20);
+                                if (owner != null && !owner.getTeam().equals(player.getTeam()))
+                                    handleKillerStats(owner, finalDeath);
+                                formatDeathVoidNonDirect(owner, player, DeathCause.TNT_VOID,finalDeath);
+                            }
 
-                        });
-
-                }
-            }.runTaskTimer(plugin, 0,2);
+                            player.handlePlayerIntoSpectator(handler, finalDeath, owner == null ? null: owner.getRawPlayer());
+                            runner.attemptEndGame();
+                        }
+                    }
         }
     }
 

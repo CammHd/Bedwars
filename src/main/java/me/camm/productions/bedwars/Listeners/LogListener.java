@@ -1,11 +1,11 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Entities.ShopKeeper;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Commands.CommandKeyword;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Entities.ShopKeeper;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.TeamHelper;
 import org.bukkit.ChatColor;

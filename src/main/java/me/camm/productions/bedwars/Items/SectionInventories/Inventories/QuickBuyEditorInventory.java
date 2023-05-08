@@ -1,12 +1,12 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
-import me.camm.productions.bedwars.Util.DataSets.ItemStackSet;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
+import me.camm.productions.bedwars.Util.Tuple2;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryCustom;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -35,8 +35,8 @@ public class QuickBuyEditorInventory extends CraftInventoryCustom implements IGa
 
     public void updateConfiguration(){
         QuickBuyInventory section = owner.getShopManager().getQuickBuy();
-         for (ItemStackSet set: section.getItems())
-             setItem(set.getSlot(), set.getStack());
+         for (Tuple2<ItemStack,Integer> set: section.getItems())
+             setItem(set.getSecondElem(), set.getFirstElem());
          setCurrentAdding(currentAdding);
     }
 

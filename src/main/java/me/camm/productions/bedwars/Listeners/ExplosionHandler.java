@@ -1,14 +1,14 @@
 package me.camm.productions.bedwars.Listeners;
 
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;
-import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.IGameTeamable;
-import me.camm.productions.bedwars.Explosions.ExplosionParticle;
-import me.camm.productions.bedwars.Explosions.VectorParameter;
-import me.camm.productions.bedwars.Explosions.Vectors.ExplosionVector;
-import me.camm.productions.bedwars.Explosions.VectorToolBox;
-import me.camm.productions.bedwars.Explosions.VelocityComponent;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.GameDragon;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.IGameTeamable;
+import me.camm.productions.bedwars.Util.Explosions.ExplosionParticle;
+import me.camm.productions.bedwars.Util.Explosions.VectorParameter;
+import me.camm.productions.bedwars.Util.Explosions.Vectors.ExplosionVector;
+import me.camm.productions.bedwars.Util.Explosions.VectorToolBox;
+import me.camm.productions.bedwars.Util.Explosions.VelocityComponent;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Explosion;
 import org.bukkit.Bukkit;

@@ -1,10 +1,10 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
-import me.camm.productions.bedwars.Entities.ActiveEntities.DreamDefender;
-import me.camm.productions.bedwars.Entities.ActiveEntities.ThrownFireball;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.TeamColor;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.DreamDefender;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.ThrownFireball;
 import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;

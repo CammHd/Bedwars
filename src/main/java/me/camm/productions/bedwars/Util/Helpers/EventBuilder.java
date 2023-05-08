@@ -1,11 +1,10 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.Game.Events.*;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-import static me.camm.productions.bedwars.Arena.Game.Events.EventTime.*;
-import me.camm.productions.bedwars.Arena.Game.Events.GameEventText;
+import me.camm.productions.bedwars.Game.Events.*;
+import me.camm.productions.bedwars.Game.GameRunner;
 
-import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.*;
+import static me.camm.productions.bedwars.Game.Events.EventTime.*;
+import static me.camm.productions.bedwars.Game.Scoreboard.ScoreBoardHeader.*;
 import static me.camm.productions.bedwars.Generators.GeneratorType.*;
 
 import java.util.ArrayList;

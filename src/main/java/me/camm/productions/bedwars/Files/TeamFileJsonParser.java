@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars.Files;
 
 import com.google.gson.JsonObject;
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Arena.Teams.TeamColor;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Teams.TeamColor;
 import me.camm.productions.bedwars.Generators.Forge;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;

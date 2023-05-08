@@ -1,13 +1,13 @@
 package me.camm.productions.bedwars;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Game.Commands.CommandKeyword;
-import me.camm.productions.bedwars.Arena.Game.GameInitializer;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
-import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
-import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Commands.CommandKeyword;
+import me.camm.productions.bedwars.Game.GameInitializer;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.PlayerManagers.HotbarManager;
+import me.camm.productions.bedwars.Game.PlayerManagers.PlayerInventoryManager;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.GameDragon;
 import me.camm.productions.bedwars.Listeners.PacketHandler;
 import me.camm.productions.bedwars.Files.FileManager;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.QuickBuyInventory;
@@ -62,12 +62,12 @@ public final class BedWars extends JavaPlugin
            for (CommandKeyword word : CommandKeyword.values()) {
                getCommand(word.getWord()).setExecutor(initialization);
            }
-
-
        }
        catch (Exception e) {
            sender.sendConsoleMessage(e.getMessage(), Level.WARNING);
+           sender.sendConsoleMessage("Disabling plugin due to initialization failure.",Level.WARNING);
            e.printStackTrace();
+           Bukkit.getPluginManager().disablePlugin(this);
        }
     }
 
@@ -180,6 +180,8 @@ public final class BedWars extends JavaPlugin
                if (!success)
                    sender.sendConsoleMessage("Could not write hot bar manager data for player "
                            +name+". Skipping.",Level.WARNING);
+               else
+                   sender.sendConsoleMessage("Saved hot bar data for "+name,Level.INFO);
             }
 
             //writing to shop file
@@ -192,6 +194,8 @@ public final class BedWars extends JavaPlugin
                 if (!success)
                     sender.sendConsoleMessage("Could not write quick buy customization data for player "
                             +name+". Skipping.",Level.WARNING);
+                else
+                    sender.sendConsoleMessage("Saved quick buy data for "+name,Level.INFO);
 
             }
         }

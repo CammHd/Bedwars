@@ -2,13 +2,11 @@ package me.camm.productions.bedwars.Files;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.internal.LinkedTreeMap;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,23 +31,6 @@ public abstract class JsonParser {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static boolean replace(String key, JsonElement elem, JsonObject parent){
-        try {
-            Field map = JsonObject.class.getDeclaredField("members");
-            map.setAccessible(true);
-            LinkedTreeMap<String, JsonElement> tree = (LinkedTreeMap<String, JsonElement>) map.get(parent);
-            map.setAccessible(false);
-            tree.replace(key, elem);
-
-            return true;
-
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
-
     public static JsonObject getParent(File file) throws IOException {
         try {
             return (JsonObject) new com.google.gson.JsonParser()
@@ -59,32 +40,6 @@ public abstract class JsonParser {
             throw new IOException("Error parsing json in file:  "+file.getName()+": "+e.getMessage());
         }
     }
-
-    @SuppressWarnings("unchecked")
-    public static JsonElement getEntry(String key, JsonObject parent) {
-        if (!parent.has(key))
-            throw new IllegalArgumentException("Parent does not contain the key");
-
-        try
-        {
-            Field field = JsonObject.class.getDeclaredField("members");
-            field.setAccessible(true);
-            LinkedTreeMap<String, JsonElement> tree = (LinkedTreeMap<String, JsonElement>) field.get(parent);
-            field.setAccessible(false);
-
-
-            return tree.get(key);
-
-        }
-        catch (Exception ignored) {
-
-        }
-
-        return null;
-
-    }
-
-
 
     protected HashMap<String, String> parseNormally(JsonObject parent){
         HashMap<String, String> entries = new HashMap<>();

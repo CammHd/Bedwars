@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Structures;
 
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
 import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import org.bukkit.ChatColor;

@@ -1,12 +1,12 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.Managers.HotbarManager;
-import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
-import me.camm.productions.bedwars.Items.ItemDatabases.*;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.PlayerManagers.HotbarManager;
+import me.camm.productions.bedwars.Items.ItemProperties.ItemCategory;
+import me.camm.productions.bedwars.Items.ItemProperties.*;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.HotBarConfig;
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
-import me.camm.productions.bedwars.Util.DataSets.ShopItemSet;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
+import me.camm.productions.bedwars.Items.ShopItemSet;
 import me.camm.productions.bedwars.Util.PacketSound;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
@@ -32,14 +32,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static me.camm.productions.bedwars.Items.ItemDatabases.BattleEnchantment.*;
-import static me.camm.productions.bedwars.Items.ItemDatabases.ShopItem.SHEARS;
+import static me.camm.productions.bedwars.Items.ItemProperties.BattleEnchantment.*;
+import static me.camm.productions.bedwars.Items.ItemProperties.ShopItem.SHEARS;
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty.QUICK_INV_BORDER_END;
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty.QUICK_INV_BORDER_START;
-import static me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory.*;
-import static me.camm.productions.bedwars.Items.ItemDatabases.LorePhrases.COST;
-import static me.camm.productions.bedwars.Items.ItemDatabases.LorePhrases.SELL;
-import static me.camm.productions.bedwars.Items.ItemDatabases.PotionData.*;
+import static me.camm.productions.bedwars.Items.ItemProperties.ItemCategory.*;
+import static me.camm.productions.bedwars.Items.ItemProperties.LorePhrases.COST;
+import static me.camm.productions.bedwars.Items.ItemProperties.LorePhrases.SELL;
+import static me.camm.productions.bedwars.Items.ItemProperties.PotionData.*;
 import static org.bukkit.Material.*;
 
 
@@ -841,7 +841,7 @@ public class ItemHelper
     Removes an item from the list if it shouldn't be contained in the file, or if the slot value is invalid.
     @param original
      */
-    public static ArrayList<ShopItemSet> filter(ArrayList<ShopItemSet> original)
+    public static List<ShopItemSet> filter(List<ShopItemSet> original)
     {
         original.removeIf(Objects::isNull);
         original.removeIf(item -> restrictedFileItems.contains(item.getItem()));

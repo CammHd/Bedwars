@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
+import me.camm.productions.bedwars.Game.Arena;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.ArmorConfig;

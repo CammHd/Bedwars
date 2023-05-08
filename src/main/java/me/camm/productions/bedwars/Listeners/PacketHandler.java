@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Listeners;
 
 import io.netty.channel.*;
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Entities.ShopKeeper;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Entities.ShopKeeper;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class PacketHandler extends ItemHelper
 {

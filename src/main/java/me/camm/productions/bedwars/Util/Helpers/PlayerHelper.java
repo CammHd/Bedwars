@@ -1,12 +1,12 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Arena.Teams.TeamTitle;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Teams.TeamTitle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.TEAM_ALIVE;
-import static me.camm.productions.bedwars.Arena.Players.Scoreboards.ScoreBoardHeader.TEAM_DEAD;
+import static me.camm.productions.bedwars.Game.Scoreboard.ScoreBoardHeader.TEAM_ALIVE;
+import static me.camm.productions.bedwars.Game.Scoreboard.ScoreBoardHeader.TEAM_DEAD;
 
 public class PlayerHelper {
 

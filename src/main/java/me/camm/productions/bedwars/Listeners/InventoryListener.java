@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Game.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.TeamJoinInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;

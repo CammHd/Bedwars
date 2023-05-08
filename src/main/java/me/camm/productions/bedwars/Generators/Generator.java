@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Generators;
 
 
-import me.camm.productions.bedwars.Arena.Game.Events.EventTime;
+import me.camm.productions.bedwars.Game.Events.EventTime;
 import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-import static me.camm.productions.bedwars.Arena.Game.Events.EventTime.*;
+import static me.camm.productions.bedwars.Game.Events.EventTime.*;
 
 /**
  * @author CAMM
@@ -118,7 +118,7 @@ public class Generator
             case DIAMOND:
             {
                 generatorType.setCustomName(ChatColor.AQUA+genType.getSimpleName());
-                setTimeTitle(EventTime.DIAMOND_TIER_ONE_TIME.getTime());  //Diamond in [n] seconds
+                setTimeTitle(DIAMOND_TIER_ONE_TIME.getTime());  //Diamond in [n] seconds
                 setGeneratorTier(1,DIAMOND_TIER_ONE_TIME.getTime());
                 totalSpawnTime = DIAMOND_TIER_ONE_TIME.getTime();
                 nextSpawnTime = DIAMOND_TIER_ONE_TIME.getTime();

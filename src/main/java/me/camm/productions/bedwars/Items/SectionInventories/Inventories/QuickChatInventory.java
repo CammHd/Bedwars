@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
 import com.google.common.collect.HashBasedTable;
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.QuickChatConfig;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.TeamOptionConfig;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;

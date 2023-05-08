@@ -1,7 +1,7 @@
 package me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations;
 
-import me.camm.productions.bedwars.Items.ItemDatabases.TeamItem;
-import static me.camm.productions.bedwars.Items.ItemDatabases.TeamItem.*;
+import me.camm.productions.bedwars.Items.ItemProperties.TeamItem;
+import static me.camm.productions.bedwars.Items.ItemProperties.TeamItem.*;
 
 
 /**

@@ -1,10 +1,10 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
 
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.DeathMessages.Cause;
-import me.camm.productions.bedwars.Arena.Players.DeathMessages.DeathFormatter;
-import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.IGameTeamable;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.DeathMessages.DeathCause;
+import me.camm.productions.bedwars.Game.DeathMessages.DeathFormatter;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.IGameTeamable;
 import org.bukkit.ChatColor;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -22,7 +22,7 @@ public class DamageHelper {
                 // is natural death
                 message = DeathFormatter.format(victim,DeathFormatter.toNaturalCause(cause));
             else
-                message = DeathFormatter.format(victim, Cause.NORMAL);
+                message = DeathFormatter.format(victim, DeathCause.NORMAL);
             //is indirect death w/ no owner
 
         }
@@ -30,8 +30,8 @@ public class DamageHelper {
         {
 
             if (involved == null) {
-                Cause type = DeathFormatter.toInitiatedCause(cause);
-                if (type == Cause.NORMAL)
+                DeathCause type = DeathFormatter.toInitiatedCause(cause);
+                if (type == DeathCause.NORMAL)
                     // is direct death
                     message = DeathFormatter.formatDirectDeath(victim, killer);
                 else
@@ -54,13 +54,13 @@ public class DamageHelper {
     }
 
 
-    public static void formatDeathVoidNonDirect(BattlePlayer killer, BattlePlayer victim, Cause cause, boolean isFinal){
+    public static void formatDeathVoidNonDirect(BattlePlayer killer, BattlePlayer victim, DeathCause deathCause, boolean isFinal){
         String message;
 
-        if (cause != Cause.FIREBALL_VOID && cause != Cause.TNT_VOID && cause != Cause.PROJECTILE_VOID)
+        if (deathCause != DeathCause.FIREBALL_VOID && deathCause != DeathCause.TNT_VOID && deathCause != DeathCause.PROJECTILE_VOID)
             return;
 
-        message = DeathFormatter.format(victim,killer,cause);
+        message = DeathFormatter.format(victim,killer, deathCause);
         ChatSender sender = ChatSender.getInstance();
 
         if (!isFinal)

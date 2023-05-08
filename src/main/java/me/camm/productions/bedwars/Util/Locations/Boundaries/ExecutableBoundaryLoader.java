@@ -1,12 +1,13 @@
 package me.camm.productions.bedwars.Util.Locations.Boundaries;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Arena.Teams.TeamTraps.ITrap;
-import me.camm.productions.bedwars.Util.DataSets.TimeSet;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Teams.Traps.ITrap;
+import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
 import me.camm.productions.bedwars.Util.PacketSound;
+import me.camm.productions.bedwars.Util.Tuple2;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.ChatColor;
@@ -19,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.logging.Level;
 
 
 /*
@@ -31,7 +32,7 @@ public class ExecutableBoundaryLoader implements Runnable
     private final Object lock;
     private final ArrayList<BattleTeam> primedTraps;
     private final ArrayList<BattleTeam> healAuras;
-    private final ArrayList<TimeSet> coolingTeams;
+    private final ArrayList<Tuple2<BattleTeam, Long>> coolingTeams;
     private final Thread thread;
     private volatile boolean running;
     private final Arena arena;
@@ -92,7 +93,8 @@ public class ExecutableBoundaryLoader implements Runnable
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            ChatSender sender = ChatSender.getInstance();
+            sender.sendConsoleMessage("Boundary loader experienced an Interrupted exception", Level.WARNING);
         }
 
     }
@@ -105,9 +107,9 @@ public class ExecutableBoundaryLoader implements Runnable
             synchronized (primedTraps) {
             if (!primedTraps.contains(team) && team.getBedExists()) {
 
-                for (TimeSet set: coolingTeams)
+                for (Tuple2<BattleTeam, Long> set: coolingTeams)
                 {
-                    if (set.getTeam().equals(team))
+                    if (set.getFirstElem().equals(team))
                         return;
                 }
 
@@ -186,7 +188,7 @@ public class ExecutableBoundaryLoader implements Runnable
             current.sendTeamSoundPacket(PacketSound.ENDERMAN);
 
             primedTraps.remove(current);
-            coolingTeams.add(new TimeSet(current, System.currentTimeMillis()));
+            coolingTeams.add(new Tuple2<>(current, System.currentTimeMillis()));
 
         }
 
@@ -254,13 +256,13 @@ public class ExecutableBoundaryLoader implements Runnable
 
         long millis = System.currentTimeMillis();
 
-        TimeSet next = coolingTeams.get(0);//1
+        Tuple2<BattleTeam, Long> next = coolingTeams.get(0);//1
 
         //traps have 20 sec cooldown
         final int COOLDOWN = 20000;
-        while ( (millis - next.getMillis() > COOLDOWN) && (!coolingTeams.isEmpty() ))
+        while ( (millis - next.getSecondElem() > COOLDOWN) && (!coolingTeams.isEmpty() ))
         {
-            BattleTeam team = next.getTeam();
+            BattleTeam team = next.getFirstElem();
             if (team.nextTrap() != null && team.getBedExists())
             {
                 synchronized (primedTraps) {

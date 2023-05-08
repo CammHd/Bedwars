@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.Game.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Entities.ActiveEntities.BedBug;
-import me.camm.productions.bedwars.Entities.BridgeEgg;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.BedBug;
+import me.camm.productions.bedwars.Game.Entities.BridgeEgg;
 import me.camm.productions.bedwars.Util.PacketSound;
 
 import org.bukkit.Location;
