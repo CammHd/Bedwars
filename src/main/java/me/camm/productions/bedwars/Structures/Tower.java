@@ -16,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.function.Function;
+
 import static me.camm.productions.bedwars.Structures.TowerParameter.*;
 
 public class Tower
@@ -52,6 +54,7 @@ public class Tower
         returnChest(event);
 
     }
+
 
     private void returnChest(BlockPlaceEvent event)
     {
@@ -191,7 +194,7 @@ A yaw of 270 represents the positive x direction. [E]
         }
 
 
-        if (yaw>AngledDirection.THREE_FIFTEEN.dir||yaw<AngledDirection.ONE_THIRTY_FIVE.dir) { ///////////CHANGED NEG AND POS
+        if (yaw> AngledDirection.THREE_FIFTEEN.dir ||yaw<AngledDirection.ONE_THIRTY_FIVE.dir) { ///////////CHANGED NEG AND POS
 
             xDirection = POSITIVE.getMeasurement();
         }
