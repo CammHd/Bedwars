@@ -210,7 +210,6 @@ public class WorldDataJsonParser extends JsonParser
             throw new IllegalArgumentException("Expected json primitive for y level. Got "+elem.getClass().getName());
 
         return JsonBuilder.toInt(elem.getAsString());
-
     }
 
 
@@ -244,7 +243,7 @@ public class WorldDataJsonParser extends JsonParser
             GameBoundary bounds = parseBoundary(parent);
 
             //Coordinate location, World world, GeneratorType type, Plugin plugin, GameBoundary box
-            return new Generator(location, arena.getWorld(), type, BedWars.getInstance(), bounds);
+            return new Generator(location, arena.getWorld(), type, BedWars.getInstance(), bounds, tierTimes);
 
 
     }

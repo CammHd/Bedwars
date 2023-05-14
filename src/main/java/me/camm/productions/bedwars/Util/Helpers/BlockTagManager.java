@@ -45,12 +45,15 @@ public class BlockTagManager {
         return Math.abs(result % 2);
     }
     public static int getIndex(byte number) {
+     //Passing in 0 gives -2147483648, which is an invalid array index, so
+        //we don't need to worry about that.
+
         int index;
         if (getValueAtPosition(7, number) == 1) {
-            number = (byte) (Math.abs(number) - 1);  //getting how big it is
+            number = (byte) (Math.abs(number) - 1);  //getting the abs value of it. -1 cause 2's comp
             index = (int) (Math.log(number) / Math.log(2) + 1); /// change of base formula
         }
-        else index = (int) (Math.log(number) / Math.log(2));
+        else index = (int) (Math.log(number) / Math.log(2)); /// basically getting the n in 2^n
 
         return index;
     }

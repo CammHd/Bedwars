@@ -759,7 +759,7 @@ public class EntityActionListener implements Listener
                         Player rawPlayer = player.getRawPlayer();
                         boolean finalDeath = !player.getTeam().getBedExists();
 
-                        if (rawPlayer.getLocation().getY() <= arena.getVoidLevel()) {
+                        if (rawPlayer.getLocation().getY() > arena.getVoidLevel()) {
                            defaults(player,rawPlayer);
                            continue;
                         }

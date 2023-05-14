@@ -18,7 +18,7 @@ import java.util.Random;
 @author CAMM
 Helper for vectors
  */
-public class VectorToolBox
+public class VectorUtils
 {
 
     private static final Random rand;

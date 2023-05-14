@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
@@ -22,12 +23,12 @@ import static java.lang.Double.NaN;
  *
  *
  */
-public class VelocityComponent {
+public class KnockbackCalculator {
     private final EntityExplodeEvent event;
     private final boolean isFireball;
     private double range;
 
-    public VelocityComponent(EntityExplodeEvent event)
+    public KnockbackCalculator(EntityExplodeEvent event)
     {
         this.event = event;
         Entity entity = event.getEntity();
@@ -49,7 +50,7 @@ public class VelocityComponent {
 
         for (Entity e: nearEntities) //for all of the nearby entities to the explosion..
         {
-            if (!VectorToolBox.isValidVelocityType(e))   //So if the entity can be affected by velocity
+            if (!VectorUtils.isValidVelocityType(e))   //So if the entity can be affected by velocity
                continue;
 
             constructAndImpart(origin, e.getLocation().clone(),e);
@@ -143,13 +144,10 @@ public class VelocityComponent {
         double delX,delY,delZ;
         Vector conversion;
 
-
-        String type = target.getType().toString().toLowerCase();
-
         if (isFireball) {
             conversion = convertToFireballDist(entityLoc, target, explosionLoc);
         }
-        else if (type.contains("tnt")){
+        else if (target instanceof TNTPrimed){
           conversion = convertToTNTProjectileDist(entityLoc, explosionLoc);
         }
         else
@@ -165,10 +163,7 @@ public class VelocityComponent {
 
         double totalMagnitude;
 
-
-
-
-        if (type.contains("tnt")) {
+        if (target instanceof TNTPrimed) {
             totalMagnitude = getTNTProjectileMagnitude(totalDist);
         }
         else {

@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 /**
  * @author CAMM
  * List of easter eggs that can be put onto the scoreboard
- * Please keep entries less than 16 characters since more than  (24 I think?) will
+ * length > 32 characters  (pretty sure) will
  * crash the client.
  */
 public enum BoardEasterEgg

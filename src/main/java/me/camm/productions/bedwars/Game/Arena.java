@@ -175,7 +175,7 @@ public class Arena
 
 
   //registers the map
-  public void registerMap() throws BedWarsException
+  public synchronized void registerMap() throws BedWarsException
   {
       if (isRegistering())
           throw new CommandException("Concurrent request for set up. The arena is already doing so!");

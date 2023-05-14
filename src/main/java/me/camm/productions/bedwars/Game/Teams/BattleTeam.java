@@ -323,9 +323,6 @@ It is up to the calling method to update the scoreboards of the players.
 
         if (canStartForge) {
 
-            if (teamColor == TeamColor.BLUE)
-                return;
-
             Thread forgeThread = new Thread(forge);
             forgeThread.start();
             canStartForge = false;

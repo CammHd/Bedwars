@@ -13,6 +13,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import static me.camm.productions.bedwars.Structures.TowerParameter.*;
 
+
+//refactor this
 public class LineBuilder
 {
     private final int xMultiplier;
@@ -37,6 +39,7 @@ public class LineBuilder
 
 
 //Draws a solid line along the x axis.
+    //refactor?
     public void drawSolidX(int length, Location loc, boolean skipFirst)
     {
 
@@ -69,6 +72,7 @@ public class LineBuilder
 
 
     //Draws a solid line along the z axis.
+    //refactor
     public void drawSolidZ(int length, Location loc, boolean skipFirst)
     {
 
@@ -100,6 +104,7 @@ public class LineBuilder
     }
 
     //Draws a horizontal square with the x and z length parameters.
+    //refactor/rebuild
     public void drawRoundPerimeter(Location starting, int xLength, int zLength)
     {
         Location draw = starting.clone();
@@ -126,8 +131,6 @@ public class LineBuilder
         }
         else
         {
-
-
             //1nd half
             drawJumpedX(SIDE_BATTLEMENTS.getMeasurement(),SIDE_BATTLEMENT_GAP.getMeasurement(),battlementLocation.clone().add(xMultiplier,0,0),false);
             drawSegmentedZ(battlementLocation.clone().add(0,0,zMultiplier),BATTLEMENT_SIZE.getMeasurement(),MAIN_BATTLEMENTS.getMeasurement());
@@ -144,6 +147,8 @@ public class LineBuilder
     }
 
 // Draws the line with the hole in the tower where the ladder goes.
+
+    //refactor
     public void drawHatch(Location start, boolean isXLarger)
     {
         Location draw = start.clone();
@@ -219,6 +224,7 @@ public class LineBuilder
     }
 
 //Draws a line with segments spaced 1 block apart and with a specified length on the x axis.
+
     public void drawSegmentedX(Location loc, int segmentLength, int segments)
     {
         Location draw = loc.clone();
@@ -360,6 +366,7 @@ public class LineBuilder
 
 
     //direction byte for block data
+    //keep for reference
     private byte faceToDirection(BlockFace face)
     {
         byte direction;
@@ -386,6 +393,7 @@ public class LineBuilder
     }
 
 
+    ///keep for reference
     @SuppressWarnings("deprecation")
     public void placeLadder(Location loc, BlockFace face)
     {
@@ -410,6 +418,7 @@ public class LineBuilder
 
 
 
+    //keep for reference
     @SuppressWarnings("deprecation")
     public void placeBlock(Location loc)
     {
@@ -439,6 +448,7 @@ public class LineBuilder
     }
 
 
+    ///get rid of/keep for reference
     private void playSound(Location loc)
     {
         loc.getWorld().playSound(loc,Sound.ITEM_PICKUP,1,1);

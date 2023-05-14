@@ -112,95 +112,35 @@ public class Tower
 
     }
 
+    /*
 
+      new BukkitRunnable() {
+
+      new ... {
+      }
+
+      }.runTask()
+
+     */
+
+
+    ///refactor this
     private void construct()  //building the tower
     {
 
         Location heightLocation = startLocation.clone();
 
         LineBuilder lineMaker = new LineBuilder(xDirection,zDirection,color,world,plugin);  //color is byte
-
-
         new BukkitRunnable()
         {
             int currentHeight = 0;
             public void run()
             {
-                if (currentHeight< HEIGHT.getMeasurement())
-                {
-                    lineMaker.drawSolidX(xBaseLength,heightLocation,true);
-                    lineMaker.drawSolidZ(zBaseLength,heightLocation,true);
-
-                    lineMaker.placeLadder(placedLocation.clone().add(0,currentHeight,0),face);
-
-                    Location xHalf = getHalfLocation(startLocation,xDirection,xBaseLength,true);  //
-                    Location zHalf = getHalfLocation(startLocation, zDirection, zBaseLength, false);
-
-                    if (currentHeight< DOCKING_HEIGHT.getMeasurement())
-                    {
-                        if (xBaseLength==BASE_LENGTH.getMeasurement())  //x is longer, so x has the entrance
-                        {
-                            // public void drawJumpedX(int placeNumber, int period, Location loc, boolean skipOne)
-                            lineMaker.drawJumpedX(2,2,zHalf.clone().add(0,currentHeight,0),true); /////////////////////////// [false] period 1
-                            lineMaker.drawSolidZ(zBaseLength, xHalf.add(0, currentHeight, 0),true);
-                        }
-                        else //z longer, so z is the entrance
-                        {
-                            lineMaker.drawJumpedZ(2,2,xHalf.clone().add(0,currentHeight,0),true);///////////// [false] , period 1
-                            lineMaker.drawSolidX(xBaseLength, zHalf.add(0, currentHeight, 0),true);
-                        }
+                currentHeight = runnable(lineMaker, heightLocation,currentHeight);
+                if (currentHeight == -1)
+                    cancel();
 
 
-
-                    }
-                    else {
-                        lineMaker.drawSolidX(xBaseLength, zHalf.add(0, currentHeight, 0),true);
-                        lineMaker.drawSolidZ(zBaseLength, xHalf.add(0, currentHeight, 0),true);
-                    }
-
-                    heightLocation.setY(heightLocation.getBlockY()+1);
-                    currentHeight++;
-                }
-                else
-                {
-                    lineMaker.placeLadder(placedLocation.clone().add(0,currentHeight,0),face);  //Just 1 more ladder block
-
-
-                    new BukkitRunnable()//2
-                    {
-                        public void run()
-                        {
-                            lineMaker.drawHatch(startLocation.clone().add(0, HEIGHT.getMeasurement(), 0), xBaseLength == BASE_LENGTH.getMeasurement());
-
-                            new BukkitRunnable()//3
-                            {
-                                public void run()
-                                {
-                                    if (xBaseLength==BASE_LENGTH.getMeasurement())
-                                    {
-                                        lineMaker.drawSegmentedX(startLocation.clone().add(0,HEIGHT.getMeasurement(),zDirection*-1),1,MAIN_BATTLEMENTS.getMeasurement());
-                                        lineMaker.drawSegmentedX(startLocation.clone().add(0,HEIGHT.getMeasurement(), zDirection*PLATFORM_WIDTH.getMeasurement()),1,MAIN_BATTLEMENTS.getMeasurement());
-                                        lineMaker.drawRoundPerimeter(startLocation.clone().add(xDirection*-1,BATTLEMENT_BASE_HEIGHT.getMeasurement(),zDirection*-1),PLATFORM_LENGTH.getMeasurement(),PLATFORM_WIDTH.getMeasurement());
-                                    }
-                                    else
-                                    {
-                                        lineMaker.drawSegmentedZ(startLocation.clone().add(xDirection*-1,HEIGHT.getMeasurement(),0),1,MAIN_BATTLEMENTS.getMeasurement());
-                                        lineMaker.drawSegmentedZ(startLocation.clone().add(xDirection*PLATFORM_WIDTH.getMeasurement(),HEIGHT.getMeasurement(),0),1,MAIN_BATTLEMENTS.getMeasurement());
-                                        lineMaker.drawRoundPerimeter(startLocation.clone().add(xDirection*-1,BATTLEMENT_BASE_HEIGHT.getMeasurement(),zDirection*-1),PLATFORM_WIDTH.getMeasurement(),PLATFORM_LENGTH.getMeasurement());
-                                    }
-                                    cancel(); //3
-                                }
-                            }.runTask(plugin);//3
-
-                            cancel();  //inner 2
-
-                        }//run() inner
-                    }.runTask(plugin);//inner 1
-
-
-                    cancel(); //outer 1
-
-                }
             }//outer run()
         }.runTaskTimer(plugin, 0, PERIOD.getMeasurement());
 
@@ -210,6 +150,7 @@ public class Tower
 
     }
 
+    ///keep for reference, remove this.
     private Location getHalfLocation(Location beginning, int multiplier, int length, boolean isX)
     {
         return isX ? beginning.clone().add(multiplier*(length+1),0,0) : beginning.clone().add(0,0,multiplier*(length+1));
@@ -223,6 +164,7 @@ A yaw of 270 represents the positive x direction. [E]
     */
 
     //Converting MC direction to normal directions that go from 0 --> 360
+    //useful
     private double normalizeDirection(double direction)
     {
         //if mod 360 greater/equal 0    t: return dir   f: return dir+360
@@ -230,6 +172,7 @@ A yaw of 270 represents the positive x direction. [E]
     }
 
 
+    //refactor or remove
     private void setDirections()  //getting dir and init variables.
     {
         double yaw = normalizeDirection(player.getLocation().getYaw());
@@ -271,6 +214,8 @@ A yaw of 270 represents the positive x direction. [E]
         calculateFace(yaw);
     }
 
+
+    //redo it
     private void calculateStart()//finding the start location for the lines to originate from
     {
         Location initial = placedLocation.clone();
@@ -295,6 +240,7 @@ A yaw of 270 represents the positive x direction. [E]
 
     }
 
+    //keep for reference
     private void calculateFace(double yaw) //calculate face for the ladders
     {
         if (yaw>AngledDirection.THREE_FIFTEEN.dir||yaw<AngledDirection.FORTY_FIVE.dir)
@@ -315,6 +261,87 @@ A yaw of 270 represents the positive x direction. [E]
 
     }
 
+    //refactor
+    public int runnable(LineBuilder lineMaker, Location heightLocation, int currentHeight)
+    {
+
+                    if (currentHeight< HEIGHT.getMeasurement())
+                    {
+                        lineMaker.drawSolidX(xBaseLength,heightLocation,true);
+                        lineMaker.drawSolidZ(zBaseLength,heightLocation,true);
+
+                        lineMaker.placeLadder(placedLocation.clone().add(0,currentHeight,0),face);
+
+                        Location xHalf = getHalfLocation(startLocation,xDirection,xBaseLength,true);  //
+                        Location zHalf = getHalfLocation(startLocation, zDirection, zBaseLength, false);
+
+                        if (currentHeight< DOCKING_HEIGHT.getMeasurement())
+                        {
+                            if (xBaseLength==BASE_LENGTH.getMeasurement())  //x is longer, so x has the entrance
+                            {
+                                // public void drawJumpedX(int placeNumber, int period, Location loc, boolean skipOne)
+                                lineMaker.drawJumpedX(2,2,zHalf.clone().add(0,currentHeight,0),true); /////////////////////////// [false] period 1
+                                lineMaker.drawSolidZ(zBaseLength, xHalf.add(0, currentHeight, 0),true);
+                            }
+                            else //z longer, so z is the entrance
+                            {
+                                lineMaker.drawJumpedZ(2,2,xHalf.clone().add(0,currentHeight,0),true);///////////// [false] , period 1
+                                lineMaker.drawSolidX(xBaseLength, zHalf.add(0, currentHeight, 0),true);
+                            }
+
+                        }
+                        else {
+                            lineMaker.drawSolidX(xBaseLength, zHalf.add(0, currentHeight, 0),true);
+                            lineMaker.drawSolidZ(zBaseLength, xHalf.add(0, currentHeight, 0),true);
+                        }
+
+                        heightLocation.setY(heightLocation.getBlockY()+1);
+                        currentHeight++;
+                    }
+                    else
+                    {
+                        lineMaker.placeLadder(placedLocation.clone().add(0,currentHeight,0),face);  //Just 1 more ladder block
+
+
+                        new BukkitRunnable()//2
+                        {
+                            public void run()
+                            {
+                                lineMaker.drawHatch(startLocation.clone().add(0, HEIGHT.getMeasurement(), 0), xBaseLength == BASE_LENGTH.getMeasurement());
+
+                                new BukkitRunnable()//3
+                                {
+                                    public void run()
+                                    {
+                                        if (xBaseLength==BASE_LENGTH.getMeasurement())
+                                        {
+                                            lineMaker.drawSegmentedX(startLocation.clone().add(0,HEIGHT.getMeasurement(),zDirection*-1),1,MAIN_BATTLEMENTS.getMeasurement());
+                                            lineMaker.drawSegmentedX(startLocation.clone().add(0,HEIGHT.getMeasurement(), zDirection*PLATFORM_WIDTH.getMeasurement()),1,MAIN_BATTLEMENTS.getMeasurement());
+                                            lineMaker.drawRoundPerimeter(startLocation.clone().add(xDirection*-1,BATTLEMENT_BASE_HEIGHT.getMeasurement(),zDirection*-1),PLATFORM_LENGTH.getMeasurement(),PLATFORM_WIDTH.getMeasurement());
+                                        }
+                                        else
+                                        {
+                                            lineMaker.drawSegmentedZ(startLocation.clone().add(xDirection*-1,HEIGHT.getMeasurement(),0),1,MAIN_BATTLEMENTS.getMeasurement());
+                                            lineMaker.drawSegmentedZ(startLocation.clone().add(xDirection*PLATFORM_WIDTH.getMeasurement(),HEIGHT.getMeasurement(),0),1,MAIN_BATTLEMENTS.getMeasurement());
+                                            lineMaker.drawRoundPerimeter(startLocation.clone().add(xDirection*-1,BATTLEMENT_BASE_HEIGHT.getMeasurement(),zDirection*-1),PLATFORM_WIDTH.getMeasurement(),PLATFORM_LENGTH.getMeasurement());
+                                        }
+                                        cancel(); //3
+                                    }
+                                }.runTask(plugin);//3
+
+                                cancel();  //inner 2
+
+                            }//run() inner
+                        }.runTask(plugin);//inner 1
+
+                        return -1;
+                    }
+                    return currentHeight;
+                }
+
+
+
+                //get rid of?
     private enum AngledDirection
     {
         FORTY_FIVE(45),
@@ -335,5 +362,7 @@ A yaw of 270 represents the positive x direction. [E]
         }
     }
 
-
 }
+
+
+

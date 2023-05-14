@@ -7,8 +7,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
-import static me.camm.productions.bedwars.Util.Explosions.VectorToolBox.calculateResistance;
-import static me.camm.productions.bedwars.Util.Explosions.VectorToolBox.isDataDestructable;
+import static me.camm.productions.bedwars.Util.Explosions.VectorUtils.calculateResistance;
+import static me.camm.productions.bedwars.Util.Explosions.VectorUtils.isDataDestructable;
 
 
 /**

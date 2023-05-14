@@ -7,8 +7,8 @@ import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.IGameT
 import me.camm.productions.bedwars.Util.Explosions.ExplosionParticle;
 import me.camm.productions.bedwars.Util.Explosions.VectorParameter;
 import me.camm.productions.bedwars.Util.Explosions.Vectors.ExplosionVector;
-import me.camm.productions.bedwars.Util.Explosions.VectorToolBox;
-import me.camm.productions.bedwars.Util.Explosions.VelocityComponent;
+import me.camm.productions.bedwars.Util.Explosions.VectorUtils;
+import me.camm.productions.bedwars.Util.Explosions.KnockbackCalculator;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Explosion;
 import org.bukkit.Bukkit;
@@ -117,7 +117,7 @@ public class ExplosionHandler implements Listener
                 continue;
 
 
-            if (!VectorToolBox.isValidDamageType(entity)) {
+            if (!VectorUtils.isValidDamageType(entity)) {
                 continue;
             }
 
@@ -163,7 +163,7 @@ public class ExplosionHandler implements Listener
 
         }
 
-        VelocityComponent component = new VelocityComponent(explodeEvent);
+        KnockbackCalculator component = new KnockbackCalculator(explodeEvent);
         component.applyVelocity();
 
         double distance = 0;
@@ -186,7 +186,7 @@ public class ExplosionHandler implements Listener
                     continue;
                 }
 
-                VectorToolBox.breakAtPosition(directions.get(rays).blockAtDistance(distance)); //breaking the block
+                VectorUtils.breakAtPosition(directions.get(rays).blockAtDistance(distance)); //breaking the block
 
                 if (incendiary)
                       fireCandidates.add(block);  //consider the block for fire [Might not be air]
@@ -215,14 +215,14 @@ public class ExplosionHandler implements Listener
 
                 switch (currentMaterial) {
                     case WOOD: {
-                        if (VectorToolBox.isDataDestructable(testBlock.getData(), false, testBlock, colors))
+                        if (VectorUtils.isDataDestructable(testBlock.getData(), false, testBlock, colors))
                             valid = true; //can be set on fire
                     }
                     break;
 
                     case STAINED_CLAY:
                     case WOOL: {
-                        if (VectorToolBox.isDataDestructable(testBlock.getData(), true, testBlock, colors))
+                        if (VectorUtils.isDataDestructable(testBlock.getData(), true, testBlock, colors))
                             valid = true;  // can be set on fire
                     }
 

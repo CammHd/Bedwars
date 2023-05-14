@@ -5,6 +5,7 @@ import me.camm.productions.bedwars.Game.Events.EventTime;
 import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -44,6 +45,7 @@ public class Generator
     private volatile int totalSpawnTime;
     private String spawnWord;  //To show the type of spawn
     private int tier;
+    private int[] tierTimes;
 
     private final Material type;
     //What the generator is spawning
@@ -79,8 +81,9 @@ public class Generator
 
     //time of upgrades is controlled externally
 
-    public Generator(Coordinate location, World world, GeneratorType type, Plugin plugin, GameBoundary box)  //construct
+    public Generator(Coordinate location, World world, GeneratorType type, Plugin plugin, GameBoundary box, int[] tierTimes)  //construct
     {
+
         this.box = box;
         this.name = TAG;
         this.x = location.getX();
@@ -238,7 +241,7 @@ public class Generator
                 break;
 
             case 2:
-                nextTime =  genType==GeneratorType.DIAMOND? DIAMOND_TIER_THREE_TIME.getTime() : EMERALD_TIER_THREE_TIME.getTime();
+                nextTime = genType==GeneratorType.DIAMOND? DIAMOND_TIER_THREE_TIME.getTime() : EMERALD_TIER_THREE_TIME.getTime();
                 break;
 
             default:

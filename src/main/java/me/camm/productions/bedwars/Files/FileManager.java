@@ -241,12 +241,12 @@ public class FileManager
                 line ++;
                 try {
                     ItemCategory category = context.process(current);
-                    set[line] = category;
+                    set[line-1] = category;
                 }
                 catch (IllegalArgumentException e) {
-                    sender.sendConsoleMessage(" at line "+(line-1) +"in " +
+                    sender.sendConsoleMessage(e.getMessage() +" at line "+(line-1) +"in " +
                             ""+player.getName()+"'s hot bar file", Level.INFO);
-                    set[line] = null;
+                    set[line-1] = null;
                 }
                 current = reader.readLine();
             }
@@ -284,7 +284,7 @@ public class FileManager
                     items.add(set);
                 }
                 catch (IllegalArgumentException e) {
-                    sender.sendConsoleMessage(" at line "+(line-1)+" in "+player.getRawPlayer().getName()+"'s inv file",Level.INFO);
+                    sender.sendConsoleMessage(e.getMessage()+" at line "+(line-1)+" in "+player.getRawPlayer().getName()+"'s inv file",Level.INFO);
                 }
                 current = reader.readLine();
             }
