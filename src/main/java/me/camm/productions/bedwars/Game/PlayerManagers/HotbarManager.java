@@ -186,10 +186,6 @@ public class HotbarManager
         player.openInventory((Inventory)editor);
     }
 
-    public boolean invEquals(Inventory other){
-        return other.equals(editor);
-    }
-
     public IGameInventory getEditor() {
         return editor;
     }

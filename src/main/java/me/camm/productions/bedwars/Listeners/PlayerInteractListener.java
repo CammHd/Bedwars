@@ -274,31 +274,27 @@ public class PlayerInteractListener implements Listener
                     blockLoc.add(face.getModX(),face.getModY(),face.getModZ());
                     Block waterPlace = blockLoc.getBlock();
 
+                    //no tag = public
                     if (!manager.hasTag(waterPlace)) {
-                        event.setCancelled(true);
+                        manager.addBlock(block.getX(), block.getY(),block.getZ(),BlockTag.ALL.getTag());
+                        removeItem(player);
                         return;
                     }
 
                     byte tag = manager.getTag(waterPlace);
 
+                    //restricted then cancel
                     if (tag == BlockTag.NONE.getTag()) {
                         event.setCancelled(true);
                         return;
                     }
 
+                    //team tag by default, don't do anything
 
                     if (player.getGameMode() == GameMode.CREATIVE)
                         return;
 
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            ItemStack stack = player.getInventory().getItemInHand();
-                            if (!ItemHelper.isItemInvalid(stack) && stack.getType()==Material.BUCKET)
-                                player.setItemInHand(null);
-                            cancel();
-                        }
-                    }.runTaskLater(plugin,1);
+                    removeItem(player);
                 }
             }
             break;
@@ -315,6 +311,19 @@ public class PlayerInteractListener implements Listener
             break;
 
         }
+    }
+
+
+    public void removeItem(Player player){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                ItemStack stack = player.getInventory().getItemInHand();
+                if (!ItemHelper.isItemInvalid(stack) && stack.getType()==Material.BUCKET)
+                    player.setItemInHand(null);
+                cancel();
+            }
+        }.runTaskLater(plugin,1);
     }
 
 

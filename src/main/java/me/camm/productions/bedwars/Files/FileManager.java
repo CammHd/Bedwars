@@ -32,11 +32,11 @@ public class FileManager
    public enum Files {
 
         GENERATORS("Generators.json"),
-        INSTRUCTIONS("Instructions.txt"),
+        //INSTRUCTIONS("Instructions.txt"),
         TEAM_DATA("TeamData.json"),
         WORLD_DATA("WorldData.json"),
 
-       EVENTS("Events.json"),
+      // EVENTS("Events.json"),
         CREDITS("ContributorList.txt");
 
         final String data;
@@ -244,7 +244,7 @@ public class FileManager
                     set[line-1] = category;
                 }
                 catch (IllegalArgumentException e) {
-                    sender.sendConsoleMessage(e.getMessage() +" at line "+(line-1) +"in " +
+                    sender.sendConsoleMessage(e.getMessage() +" at line "+(line-1) +" in " +
                             ""+player.getName()+"'s hot bar file", Level.INFO);
                     set[line-1] = null;
                 }
@@ -330,6 +330,9 @@ public class FileManager
         public @Nullable ItemCategory process(String string) throws IllegalArgumentException {
             try {
                 string = string.trim();
+                if (string.equals("null"))
+                    return null;
+
                 ItemCategory cat = ItemCategory.valueOf(string);
                 if (cat==ItemCategory.NONE||cat==ItemCategory.NAV) {
                     return null;

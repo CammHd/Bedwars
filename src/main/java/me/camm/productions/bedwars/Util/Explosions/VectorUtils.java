@@ -78,8 +78,6 @@ public class VectorUtils
             case DROPPED_ITEM:
             case FIREBALL:
                 valid = false;
-
-
         }
         return valid;
     }
@@ -124,17 +122,11 @@ public class VectorUtils
         BlockTagManager manager = BlockTagManager.get();
 
         //no tag -> map block
-        if (!manager.hasTag(block))
+        if (manager.hasTag(block) && manager.getTag(block) != BlockTag.ALL.getTag())
             return false;
 
         if (!manager.isInbounds(block))
             return false;
-
-       byte tag = manager.getTag(block.getX(), block.getY(), block.getZ());
-
-        //ensure it's not a bed, chest, generator
-       if (tag != BlockTag.ALL.hashCode())
-           return false;
 
         return canBreak;
 
@@ -153,8 +145,6 @@ public class VectorUtils
         return (blockStrength+VectorParameter.BLOCK_ADDITION.getValue())/
                 VectorParameter.BLOCK_DIVISOR.getValue();
     }
-
-
 
     /*
     @Author CAMM
