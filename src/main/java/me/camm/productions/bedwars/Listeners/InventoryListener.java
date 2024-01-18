@@ -1,16 +1,13 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.Managers.PlayerInventoryManager;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName;
 import me.camm.productions.bedwars.Items.SectionInventories.Inventories.TeamJoinInventory;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
-import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
-import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +15,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +79,6 @@ public class InventoryListener implements Listener {
 
         Inventory clicked = event.getClickedInventory();
         IGameInventory gameInventory = monitors.getOrDefault(clicked.hashCode(), null);
-
 
 
         if (gameInventory == null) {

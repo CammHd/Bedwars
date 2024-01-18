@@ -1,0 +1,71 @@
+
+This file is a file for instructions in the game.
+2 Config Files:
+
+Teams, and World data
+Teams are for specifying new teams, World Data is for Specifying data in the world.
+
+To register a new team, use the following lines.
+The lines must be written in order. Spaces are allowed.
+
+TeamColor: color--
+ForgeTime: Milliseconds (integer greater than 0) Spawn an item ~every n milliseconds, slightly randomized--
+ForgeSpawn: x/y/z--
+TeamSpawn: x/y/z/yaw--
+Bed: x1,x2/y1,y2/z1,z2--
+Chest: x/y/z--
+QuickBuySpawn: x/y/z/yaw--
+TeamBuySpawn: x/y/z/yaw--
+RestrictedPlaceArea: x1,x2/y1,y2/z1,z2---
+HealPoolArea: x1,x2/y1,y2/z1,z2---
+TrapTriggerArea: x1,x2/y1,y2/z1,z2
+
+Colors are: red, blue, yellow, white, aqua, gray, pink, green
+Integers are whole numbers. E.g 1,120, 20
+Teams should be unique. There should be no 2 red teams for example.
+
+Coordinates like X,Y, and Z are decimal numbers or whole numbers. They are coordinates for
+a position.
+Yaw is a rotation. It follows the In-game Coordinates.
+
+
+To specify a world, use the following:
+The world name must be exactly the name of the world folder.
+You would put this in the world data file.
+
+World: world name
+Bounds: x1,x2/y1,y2/z1,z2
+SpectatorSpawn: x/y/z
+Void: y
+
+After specifying a world, in the same file, you can use the following to specify a generator spawn.
+Type refers to a diamond or emerald generator.
+
+Generator:
+Type: type
+Spawn: x/y/z
+RegisteredArea: x1,x2/y1,y2/z1,z2
+
+
+====================================================
+
+Commands
+
+/setup
+Loads the data from the config files into the world. Prepares the world for the game
+by adding metadata.
+
+/register
+Registers the executing player onto a team of their choosing.
+
+/unregister
+Unregisters the executing player from their team.
+
+/start
+Starts the game. There must be opposition for the game to start
+
+/endgame
+Ends the game manually.
+
+/shout <args>
+Sends a public message visible to all other teams in the game

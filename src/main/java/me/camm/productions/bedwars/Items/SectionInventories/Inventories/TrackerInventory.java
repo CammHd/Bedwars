@@ -1,11 +1,11 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.Managers.PlayerTrackerManager;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.PlayerManagers.PlayerTrackerManager;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Items.ItemProperties.ItemCategory;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.ResourceConfig;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
@@ -40,7 +40,7 @@ public class TrackerInventory extends InventoryOptionable {
                 continue;
 
 
-            if (team.doesBedExist())
+            if (team.getBedExists())
             {
                 allBroken = false;
                 break;

@@ -1,0 +1,29 @@
+{
+"Arena": {
+
+ "World Name": "",
+  "Void Y Level": 0,
+
+
+  "Spectator Spawn": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+
+
+  "Boundaries": {
+    "From": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+
+    "To": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0
+    }
+  }
+ }
+}

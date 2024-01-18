@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations;
 
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
 
 
 /**

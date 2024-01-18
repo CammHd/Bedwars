@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
+import me.camm.productions.bedwars.Game.Arena;
 import me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations.BlockConfig;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.ShopInventory;
 import org.bukkit.inventory.Inventory;

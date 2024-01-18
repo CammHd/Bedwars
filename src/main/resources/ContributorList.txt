@@ -1,0 +1,63 @@
+
+ List Up to date as of 2023-12-02 (ydm)
+ Project started November 2019
+ Core Finished Jan 23 2021
+ Release 1.0.0 on Aug 2 2022
+
+Developers:
+ Bipi
+ CAMM_H87 (Founding Developer)
+ Mohit Verma
+
+====================================================
+Major Contributors:
+
+Buster_Buckaroo
+Bipi
+CAMM_H87
+KiwiGod888
+Lachi_Molala
+Lercerpe
+Marcaroni_
+Mohit Verma
+MrTeavee
+
+====================================================
+Play Testing:
+
+CAMM_H87
+ChristmasPotato
+J4CKTH3REAPER
+KiwiGod888
+MaidTheMage
+Marcaroni_
+
+====================================================
+General Testing:
+
+CAMM_H87
+GR3aterG0ld
+KiwiGod888
+Lachi_Molala
+Marcaroni_
+MrTeavee
+sophieeeishere
+
+====================================================
+Research:
+
+adithemaddy
+BusterBuckaroo
+CAMM_H87
+GR3AterG0ld
+KiwiGod888
+Lercerpe
+Marcaroni_
+MrTeavee
+
+====================================================
+Team Morale:
+
+Lachi_Molala
+Marcaroni_
+MrTeavee

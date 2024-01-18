@@ -1,5 +1,6 @@
 package me.camm.productions.bedwars.Util.Locations.Boundaries;
 
+import me.camm.productions.bedwars.Util.Locations.RegisterType;
 import me.camm.productions.bedwars.Util.Locations.WallFace;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -60,7 +61,7 @@ public class SoakBoundary extends Boundary<Double>
     }
 
 
-    private void reArrange(int one, int two, Double[] order, int repetition) //method loop for rearranging
+    private void order(int one, int two, Double[] order, int repetition) //method loop for rearranging
     {
         double placeHold;
 
@@ -79,7 +80,7 @@ public class SoakBoundary extends Boundary<Double>
 
             if (repetition < TOTAL) {
                 repetition++;
-                reArrange(one, two, order, repetition);
+                order(one, two, order, repetition);
             } else
                 bounds = order;
         }
@@ -93,7 +94,7 @@ public class SoakBoundary extends Boundary<Double>
         final int ONE = 0;
         final int TWO = 1;
         final int REPETITION = 0;
-        reArrange(ONE, TWO, bounds, REPETITION);
+        order(ONE, TWO, bounds, REPETITION);
     }
 
 
@@ -111,9 +112,9 @@ public class SoakBoundary extends Boundary<Double>
     public void register(World world, String type, int blocks, Plugin plugin)//include stuff to register different blocks [e.g air, wood, wool{include colors}]
     {
 
-        if (blocks > 0) //if 0, then register blocks that are not air
+        if (blocks == RegisterType.EVERYTHING.getType()) //if 0, then register blocks that are not air
             registerAll(world, type, plugin);  //if 0, then register blocks that are not air
-        else if (blocks == 0)
+        else if (blocks == RegisterType.NOT_AIR.getType())
             registerSolids(world, type, plugin);
         else
             registerAir(world, type, plugin); //only register the air

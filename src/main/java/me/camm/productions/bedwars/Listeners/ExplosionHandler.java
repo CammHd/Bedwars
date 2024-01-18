@@ -1,14 +1,14 @@
 package me.camm.productions.bedwars.Listeners;
 
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Entities.ActiveEntities.GameDragon;
-import me.camm.productions.bedwars.Entities.ActiveEntities.Hierarchy.IGameTeamable;
-import me.camm.productions.bedwars.Explosions.ExplosionParticle;
-import me.camm.productions.bedwars.Explosions.VectorParameter;
-import me.camm.productions.bedwars.Explosions.Vectors.ExplosionVector;
-import me.camm.productions.bedwars.Explosions.VectorToolBox;
-import me.camm.productions.bedwars.Explosions.VelocityComponent;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.GameDragon;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.Hierarchy.IGameTeamable;
+import me.camm.productions.bedwars.Util.Explosions.ExplosionParticle;
+import me.camm.productions.bedwars.Util.Explosions.VectorParameter;
+import me.camm.productions.bedwars.Util.Explosions.Vectors.ExplosionVector;
+import me.camm.productions.bedwars.Util.Explosions.VectorUtils;
+import me.camm.productions.bedwars.Util.Explosions.KnockbackCalculator;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Explosion;
 import org.bukkit.Bukkit;
@@ -117,7 +117,7 @@ public class ExplosionHandler implements Listener
                 continue;
 
 
-            if (!VectorToolBox.isValidDamageType(entity)) {
+            if (!VectorUtils.isValidDamageType(entity)) {
                 continue;
             }
 
@@ -163,7 +163,7 @@ public class ExplosionHandler implements Listener
 
         }
 
-        VelocityComponent component = new VelocityComponent(explodeEvent);
+        KnockbackCalculator component = new KnockbackCalculator(explodeEvent);
         component.applyVelocity();
 
         double distance = 0;
@@ -176,13 +176,17 @@ public class ExplosionHandler implements Listener
                 Block block = directions.get(rays).blockAtDistance(distance);
                 boolean broken = directions.get(rays).conflict(block); //determine if the block should be broken.
 
+                /*
+                 BTM.canExplosivesBreak(entity, directions.get(rays))
+                 */
+
                 if (!broken) {
                     if (directions.get(rays).lostStrength())  //If the vector has lost power, then remove it to save resources.
                         directions.remove(rays);
                     continue;
                 }
 
-                VectorToolBox.breakAtPosition(directions.get(rays).blockAtDistance(distance)); //breaking the block
+                VectorUtils.breakAtPosition(directions.get(rays).blockAtDistance(distance)); //breaking the block
 
                 if (incendiary)
                       fireCandidates.add(block);  //consider the block for fire [Might not be air]
@@ -211,14 +215,14 @@ public class ExplosionHandler implements Listener
 
                 switch (currentMaterial) {
                     case WOOD: {
-                        if (VectorToolBox.isDataDestructable(testBlock.getData(), false, testBlock, colors))
+                        if (VectorUtils.isDataDestructable(testBlock.getData(), false, testBlock, colors))
                             valid = true; //can be set on fire
                     }
                     break;
 
                     case STAINED_CLAY:
                     case WOOL: {
-                        if (VectorToolBox.isDataDestructable(testBlock.getData(), true, testBlock, colors))
+                        if (VectorUtils.isDataDestructable(testBlock.getData(), true, testBlock, colors))
                             valid = true;  // can be set on fire
                     }
 

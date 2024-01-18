@@ -22,13 +22,13 @@ public class ChatSender
     }
 
     public void sendConsoleMessage(String message, Level l){
-        logger.log(l,"[BEDWARS] "+message);
+        logger.log(l,"[BEDWARS-CONSOLE] "+message);
     }
 
 
     public static ChatSender getInstance(){
         if (sender == null) {
-            sender = new ChatSender(BedWars.getPlugin());
+            sender = new ChatSender(BedWars.getInstance());
         }
             return sender;
     }

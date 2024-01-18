@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Util.Helpers;
 
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Players.Scoreboards.PlayerBoard;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Scoreboard.PlayerBoard;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
 
 import java.util.Collection;
 
@@ -34,5 +34,13 @@ public class TeamHelper
             board.updateTeamStatuses();
             board.switchPrimaryBuffer();
         }
+    }
+
+    public static boolean allTeamsEliminated(Collection<BattleTeam> teams){
+        for (BattleTeam team: teams) {
+            if (!team.isEliminated())
+                return false;
+        }
+        return true;
     }
 }

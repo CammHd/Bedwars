@@ -1,5 +1,7 @@
 package me.camm.productions.bedwars.Util.Locations;
 
+import me.camm.productions.bedwars.Util.BlockTag;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,18 +15,21 @@ Notes for generic classes:
 t cannot be instantiated directly. So that means that you will need to throw an illegal
 args exception and handle it externally.
  */
-import static me.camm.productions.bedwars.Util.Locations.BlockRegisterType.*;
+
 
 public class BridgeFiller
 {
     private int x1, x2, y1, y2, z1, z2;
     private int[] bounds;
 
+    private final BlockTagManager manager;
+
     public BridgeFiller(Location one, Location two)
     {
         this.bounds = new int[] {one.getBlockX(),two.getBlockX(),one.getBlockY(), two.getBlockY(),one.getBlockZ(), two.getBlockZ()};
         reArrange();
         dissectArray();
+        manager = BlockTagManager.get();
     }
 
     private void dissectArray() {
@@ -76,7 +81,7 @@ public class BridgeFiller
     }
 
     @SuppressWarnings("deprecation")
-    public void fill(Material filler, byte data, World world, String unregister, Plugin plugin)
+    public void fill(Material filler, byte data, World world)
     {
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
@@ -84,13 +89,10 @@ public class BridgeFiller
                     Block block = world.getBlockAt(x, y, z);
 
 
-                    if (block.getType()==Material.AIR && canFill(block))
-                    {
-                        block.setType(filler);
+                    if (canFill(block)) {
+                        block.setType(filler);  // block.set type
                         block.setData(data);
-                        block.removeMetadata(unregister, plugin);
                     }
-
                 }
             }
         }
@@ -99,6 +101,22 @@ public class BridgeFiller
 
     private boolean canFill(Block b)
     {
-        return !(b.hasMetadata(GENERATOR.getData()) || b.hasMetadata(BASE.getData()) || (!b.hasMetadata(ARENA.getData())));
+        if (!manager.isInbounds(b))
+            return false;
+
+        if (!manager.hasTag(b))
+            return true;
+
+        return (manager.getTag(b) != BlockTag.NONE.getTag()) &&
+                (b.getType() == Material.AIR);
+
+
+
+
+        // TODO: FIX METADATA CHECKER
+        /*
+         if block does not have 0000 0000 and in bounds
+         then can place
+         */
     }
 }

@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Templates;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Items.ItemDatabases.DefaultTemplateNavigation;
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Items.ItemProperties.DefaultTemplateNavigation;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryCustom;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import static me.camm.productions.bedwars.Items.ItemDatabases.DefaultTemplateNavigation.EMPTY;
+import static me.camm.productions.bedwars.Items.ItemProperties.DefaultTemplateNavigation.EMPTY;
 
 
 /**

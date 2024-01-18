@@ -1,8 +1,8 @@
 package me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations;
 
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty;
-import me.camm.productions.bedwars.Items.ItemDatabases.ItemCategory;
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Items.ItemProperties.ItemCategory;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 

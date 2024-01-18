@@ -1,10 +1,11 @@
 package me.camm.productions.bedwars.Generators;
 
 
-import me.camm.productions.bedwars.Files.FileKeywords.WorldFileKeyword;
-import me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime;
-import me.camm.productions.bedwars.Util.Locations.BlockRegisterType;
+import me.camm.productions.bedwars.Game.Events.EventTime;
+import me.camm.productions.bedwars.Util.BlockTag;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.GameBoundary;
+import me.camm.productions.bedwars.Util.Locations.Coordinate;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -18,7 +19,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-import static me.camm.productions.bedwars.Arena.GameRunning.Events.EventTime.*;
+import static me.camm.productions.bedwars.Game.Events.EventTime.*;
 
 /**
  * @author CAMM
@@ -28,6 +29,7 @@ public class Generator
 {
 
     private final static int GROUPED_PLAYER_NUMBER;
+    private static final String TAG = "GENERATOR";
 
 
     //number to check for when deciding the cap for diamond and emerald spawn amounts
@@ -43,6 +45,7 @@ public class Generator
     private volatile int totalSpawnTime;
     private String spawnWord;  //To show the type of spawn
     private int tier;
+    private int[] tierTimes;
 
     private final Material type;
     //What the generator is spawning
@@ -78,32 +81,21 @@ public class Generator
 
     //time of upgrades is controlled externally
 
-    public Generator(double x, double y, double z, World world, String spawning, Plugin plugin, GameBoundary box)  //construct
+    public Generator(Coordinate location, World world, GeneratorType type, Plugin plugin, GameBoundary box, int[] tierTimes)  //construct
     {
+
         this.box = box;
-        this.name = BlockRegisterType.GENERATOR.getData();
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.name = TAG;
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
         this.world = world;
         this.playerNumber = 0;
         this.plugin = plugin;
         this.timeCount = 0;
 
-        if (spawning==null) {
-            //If what the generator spawns is null, default to diamond.
-            this.genType = GeneratorType.DIAMOND;
-            this.type = genType.getSpinningBlockMaterial();
-            return;
-        }
-
-
-        this.genType = spawning.equalsIgnoreCase(WorldFileKeyword.EMERALD.getKey()) ?
-                GeneratorType.EMERALD:GeneratorType.DIAMOND;
-
+        this.genType = type;
         this.type = genType.getSpinningBlockMaterial();
-
-
     }
 
     /*
@@ -124,16 +116,12 @@ public class Generator
             loaded.load();
 
 
-
-
-
-
         switch (genType)
         {
             case DIAMOND:
             {
                 generatorType.setCustomName(ChatColor.AQUA+genType.getSimpleName());
-                setTimeTitle(EventTime.DIAMOND_TIER_ONE_TIME.getTime());  //Diamond in [n] seconds
+                setTimeTitle(DIAMOND_TIER_ONE_TIME.getTime());  //Diamond in [n] seconds
                 setGeneratorTier(1,DIAMOND_TIER_ONE_TIME.getTime());
                 totalSpawnTime = DIAMOND_TIER_ONE_TIME.getTime();
                 nextSpawnTime = DIAMOND_TIER_ONE_TIME.getTime();
@@ -182,7 +170,7 @@ public class Generator
     //getters, setters and helpers
     public void registerBox()
     {
-        box.register(world,name,1,plugin);  //register all blocks
+        box.registerAll(BlockTag.NONE.getTag());
     }
 
     public void setPlayerNumber(int newNumber)
@@ -253,7 +241,7 @@ public class Generator
                 break;
 
             case 2:
-                nextTime =  genType==GeneratorType.DIAMOND? DIAMOND_TIER_THREE_TIME.getTime() : EMERALD_TIER_THREE_TIME.getTime();
+                nextTime = genType==GeneratorType.DIAMOND? DIAMOND_TIER_THREE_TIME.getTime() : EMERALD_TIER_THREE_TIME.getTime();
                 break;
 
             default:
@@ -317,17 +305,17 @@ public class Generator
 
         for (Entity entity : items) {
             if (!entity.getType().equals(EntityType.DROPPED_ITEM))
-            continue;
+             continue;
 
             current = (Item) entity;
             if (current.getItemStack().getType() != product) //  if diamond/emerald
-            continue;
+              continue;
 
             if (current.getLocation().distance(generatorType.getLocation()) > 5)
-            continue;
+              continue;
 
             if (current.hasMetadata(name))
-            nearby += current.getItemStack().getAmount();
+              nearby += current.getItemStack().getAmount();
 
         } //for
 

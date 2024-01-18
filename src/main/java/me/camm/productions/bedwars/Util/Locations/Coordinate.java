@@ -1,5 +1,7 @@
 package me.camm.productions.bedwars.Util.Locations;
 
+import me.camm.productions.bedwars.Util.BlockTag;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Locations.Boundaries.SoakBoundary;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -85,8 +87,6 @@ public class Coordinate implements IRegistratable
         }
         else
             block.setMetadata(type, value);
-
-
     }
 
     public double getX()
@@ -109,11 +109,6 @@ public class Coordinate implements IRegistratable
         return yaw;
     }
 
-    public double[] getCoordinates()
-    {
-
-        return new double[]{x,y,z,yaw};
-    }
 
     public Location getAsLocation(World world)
     {
@@ -126,8 +121,23 @@ public class Coordinate implements IRegistratable
         world.getBlockAt((int)x,(int)y,(int)z).setMetadata(type,new FixedMetadataValue(plugin,1));
     }
 
+    public void unregister() {
+        BlockTagManager manager = BlockTagManager.get();
+        manager.removeTag((int)x,(int)y,(int)z);
+    }
+
     public void unregister(World world, String type, Plugin p){
         world.getBlockAt((int)x,(int)y,(int)z).removeMetadata(type, p);
+    }
+
+    public void register(byte tag) {
+        BlockTagManager manager = BlockTagManager.get();
+        manager.addBlock((int)x,(int)y,(int)z, tag);
+    }
+
+    public void registerWithOverrides(byte tag) {
+        BlockTagManager manager = BlockTagManager.get();
+        manager.overrideTag((int)x,(int)y,(int)z, tag);
     }
 
     public SoakBoundary toBoundaryPoint()

@@ -1,9 +1,9 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Entities.ActiveEntities.BedBug;
-import me.camm.productions.bedwars.Entities.Consumables.BridgeEgg;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Entities.ActiveEntities.BedBug;
+import me.camm.productions.bedwars.Game.Entities.BridgeEgg;
 import me.camm.productions.bedwars.Util.PacketSound;
 
 import org.bukkit.Location;
@@ -23,7 +23,6 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ProjectileListener implements Listener
 {

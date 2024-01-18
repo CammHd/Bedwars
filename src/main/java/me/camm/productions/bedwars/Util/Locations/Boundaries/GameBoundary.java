@@ -1,15 +1,14 @@
 package me.camm.productions.bedwars.Util.Locations.Boundaries;
 
 
-import me.camm.productions.bedwars.Util.Helpers.ChatSender;
+import me.camm.productions.bedwars.Util.Helpers.BlockTagManager;
 import me.camm.productions.bedwars.Util.Locations.Coordinate;
-import org.bukkit.ChatColor;
+import me.camm.productions.bedwars.Util.Locations.RegisterType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
@@ -20,7 +19,10 @@ public class GameBoundary extends Boundary<Integer>
 {
     private Integer[] bounds;
     private final Random rand;
-    private static ChatSender sender;
+
+    private static BlockTagManager blockTagManager;
+  //  public static ConcurrentMap<Long, Byte> blocks = new ConcurrentHashMap<>(1000); //block tag manager class deals with this
+
 
     public GameBoundary(Integer[] bounds) {
         this.bounds = bounds;
@@ -28,7 +30,25 @@ public class GameBoundary extends Boundary<Integer>
         analyze();
         reArrange();
         dissectArray();
-        sender = ChatSender.getInstance();
+     //   sender = ChatSender.getInstance();
+        //the blockTagmanager should be initialized externally.
+        //the arena requires boundaries, but the boundaries require an arena for the blocktagmanager.
+        //initialize the tag manager when boundaries after arena is constructed, but before they are used.
+
+    }
+
+
+    /*
+
+    Sets the blocktagmanager variable for all boundaries.
+    @pre: The arena must be constructed first and initialized in the BlockTagManager class
+    with BlockTagManager.initialize(Arena gameArena)
+
+    This method should be called before any operations involving the boundaries are done
+    and after the arena is init
+     */
+    public static void initializeTagManager(){
+        blockTagManager = BlockTagManager.get();
     }
 
 
@@ -42,15 +62,15 @@ public class GameBoundary extends Boundary<Integer>
 
     @Override
     protected void dissectArray() {
-        if (bounds != null && bounds.length == 6) {
+        if (bounds == null || bounds.length != 6) {
+            this.bounds = reset();
+        } else {
             x1 = bounds[0];
             x2 = bounds[1];
             y1 = bounds[2];
             y2 = bounds[3];
             z1 = bounds[4];
             z2 = bounds[5];
-        } else {
-            this.bounds = reset();
         }
     }
 
@@ -77,11 +97,12 @@ public class GameBoundary extends Boundary<Integer>
 
         if (order.length == LENGTH)  //if the length of the array is 6
         {
-            if (order[one] > order[two]) {
+            if (!(order[one] <= order[two])) {
                 placeHold = order[two];
                 order[two] = order[one];
                 order[one] = placeHold;
             }
+
             one += 2;
             two += 2;
 
@@ -100,6 +121,7 @@ public class GameBoundary extends Boundary<Integer>
     @SuppressWarnings("deprecation")
     public void replace(Material replacement, Material toReplace, byte[] toReplaceData, World world)
     {
+
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
                 for (int z = z1; z <= z2; z++) {
@@ -144,28 +166,78 @@ public class GameBoundary extends Boundary<Integer>
         return false;
     }
 
-    public void unregister(String metadata, World world, Plugin plugin) {
+    public void unregister(World world) {
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
                 for (int z = z1; z <= z2; z++) {
                     Block block = world.getBlockAt(x, y, z);
-                    block.removeMetadata(metadata, plugin);
+                    if (blockTagManager.hasTag(block)) {
+                        blockTagManager.removeTag(x,y,z);
+                    }
                 }
             }
         }
     }
 
-    public void register(World world, String type, int blocks, Plugin plugin)//include stuff to register different blocks [e.g. air, wood, wool{include colors}]
-    {
-
-        if (blocks > 0) //if 0, then register blocks that are not air
-            registerAll(world, type, plugin);  //if 0, then register blocks that are not air
-        else if (blocks == 0)
-            registerSolids(world, type, plugin);
-        else
-            registerAir(world, type, plugin); //only register the air
-
+    public void register(World world, byte tag, RegisterType type) {
+        if(type == RegisterType.EVERYTHING)
+        {
+            registerAll(tag);
+        } else if (type == RegisterType.AIR_ONLY) {
+            registerAir(world, tag);
+        } else
+        {
+            registerNotAir(world, tag);
+        }
     }
+
+    public void registerWithOverrides(byte tag) {
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    blockTagManager.overrideTag(x,y,z, tag);
+                }
+            }
+        }
+    }
+
+
+
+    public void registerAll(byte tag){
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    blockTagManager.addBlock(x,y,z,tag);
+                }
+            }
+        }
+    }
+
+    public void registerAir(World world, byte tag){
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (block.getType() == Material.AIR)
+                        blockTagManager.addBlock(x,y,z,tag);
+                }
+            }
+        }
+    }
+
+    public void registerNotAir(World world, byte tag){
+        for (int x = x1; x <= x2; x++) {
+            for (int y = y1; y <= y2; y++) {
+                for (int z = z1; z <= z2; z++) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (block.getType() != Material.AIR)
+                        blockTagManager.addBlock(x,y,z,tag);
+                }
+            }
+        }
+    }
+
+
     //1 = all, 0 = !air, -1 = air only
 
     public Coordinate getRandomCoordinateWithin() {
@@ -185,63 +257,12 @@ public class GameBoundary extends Boundary<Integer>
 
 
     //registers all blocks in the bounds with a metadata of string type
-    private void registerAll(World world, String type, Plugin plugin) {
 
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-
-                    Block block = world.getBlockAt(x, y, z);
-                    block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-
-                }
-            }
-        }
-        sendRegistry(type);
-    }
-
-    //Registering everything that is not air
-    private void registerSolids(World world, String type, Plugin plugin) {
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() != Material.AIR)
-                        block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-                }
-            }
-        }
-        sendRegistry(type);
-    }
-
-   //registering all materials that are air
-    private void registerAir(World world, String type, Plugin plugin) {
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() == Material.AIR)
-                        block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-                }
-            }
-        }
-        sendRegistry(type);
-    }
 
     //registering all materials except for that provided, and air
-    public void registerButNotBlockOrAir(World world, String type, Plugin plugin, Material notRegister) {
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() != notRegister && block.getType() != Material.AIR)  //if not air and not the material, then register
-                        block.setMetadata(type, new FixedMetadataValue(plugin, 1));
-                }
-            }
-        }
-       sendRegistry(type);
-    }
 
+
+    @Deprecated //need to update to be compatible with new metadata system
     public void unregister(World world, String type, Plugin plugin) {
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
@@ -251,7 +272,7 @@ public class GameBoundary extends Boundary<Integer>
                 }
             }
         }
-        sendUnregistry(type);
+        //sendUnregistry(type);
 
     }
 
@@ -261,14 +282,15 @@ public class GameBoundary extends Boundary<Integer>
         return (x1<=x && x<=x2) && (y1<=y && y<=y2) && (z1<=z && z<=z2);
     }
 
-    private void sendRegistry(String type)
+    public boolean containsCoordinate(double x, double y, double z)
     {
-        sender.sendMessage(ChatColor.YELLOW + "[MAP REGISTER] Registered Zone from (x1=" + x1 + ",y1=" + y1 + ",z1=" + z1 + ") to (x2=" + x2 + ",y2=" + y2 + ",z2=" + z2 + ") with " + type);
+        return (x1<=x && x<=x2) && (y1<=y && y<=y2) && (z1<=z && z<=z2);
     }
 
-
-    private void sendUnregistry(String type) {
-        sender.sendMessage(ChatColor.YELLOW + "[MAP REGISTER] Unregistered Zone from (x1=" + x1 + ",y1=" + y1 + ",z1=" + z1 + ") to (x2=" + x2 + ",y2=" + y2 + ",z2=" + z2 + ") from " + type);
+    public boolean containsEntity(Entity entity)
+    {
+        Location loc = entity.getLocation();
+        return (x1<= loc.getX() && loc.getX()<=x2) && (y1<= loc.getY() && loc.getY() <=y2) && (z1<= loc.getZ() && loc.getZ() <=z2);
     }
 
     public Integer[] getValues() {

@@ -11,12 +11,15 @@ public abstract class Boundary<T extends Number> implements IRegistratable {
     protected abstract void reArrange();
     protected abstract void dissectArray();
     protected abstract T[] reset();
-
     public void register(World world, String type, Plugin plugin){
 
     }
 
     public void unregister(World world, String type, Plugin plugin){
+
+    }
+
+    public void register(World world, String type, int blocks, Plugin plugin) {
 
     }
 

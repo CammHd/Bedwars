@@ -1,15 +1,15 @@
 package me.camm.productions.bedwars.Items.SectionInventories.Inventories;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
 import me.camm.productions.bedwars.Items.SectionInventories.Templates.IGameInventory;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.InventoryOperationHelper;
 import me.camm.productions.bedwars.Util.Helpers.ItemHelper;
 import me.camm.productions.bedwars.Util.Helpers.TeamHelper;
-import me.camm.productions.bedwars.Validation.RegistrationException;
+import me.camm.productions.bedwars.Util.Exceptions.RegistrationException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryCustom;
@@ -21,9 +21,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryName.TEAM_JOIN;
 
@@ -52,7 +54,7 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
         init();
     }
 
-    @SuppressWarnings("deprecration")
+    @SuppressWarnings("deprecation")
     private void init(){
         int slot = 0;
         for (BattleTeam currentTeam: teams)
@@ -81,13 +83,17 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
     }
 
     public void operate(InventoryClickEvent event) {
-       boolean cancel =  InventoryOperationHelper.triedToPlaceIn(event, this);
+       boolean cancel = InventoryOperationHelper.triedToPlaceIn(event, this);
 
         if (cancel)
             event.setCancelled(true);
 
-
-       registerToTeam(event);
+        try {
+            registerToTeam(event);
+        }
+        catch (IOException e) {
+            sender.sendConsoleMessage(e.getMessage(), Level.WARNING);
+        }
     }
 
 
@@ -96,8 +102,9 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
  @Author CAMM
  Adds a player to a team, or changes their team if they are already on one.
   */
-    private void registerToTeam(InventoryClickEvent event)
+    private void registerToTeam(InventoryClickEvent event) throws IOException
     {
+
         Inventory inv = event.getClickedInventory();
         HumanEntity player = event.getWhoClicked();
         Map<UUID, BattlePlayer> registeredPlayers = arena.getPlayers();
@@ -158,7 +165,7 @@ public class TeamJoinInventory extends CraftInventoryCustom implements IGameInve
         else  // If they were not in the team before.
         {
             BattleTeam team = arena.getTeams().get(name);
-            currentPlayer = new BattlePlayer((Player) event.getWhoClicked(), team, arena, arena.assignPlayerNumber());
+            currentPlayer = new BattlePlayer((Player) event.getWhoClicked(), team, arena);
             //Since the player board is initialized before the player joins, we get the incorrect amount of players on the team initially.
 
             boolean isAdded = team.addPlayer(currentPlayer);

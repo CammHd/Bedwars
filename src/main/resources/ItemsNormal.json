@@ -1,0 +1,15 @@
+{
+  "FIREBALL": {
+    "Name" : "Fireball",
+    "Material": "FIRE_CHARGE",
+    "Lore": "some optional lore here",
+    "Cost Material": "IRON_INGOT",
+    "Category" : "UTILITY",
+    "Persistent" : false,
+    "Keep item name": false,
+    "LCost" : 1,
+    "HCost" : 2,
+    "ByteData": 0
+  }
+
+}

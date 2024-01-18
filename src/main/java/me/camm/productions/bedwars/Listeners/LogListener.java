@@ -1,11 +1,11 @@
 package me.camm.productions.bedwars.Listeners;
 
-import me.camm.productions.bedwars.Arena.GameRunning.Arena;
-import me.camm.productions.bedwars.Arena.GameRunning.Commands.CommandKeyword;
-import me.camm.productions.bedwars.Arena.GameRunning.GameRunner;
-import me.camm.productions.bedwars.Arena.Players.BattlePlayer;
-import me.camm.productions.bedwars.Arena.Teams.BattleTeam;
-import me.camm.productions.bedwars.Entities.ShopKeeper;
+import me.camm.productions.bedwars.Game.Arena;
+import me.camm.productions.bedwars.Game.Commands.CommandKeyword;
+import me.camm.productions.bedwars.Game.GameRunner;
+import me.camm.productions.bedwars.Game.BattlePlayer;
+import me.camm.productions.bedwars.Game.Teams.BattleTeam;
+import me.camm.productions.bedwars.Game.Entities.ShopKeeper;
 import me.camm.productions.bedwars.Util.Helpers.ChatSender;
 import me.camm.productions.bedwars.Util.Helpers.TeamHelper;
 import org.bukkit.ChatColor;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHelper, IPlayerUtil
 {
@@ -69,7 +68,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
         Map<UUID,BattlePlayer> registeredPlayers = arena.getPlayers();
 
         if (packetHandler!=null) {
-            if (packetHandler.contains(event.getPlayer()))
+            if (packetHandler.channelsContains(event.getPlayer()))
                 packetHandler.removePlayer(event.getPlayer());
         }
 
@@ -79,7 +78,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
         //setting the quit message
         BattlePlayer current = registeredPlayers.get(event.getPlayer().getUniqueId());
 
-        if (current.getIsEliminated())
+        if (current.isEliminated())
             return;
 
 
@@ -96,7 +95,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
 
 
         //if is on last life
-        if (!team.doesBedExist())
+        if (!team.getBedExists())
         {
             //eliminate them
             sender.sendMessage(current.getTeam().getTeamColor().getChatColor()+current.getRawPlayer().getName()+ChatColor.YELLOW+" was on their last life! They have been eliminated!");
@@ -172,7 +171,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
 
         current.refactorPlayer(player);
 
-        isBedExists = team.doesBedExist();
+        isBedExists = team.getBedExists();
 
         if (runner.isRunning() && packetHandler != null)
         {
@@ -180,12 +179,6 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
                 current.handlePlayerIntoSpectator(packetHandler,true);
             else
                 current.handlePlayerRespawn(packetHandler);
-
-        }
-
-        if (arena.isSpent()) {
-            current.sendMessage(ChatColor.YELLOW+"The game is over.");
-            return;
         }
 
         current.getRawPlayer().setScoreboard(arena.getHealthBoard());  //refreshing the board.
@@ -197,7 +190,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
             return;
 
 
-        if (packetHandler.contains(player)) {
+        if (packetHandler.channelsContains(player)) {
             packetHandler.removePlayer(player);
         }
         packetHandler.addPlayer(player);
@@ -208,7 +201,7 @@ public class LogListener implements Listener//, IArenaChatHelper, IArenaWorldHel
             keeper.setRotation(player);
         }
 
-        current.handlePlayerIntoSpectator(packetHandler,!team.doesBedExist(),null);
+        current.handlePlayerIntoSpectator(packetHandler,!team.getBedExists(),null);
 
     }
 }

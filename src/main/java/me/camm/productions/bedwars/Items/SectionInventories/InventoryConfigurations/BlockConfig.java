@@ -1,6 +1,6 @@
 package me.camm.productions.bedwars.Items.SectionInventories.InventoryConfigurations;
 
-import me.camm.productions.bedwars.Items.ItemDatabases.ShopItem;
+import me.camm.productions.bedwars.Items.ItemProperties.ShopItem;
 
 import static me.camm.productions.bedwars.Items.SectionInventories.Templates.InventoryProperty.QUICK_INV_BORDER_START;
 
