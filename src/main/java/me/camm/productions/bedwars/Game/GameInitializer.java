@@ -129,8 +129,7 @@ public class GameInitializer implements CommandExecutor
         }
         catch (Exception e) {
             sender.sendMessage(ChatColor.RED+"Error occurred trying to execute command \""+label+"\". Check the console for more info.");
-            messager.sendConsoleMessage(e.getMessage(),Level.WARNING);
-            e.printStackTrace();
+            messager.sendConsoleMessage(ChatColor.RED+e.getMessage(),Level.WARNING);
         }
         return true;
     }
